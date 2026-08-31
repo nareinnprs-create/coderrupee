@@ -20,6 +20,10 @@
     "package:mac": "electron-builder --mac --config electron-builder.config.ts",
     "package:win": "electron-builder --win --config electron-builder.config.ts",
     "package:linux": "electron-builder --linux --config electron-builder.config.ts",
+    "package:internal": "bun ./scripts/package-unsigned.ts",
+    "package:internal:win": "bun ./scripts/package-unsigned.ts --win",
+    "package:internal:mac": "bun ./scripts/package-unsigned.ts --mac",
+    "package:internal:linux": "bun ./scripts/package-unsigned.ts --linux",
     "native:build": "bun install --cwd native"
   },
   "main": "./out/main/index.js",

@@ -35,6 +35,8 @@ const channel = (() => {
   return "dev"
 })()
 
+const unsigned = process.env.CODERRUPEE_UNSIGNED === "1"
+
 const APP_IDS = {
   dev: "ai.coderrupee.desktop.dev",
   beta: "ai.coderrupee.desktop.beta",
@@ -79,11 +81,12 @@ const getBase = (appId: string): Configuration => ({
     gatekeeperAssess: false,
     entitlements: "resources/entitlements.plist",
     entitlementsInherit: "resources/entitlements.plist",
-    notarize: true,
+    notarize: !unsigned,
+    identity: unsigned ? null : undefined,
     target: ["dmg", "zip"],
   },
   dmg: {
-    sign: true,
+    sign: !unsigned,
   },
   protocols: {
     name: "CoderRupee",
@@ -93,7 +96,7 @@ const getBase = (appId: string): Configuration => ({
     icon: `resources/icons/icon.ico`,
     certificateSubjectName: "Opraiz Technology Pvt Ltd",
     signtoolOptions: {
-      sign: signWindows,
+      sign: unsigned ? undefined : signWindows,
     },
     target: ["nsis"],
     verifyUpdateCodeSignature: false,
