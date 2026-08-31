@@ -276,6 +276,9 @@ export const DESKTOP_NATIVE_ENGLISH = {
   "desktop.updater.dialog.ready.title": "Update Ready",
   "desktop.updater.dialog.restart": "Restart",
   "desktop.updater.dialog.later": "Later",
+  "desktop.updater.dialog.manual.message": "Update {{version}} is available. Download the latest installer to update.",
+  "desktop.updater.dialog.manual.title": "Update Available",
+  "desktop.updater.dialog.manual.download": "Download Update",
 
   "desktop.recovery.action.relaunch": "Relaunch",
   "desktop.recovery.action.exportLogs": "Export Logs",

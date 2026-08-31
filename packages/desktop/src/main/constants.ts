@@ -5,3 +5,4 @@ const raw = import.meta.env.CODERRUPEE_CHANNEL
 export const CHANNEL: Channel = raw === "dev" || raw === "beta" || raw === "prod" ? raw : "dev"
 
 export const UPDATER_ENABLED = app.isPackaged && CHANNEL !== "dev"
+export const UNSIGNED_BUILD = process.env.CODERRUPEE_UNSIGNED === "1"
