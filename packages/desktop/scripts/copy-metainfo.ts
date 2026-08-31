@@ -17,8 +17,8 @@ const xml = `<?xml version="1.0" encoding="UTF-8"?>
   <name>${productName}</name>
   <summary>${summary}</summary>
 
-  <developer id="ly.anoma">
-    <name>Anomaly Innovations Inc.</name>
+  <developer id="ai.coderrupee">
+    <name>CoderRupee</name>
   </developer>
 
   <description>
@@ -31,13 +31,13 @@ const xml = `<?xml version="1.0" encoding="UTF-8"?>
 
   <content_rating type="oars-1.1" />
 
-  <url type="bugtracker">https://github.com/coderrupee/coderrupee/issues</url>
+  <url type="bugtracker">https://github.com/nareinnprs-create/coderrupee/issues</url>
   <url type="homepage">https://coderrupee.ai</url>
-  <url type="vcs-browser">https://github.com/coderrupee/coderrupee</url>
+  <url type="vcs-browser">https://github.com/nareinnprs-create/coderrupee</url>
 
   <screenshots>
     <screenshot type="default">
-      <image>https://raw.githubusercontent.com/coderrupee/coderrupee/b75d4d1c5ec449585d515c756fc81f080a157a9a/packages/web/src/assets/lander/screenshot.png</image>
+      <image>https://raw.githubusercontent.com/nareinnprs-create/coderrupee/b75d4d1c5ec449585d515c756fc81f080a157a9a/packages/web/src/assets/lander/screenshot.png</image>
     </screenshot>
   </screenshots>
 </component>

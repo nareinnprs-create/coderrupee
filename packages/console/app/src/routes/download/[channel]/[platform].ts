@@ -32,7 +32,7 @@ export async function GET({ params: { platform, channel } }: APIEvent) {
   if (!assetName) return new Response(null, { status: 404 })
 
   const latest = await fetch(
-    `https://github.com/anomalyco/${channel === "stable" ? "coderrupee" : "coderrupee-beta"}/releases/latest/download/${assetName}`,
+    `https://github.com/nareinnprs-create/coderrupee/releases/latest/download/${assetName}`,
     { redirect: "manual" },
   )
   const location = latest.headers.get("location")

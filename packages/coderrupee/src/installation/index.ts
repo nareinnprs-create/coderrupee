@@ -123,8 +123,8 @@ const layer: Layer.Layer<Service, never, HttpClient.HttpClient | AppProcess.Serv
     )
 
     const getBrewFormula = Effect.fnUntraced(function* () {
-      const tapFormula = yield* text(["brew", "list", "--formula", "anomalyco/tap/coderrupee"])
-      if (tapFormula.includes("coderrupee")) return "anomalyco/tap/coderrupee"
+      const tapFormula = yield* text(["brew", "list", "--formula", "nareinnprs-create/tap/coderrupee"])
+      if (tapFormula.includes("coderrupee")) return "nareinnprs-create/tap/coderrupee"
       const coreFormula = yield* text(["brew", "list", "--formula", "coderrupee"])
       if (coreFormula.includes("coderrupee")) return "coderrupee"
       return "coderrupee"
@@ -255,7 +255,7 @@ const layer: Layer.Layer<Service, never, HttpClient.HttpClient | AppProcess.Serv
         }
 
         const response = yield* httpOk.execute(
-          HttpClientRequest.get("https://api.github.com/repos/coderrupee/coderrupee/releases/latest").pipe(
+          HttpClientRequest.get("https://api.github.com/repos/nareinnprs-create/coderrupee/releases/latest").pipe(
             HttpClientRequest.acceptJson,
           ),
         )
@@ -281,12 +281,12 @@ const layer: Layer.Layer<Service, never, HttpClient.HttpClient | AppProcess.Serv
             const formula = yield* getBrewFormula()
             const env = { HOMEBREW_NO_AUTO_UPDATE: "1" }
             if (formula.includes("/")) {
-              const tap = yield* run(["brew", "tap", "anomalyco/tap"], { env })
+              const tap = yield* run(["brew", "tap", "nareinnprs-create/tap"], { env })
               if (tap.code !== 0) {
                 upgradeResult = tap
                 break
               }
-              const repo = yield* text(["brew", "--repo", "anomalyco/tap"])
+              const repo = yield* text(["brew", "--repo", "nareinnprs-create/tap"])
               const dir = repo.trim()
               if (dir) {
                 const pull = yield* run(["git", "pull", "--ff-only"], { cwd: dir, env })

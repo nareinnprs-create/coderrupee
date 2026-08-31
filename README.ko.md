@@ -53,7 +53,7 @@ curl -fsSL https://coderrupee.ai/install | bash
 npm i -g coderrupee-ai@latest        # bun/pnpm/yarn 도 가능
 scoop install coderrupee             # Windows
 choco install coderrupee             # Windows
-brew install anomalyco/tap/coderrupee # macOS 및 Linux (권장, 항상 최신)
+brew install nareinnprs-create/tap/coderrupee # macOS 및 Linux (권장, 항상 최신)
 brew install coderrupee              # macOS 및 Linux (공식 brew formula, 업데이트 빈도 낮음)
 sudo pacman -S coderrupee            # Arch Linux (Stable)
 paru -S coderrupee-bin               # Arch Linux (Latest from AUR)

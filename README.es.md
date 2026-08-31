@@ -53,7 +53,7 @@ curl -fsSL https://coderrupee.ai/install | bash
 npm i -g coderrupee-ai@latest        # o bun/pnpm/yarn
 scoop install coderrupee             # Windows
 choco install coderrupee             # Windows
-brew install anomalyco/tap/coderrupee # macOS y Linux (recomendado, siempre al día)
+brew install nareinnprs-create/tap/coderrupee # macOS y Linux (recomendado, siempre al día)
 brew install coderrupee              # macOS y Linux (fórmula oficial de brew, se actualiza menos)
 sudo pacman -S coderrupee            # Arch Linux (Stable)
 paru -S coderrupee-bin               # Arch Linux (Latest from AUR)

@@ -2,7 +2,7 @@
 
 import { parseArgs } from "util"
 
-const defaultRepo = "coderrupee/coderrupee"
+const defaultRepo = "nareinnprs-create/coderrupee"
 const defaultAgeMonths = 1
 const defaultThreshold = 2
 const defaultSleepMs = 20_000

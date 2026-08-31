@@ -139,9 +139,9 @@ export default function Download() {
                 </code>
                 <CopyStatus />
               </button>
-              <button data-component="cli-row" onClick={handleCopyClick("brew install anomalyco/tap/coderrupee")}>
+              <button data-component="cli-row" onClick={handleCopyClick("brew install nareinnprs-create/tap/coderrupee")}>
                 <code>
-                  brew install <strong>anomalyco/tap/coderrupee</strong>
+                  brew install <strong>nareinnprs-create/tap/coderrupee</strong>
                 </code>
                 <CopyStatus />
               </button>

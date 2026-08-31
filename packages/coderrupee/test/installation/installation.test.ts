@@ -149,7 +149,7 @@ describe("installation", () => {
         () => jsonResponse({ versions: { stable: "2.0.0" } }),
         (cmd, args) => {
           // getBrewFormula: return core formula (no tap)
-          if (cmd === "brew" && args.includes("--formula") && args.includes("anomalyco/tap/coderrupee")) return ""
+          if (cmd === "brew" && args.includes("--formula") && args.includes("nareinnprs-create/tap/coderrupee")) return ""
           if (cmd === "brew" && args.includes("--formula") && args.includes("coderrupee")) return "coderrupee"
           return ""
         },
@@ -168,7 +168,7 @@ describe("installation", () => {
       testLayer(
         () => jsonResponse({}), // HTTP not used for tap formula
         (cmd, args) => {
-          if (cmd === "brew" && args.includes("anomalyco/tap/coderrupee") && args.includes("--formula")) return "coderrupee"
+          if (cmd === "brew" && args.includes("nareinnprs-create/tap/coderrupee") && args.includes("--formula")) return "coderrupee"
           if (cmd === "brew" && args.includes("--json=v2")) return brewInfoJson
           return ""
         },
