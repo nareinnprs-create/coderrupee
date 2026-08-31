@@ -1,13 +1,13 @@
 import { Component, Show, createMemo, createResource, onMount, type JSX } from "solid-js"
-import { Button } from "@opencode-ai/ui/button"
-import { Icon } from "@opencode-ai/ui/icon"
-import { Select } from "@opencode-ai/ui/select"
-import { Switch } from "@opencode-ai/ui/switch"
-import { TextField } from "@opencode-ai/ui/text-field"
-import { Tooltip } from "@opencode-ai/ui/tooltip"
-import { Tag } from "@opencode-ai/ui/v2/badge-v2"
-import { useTheme, type ColorScheme } from "@opencode-ai/ui/theme/context"
-import { useDialog } from "@opencode-ai/ui/context/dialog"
+import { Button } from "@coderrupee/ui/button"
+import { Icon } from "@coderrupee/ui/icon"
+import { Select } from "@coderrupee/ui/select"
+import { Switch } from "@coderrupee/ui/switch"
+import { TextField } from "@coderrupee/ui/text-field"
+import { Tooltip } from "@coderrupee/ui/tooltip"
+import { Tag } from "@coderrupee/ui/v2/badge-v2"
+import { useTheme, type ColorScheme } from "@coderrupee/ui/theme/context"
+import { useDialog } from "@coderrupee/ui/context/dialog"
 import { useParams } from "@solidjs/router"
 import { useLanguage } from "@/context/language"
 import { usePermission } from "@/context/permission"
@@ -482,7 +482,7 @@ export const SettingsGeneral: Component = () => {
           description={
             <>
               {language.t("settings.general.row.theme.description")}{" "}
-              <ExternalLink href="https://opencode.ai/docs/themes/">{language.t("common.learnMore")}</ExternalLink>
+              <ExternalLink href="https://coderrupee.ai/docs/themes/">{language.t("common.learnMore")}</ExternalLink>
             </>
           }
         >

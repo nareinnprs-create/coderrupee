@@ -1,15 +1,15 @@
 import { expect, test } from "@playwright/test"
-import { mockOpenCodeServer } from "../utils/mock-server"
+import { mockCoderRupeeServer } from "../utils/mock-server"
 import { expectAppVisible } from "../utils/waits"
 
-const directory = "C:/OpenCode/NewProject"
+const directory = "C:/CoderRupee/NewProject"
 
-test("creates a session in a new project, connects OpenCode Go, and selects its model", async ({ page }) => {
+test("creates a session in a new project, connects CoderRupee Go, and selects its model", async ({ page }) => {
   let connectedGo = false
   let pendingGo = false
   const connections: Array<{ integrationID: string; body: unknown }> = []
 
-  await mockOpenCodeServer(page, {
+  await mockCoderRupeeServer(page, {
     directory,
     project: {
       id: "proj_model_selection_flow",
@@ -22,8 +22,8 @@ test("creates a session in a new project, connects OpenCode Go, and selects its 
     provider: () => ({
       all: [
         {
-          id: "opencode",
-          name: "OpenCode",
+          id: "coderrupee",
+          name: "CoderRupee",
           models: {
             "free-model": {
               id: "free-model",
@@ -34,8 +34,8 @@ test("creates a session in a new project, connects OpenCode Go, and selects its 
           },
         },
         {
-          id: "opencode-go",
-          name: "OpenCode Go",
+          id: "coderrupee-go",
+          name: "CoderRupee Go",
           models: {
             "go-model-1": {
               id: "go-model-1",
@@ -46,13 +46,13 @@ test("creates a session in a new project, connects OpenCode Go, and selects its 
           },
         },
       ],
-      connected: connectedGo ? ["opencode", "opencode-go"] : ["opencode"],
-      default: { providerID: "opencode", modelID: "free-model" },
+      connected: connectedGo ? ["coderrupee", "coderrupee-go"] : ["coderrupee"],
+      default: { providerID: "coderrupee", modelID: "free-model" },
     }),
-    integrationMethods: { "opencode-go": [{ type: "api", label: "API key" }] },
+    integrationMethods: { "coderrupee-go": [{ type: "api", label: "API key" }] },
     onConnectKey: (input) => {
       connections.push(input)
-      if (input.integrationID === "opencode-go") pendingGo = true
+      if (input.integrationID === "coderrupee-go") pendingGo = true
     },
     onInstanceDispose: () => {
       if (pendingGo) connectedGo = true
@@ -65,7 +65,7 @@ test("creates a session in a new project, connects OpenCode Go, and selects its 
   })
   await page.addInitScript(() => {
     localStorage.setItem("settings.v3", JSON.stringify({ general: { newLayoutDesigns: true } }))
-    localStorage.setItem("opencode.global.dat:server", JSON.stringify({ projects: { local: [] } }))
+    localStorage.setItem("coderrupee.global.dat:server", JSON.stringify({ projects: { local: [] } }))
   })
 
   await page.goto("/")
@@ -79,17 +79,17 @@ test("creates a session in a new project, connects OpenCode Go, and selects its 
 
   const modelControl = page.locator('[data-action="prompt-model"]')
   await modelControl.click()
-  await expect(page.locator('[data-section="free-models"]')).toContainText("Free models provided by OpenCode")
+  await expect(page.locator('[data-section="free-models"]')).toContainText("Free models provided by CoderRupee")
 
-  await page.locator('[data-provider-id="opencode-go"]').click()
+  await page.locator('[data-provider-id="coderrupee-go"]').click()
   await page.locator('[data-input="provider-api-key"]').fill("mock-go-api-key")
   await page.locator('[data-action="provider-connect-submit"]').click()
   await expect(page.locator('[data-component="dialog-v2"]')).toHaveCount(0)
-  expect(connections).toEqual([{ integrationID: "opencode-go", body: { type: "api", key: "mock-go-api-key" } }])
+  expect(connections).toEqual([{ integrationID: "coderrupee-go", body: { type: "api", key: "mock-go-api-key" } }])
 
   await expect(modelControl).toHaveAttribute("data-control-type", "popover")
   await modelControl.click()
-  const goModel = page.locator('[data-option-key="opencode-go:go-model-1"]')
+  const goModel = page.locator('[data-option-key="coderrupee-go:go-model-1"]')
   await expect(goModel).toBeVisible()
   await goModel.click()
 

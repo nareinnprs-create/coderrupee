@@ -1,12 +1,12 @@
 import "@/index.css"
 import * as Sentry from "@sentry/solid"
-import { I18nProvider } from "@opencode-ai/ui/context"
-import { DialogProvider } from "@opencode-ai/ui/context/dialog"
-import { FileComponentProvider } from "@opencode-ai/ui/context/file"
-import { File } from "@opencode-ai/session-ui/file"
-import { Font } from "@opencode-ai/ui/font"
-import { Splash } from "@opencode-ai/ui/logo"
-import { ThemeProvider } from "@opencode-ai/ui/theme/context"
+import { I18nProvider } from "@coderrupee/ui/context"
+import { DialogProvider } from "@coderrupee/ui/context/dialog"
+import { FileComponentProvider } from "@coderrupee/ui/context/file"
+import { File } from "@coderrupee/session-ui/file"
+import { Font } from "@coderrupee/ui/font"
+import { Splash } from "@coderrupee/ui/logo"
+import { ThemeProvider } from "@coderrupee/ui/theme/context"
 import { MetaProvider } from "@solidjs/meta"
 import {
   type BaseRouterProps,
@@ -20,7 +20,7 @@ import {
 } from "@solidjs/router"
 import { QueryClient, QueryClientProvider } from "@tanstack/solid-query"
 import { Effect } from "effect"
-import { base64Encode } from "@opencode-ai/core/util/encode"
+import { base64Encode } from "@coderrupee/core/util/encode"
 import {
   type Component,
   createEffect,
@@ -268,7 +268,7 @@ function LayoutCompatibility(props: ParentProps) {
 
 declare global {
   interface Window {
-    __OPENCODE__?: {
+    __CODERRUPEE__?: {
       deepLinks?: string[]
     }
     api?: {

@@ -1,6 +1,6 @@
-# OpenCode Desktop
+# CoderRupee Desktop
 
-The OpenCode Desktop app, built with Electron.
+The CoderRupee Desktop app, built with Electron.
 
 ## Development
 

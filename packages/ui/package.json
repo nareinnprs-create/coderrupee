@@ -1,11 +1,11 @@
 {
-  "name": "@opencode-ai/ui",
+  "name": "@coderrupee/ui",
   "version": "1.18.25",
   "type": "module",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/anomalyco/opencode.git",
+    "url": "git+https://github.com/coderrupee/coderrupee.git",
     "directory": "packages/ui"
   },
   "publishConfig": {

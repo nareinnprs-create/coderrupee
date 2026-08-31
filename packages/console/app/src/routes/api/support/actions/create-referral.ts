@@ -1,7 +1,7 @@
 import type { APIEvent } from "@solidjs/start/server"
-import { Referral } from "@opencode-ai/console-core/referral.js"
-import { safeEqual } from "@opencode-ai/console-core/util/crypto.js"
-import { Resource } from "@opencode-ai/console-resource"
+import { Referral } from "@coderrupee/console-core/referral.js"
+import { safeEqual } from "@coderrupee/console-core/util/crypto.js"
+import { Resource } from "@coderrupee/console-resource"
 import z from "zod"
 
 const Body = z.object({

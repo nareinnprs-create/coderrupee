@@ -19,24 +19,24 @@ beforeEach(() => {
 })
 
 describe("theme preload", () => {
-  test("migrates legacy oc-1 to oc-2 before mount", () => {
-    localStorage.setItem("opencode-theme-id", "oc-1")
-    localStorage.setItem("opencode-theme-css-light", "--background-base:#fff;")
-    localStorage.setItem("opencode-theme-css-dark", "--background-base:#000;")
+  test("migrates legacy oc-1 to coderrupee before mount", () => {
+    localStorage.setItem("coderrupee-theme-id", "oc-1")
+    localStorage.setItem("coderrupee-theme-css-light", "--background-base:#fff;")
+    localStorage.setItem("coderrupee-theme-css-dark", "--background-base:#000;")
 
     run()
 
-    expect(document.documentElement.dataset.theme).toBe("oc-2")
+    expect(document.documentElement.dataset.theme).toBe("coderrupee")
     expect(document.documentElement.dataset.colorScheme).toBe("light")
-    expect(localStorage.getItem("opencode-theme-id")).toBe("oc-2")
-    expect(localStorage.getItem("opencode-theme-css-light")).toBeNull()
-    expect(localStorage.getItem("opencode-theme-css-dark")).toBeNull()
+    expect(localStorage.getItem("coderrupee-theme-id")).toBe("coderrupee")
+    expect(localStorage.getItem("coderrupee-theme-css-light")).toBeNull()
+    expect(localStorage.getItem("coderrupee-theme-css-dark")).toBeNull()
     expect(document.getElementById("oc-theme-preload")).toBeNull()
   })
 
   test("keeps cached css for non-default themes", () => {
-    localStorage.setItem("opencode-theme-id", "nightowl")
-    localStorage.setItem("opencode-theme-css-light", "--background-base:#fff;")
+    localStorage.setItem("coderrupee-theme-id", "nightowl")
+    localStorage.setItem("coderrupee-theme-css-light", "--background-base:#fff;")
 
     run()
 
