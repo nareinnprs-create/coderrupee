@@ -139,7 +139,7 @@ function getConfig() {
         appId,
         productName: "CoderRupee Beta",
         protocols: { name: "CoderRupee Beta", schemes: ["coderrupee"] },
-        publish: { provider: "github", owner: "opraizfoundry", repo: "coderrupee-beta", channel: "latest" },
+        publish: { provider: "github", owner: "nareinnprs-create", repo: "coderrupee-beta", channel: "latest" },
         deb: { fpm: [metainfoFpm(appId)] },
         rpm: { packageName: "coderrupee-beta", fpm: [metainfoFpm(appId)] },
       }
@@ -150,7 +150,7 @@ function getConfig() {
         appId,
         productName: "CoderRupee",
         protocols: { name: "CoderRupee", schemes: ["coderrupee"] },
-        publish: { provider: "github", owner: "opraizfoundry", repo: "coderrupee", channel: "latest" },
+        publish: { provider: "github", owner: "nareinnprs-create", repo: "coderrupee", channel: "latest" },
         deb: { fpm: [metainfoFpm(appId), legacyDesktopEntryFpm] },
         rpm: { packageName: "coderrupee", fpm: [metainfoFpm(appId), legacyDesktopEntryFpm] },
       }
