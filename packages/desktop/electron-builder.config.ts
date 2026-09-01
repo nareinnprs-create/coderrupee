@@ -94,10 +94,14 @@ const getBase = (appId: string): Configuration => ({
   },
   win: {
     icon: `resources/icons/icon.ico`,
-    certificateSubjectName: "Opraiz Technology Pvt Ltd",
-    signtoolOptions: {
-      sign: unsigned ? undefined : signWindows,
-    },
+    ...(unsigned
+      ? { signAndEditExecutable: false }
+      : {
+          signtoolOptions: {
+            certificateSubjectName: "Opraiz Technology Pvt Ltd",
+            sign: signWindows,
+          },
+        }),
     target: ["nsis"],
     verifyUpdateCodeSignature: false,
   },
