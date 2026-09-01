@@ -6,7 +6,7 @@ import { define } from "./internal"
 import { Effect } from "effect"
 import { AbsolutePath } from "../schema"
 import { SkillV2 } from "../skill"
-import customizeOpencodeContent from "./skill/customize-coderrupee.md" with { type: "text" }
+import customizeOpencodeContent from "./skill/customize-opencode.md" with { type: "text" }
 
 export const CustomizeOpencodeContent = customizeOpencodeContent
 
