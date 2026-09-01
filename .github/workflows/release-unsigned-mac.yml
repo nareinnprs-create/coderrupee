@@ -68,7 +68,12 @@ jobs:
             packages/desktop/dist/*.zip
 
       - name: Upload to GitHub release
-        run: gh release upload "v${{ inputs.version }}" packages/desktop/dist/*.dmg packages/desktop/dist/*.zip --clobber --repo nareinnprs-create/coderrupee
+        run: |
+          if gh release view "v${{ inputs.version }}" --repo nareinnprs-create/coderrupee >/dev/null 2>&1; then
+            gh release upload "v${{ inputs.version }}" dist/*.dmg dist/*.zip --clobber --repo nareinnprs-create/coderrupee
+          else
+            gh release create "v${{ inputs.version }}" dist/*.dmg dist/*.zip --repo nareinnprs-create/coderrupee --title "v${{ inputs.version }}" --latest=false
+          fi
         working-directory: packages/desktop
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
