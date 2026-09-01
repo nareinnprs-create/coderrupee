@@ -1,4 +1,4 @@
-export * as CoderRupee from "./coderrupee"
+export * as CoderRupee from "./opencode"
 export * as Tool from "./tool"
 
 export { ClientError } from "@coderrupee/client/effect"
