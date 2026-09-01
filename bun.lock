@@ -31,7 +31,7 @@
       "name": "@coderrupee/app",
       "version": "1.18.25",
       "dependencies": {
-        "@coderrupee/client": "workspace:*",
+        "@coderrupee/client": "file:vendor/coderrupee-ai-client-1.17.13-v2.tgz",
         "@coderrupee/core": "workspace:*",
         "@coderrupee/schema": "workspace:*",
         "@coderrupee/sdk": "workspace:*",
@@ -800,7 +800,7 @@
       "name": "@coderrupee/session-ui",
       "version": "1.18.25",
       "dependencies": {
-        "@coderrupee/client": "workspace:*",
+        "@coderrupee/client": "file:../app/vendor/coderrupee-ai-client-1.17.13-v2.tgz",
         "@coderrupee/core": "workspace:*",
         "@coderrupee/sdk": "workspace:*",
         "@coderrupee/ui": "workspace:*",
@@ -5842,6 +5842,8 @@
 
     "@cloudflare/vite-plugin/ws": ["ws@8.18.0", "", { "peerDependencies": { "bufferutil": "^4.0.1", "utf-8-validate": ">=5.0.2" }, "optionalPeers": ["bufferutil", "utf-8-validate"] }, "sha512-8VbfWfHLbbwu3+N6OKsOMpBdT4kXPDDB9cJk2bJ6mh9ucxdlnNvH1e+roYkKmN9Nxw2yjz7VzeO9oOz2zJ04Pw=="],
 
+    "@coderrupee/app/@coderrupee/client": ["@opencode-ai/client@vendor/coderrupee-ai-client-1.17.13-v2.tgz", {}, "sha512-UeiJFzSqsGfu0+3DDAIQmqmfBde0GwG+kbw/fI+TgvYK8oJBlhSWSiS8HZ4/UTJuNZ1AVLCd4bDU90PvmsYg9w=="],
+
     "@coderrupee/core/@ai-sdk/openai": ["@ai-sdk/openai@3.0.84", "", { "dependencies": { "@ai-sdk/provider": "3.0.14", "@ai-sdk/provider-utils": "4.0.38" }, "peerDependencies": { "zod": "^3.25.76 || ^4.1.8" } }, "sha512-cmgbeJL0bbY0yTJH4/AdmP5E7MjWRL9G8UdhIi0JlV/So03o82ORJofW8OzwCZPTORVQblFbpZXYGDcUd9NdUQ=="],
 
     "@coderrupee/core/@ai-sdk/openai-compatible": ["@ai-sdk/openai-compatible@2.0.41", "", { "dependencies": { "@ai-sdk/provider": "3.0.8", "@ai-sdk/provider-utils": "4.0.23" }, "peerDependencies": { "zod": "^3.25.76 || ^4.1.8" } }, "sha512-kNAGINk71AlOXx10Dq/PXw4t/9XjdK8uxfpVElRwtSFMdeSiLVt58p9TPx4/FJD+hxZuVhvxYj9r42osxWq79g=="],
@@ -5853,6 +5855,8 @@
     "@coderrupee/llm/@smithy/eventstream-codec": ["@smithy/eventstream-codec@4.2.14", "", { "dependencies": { "@aws-crypto/crc32": "5.2.0", "@smithy/types": "^4.14.1", "@smithy/util-hex-encoding": "^4.2.2", "tslib": "^2.6.2" } }, "sha512-erZq0nOIpzfeZdCyzZjdJb4nVSKLUmSkaQUVkRGQTXs30gyUGeKnrYEg+Xe1W5gE3aReS7IgsvANwVPxSzY6Pw=="],
 
     "@coderrupee/llm/@smithy/util-utf8": ["@smithy/util-utf8@4.2.2", "", { "dependencies": { "@smithy/util-buffer-from": "^4.2.2", "tslib": "^2.6.2" } }, "sha512-75MeYpjdWRe8M5E3AW0O4Cx3UadweS+cwdXjwYGBW5h/gxxnbeZ877sLPX/ZJA9GVTlL/qG0dXP29JWFCD1Ayw=="],
+
+    "@coderrupee/session-ui/@coderrupee/client": ["@opencode-ai/client@../app/vendor/coderrupee-ai-client-1.17.13-v2.tgz", {}, "sha512-UeiJFzSqsGfu0+3DDAIQmqmfBde0GwG+kbw/fI+TgvYK8oJBlhSWSiS8HZ4/UTJuNZ1AVLCd4bDU90PvmsYg9w=="],
 
     "@coderrupee/session-ui/@solid-primitives/resize-observer": ["@solid-primitives/resize-observer@2.1.3", "", { "dependencies": { "@solid-primitives/event-listener": "^2.4.3", "@solid-primitives/rootless": "^1.5.2", "@solid-primitives/static-store": "^0.1.2", "@solid-primitives/utils": "^6.3.2" }, "peerDependencies": { "solid-js": "^1.6.12" } }, "sha512-zBLje5E06TgOg93S7rGPldmhDnouNGhvfZVKOp+oG2XU8snA+GoCSSCz1M+jpNAg5Ek2EakU5UVQqL152WmdXQ=="],
 
