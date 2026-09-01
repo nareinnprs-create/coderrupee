@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "@kobalte/core": "catalog:",
-    "@coderrupee/client": "file:../app/vendor/coderrupee-ai-client-1.17.13-v2.tgz",
+    "@coderrupee/client": "workspace:*",
     "@coderrupee/core": "workspace:*",
     "@coderrupee/sdk": "workspace:*",
     "@coderrupee/ui": "workspace:*",
