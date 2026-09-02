@@ -93,6 +93,112 @@ Rules:
 - If the conversation ends with an unanswered question to the user, preserve that exact question
 - If the conversation ends with an imperative statement or request to the user (e.g. "Now please run the command and paste the console output"), always include that exact request in the summary`
 
+const PROMPT_REVIEWER = `You are a senior code reviewer. Analyze code for bugs, security vulnerabilities, performance issues, and adherence to best practices.
+
+Guidelines:
+- Be specific: cite file paths, line numbers, and concrete fixes
+- Categorize findings by severity: Critical, High, Medium, Low
+- Check for: null/undefined access, race conditions, resource leaks, injection risks, logic errors
+- Verify: error handling, edge cases, type safety, naming conventions
+- Compare against existing patterns in the codebase
+- Never make edits — only report findings
+- Format output as a structured review with sections per file
+
+Complete the review thoroughly and report findings clearly.`
+
+const PROMPT_TESTER = `You are a test engineer. Write comprehensive tests covering edge cases, error paths, and integration scenarios.
+
+Guidelines:
+- Follow existing test patterns in the codebase
+- Use the same test framework and assertion library already in use
+- Write tests that are deterministic — no flaky tests
+- Cover: happy path, edge cases, error conditions, boundary values
+- Name tests descriptively — the test name should explain the scenario
+- Run tests after writing them. If tests fail, diagnose and fix.
+- Always verify tests pass before reporting success
+- Do not modify source code — only create or update test files
+
+Complete the test creation and verify all tests pass.`
+
+const PROMPT_SECURITY = `You are a security auditor. Scan for vulnerabilities and produce structured reports.
+
+Check for:
+- Hardcoded secrets, API keys, tokens, passwords
+- SQL injection, XSS, CSRF, path traversal
+- Insecure dependencies (check lockfiles and manifests)
+- Authentication and authorization flaws
+- Data exposure and information leakage
+- Insecure deserialization, prototype pollution
+- Race conditions in security-critical paths
+- Missing input validation and sanitization
+
+Output format:
+For each finding, report:
+- Severity: Critical / High / Medium / Low
+- Category: (e.g., "Injection", "Secret Leak", "Auth Bypass")
+- File path and line number
+- Description of the vulnerability
+- Recommended fix with code example if applicable
+
+Complete the security audit and report all findings.`
+
+const PROMPT_DOCUMENTER = `You are a technical writer. Generate and maintain clear, concise documentation.
+
+Guidelines:
+- For API docs: include parameters, return types, exceptions, and usage examples
+- For READMEs: include setup instructions, usage examples, architecture overview
+- For inline comments: explain WHY, not WHAT — the code explains what
+- Follow existing documentation style and structure in the codebase
+- Use consistent terminology — check glossary if one exists
+- Keep documentation close to the code it describes
+- Never duplicate information across sections
+- Use Markdown formatting with clear heading hierarchy
+
+Complete the documentation and verify it is consistent with the codebase.`
+
+const PROMPT_MIGRATOR = `You are a database migration specialist. Create safe, reversible database migrations.
+
+Guidelines:
+- Always check the existing schema before writing migrations
+- Write migrations that are reversible (up and down)
+- Use transactions for atomic apply/rollback
+- Never drop columns or tables without explicit user confirmation
+- Add indexes for foreign keys and frequently queried columns
+- Validate migration syntax before executing
+- Test rollback path — verify the down migration works
+- Document breaking changes in the migration description
+- Use the project's existing migration framework and conventions
+
+Complete the migration and verify it applies and rolls back cleanly.`
+
+const PROMPT_DEPLOYER = `You are a deployment engineer. Manage CI/CD pipelines, Docker configs, and deployment scripts.
+
+Guidelines:
+- Validate all configs before applying changes
+- Check for environment-specific variables and secrets
+- Never deploy to production without explicit user confirmation
+- Use the project's existing CI/CD framework and conventions
+- Ensure rollback paths exist for all changes
+- Check for compatibility with existing infrastructure
+- Document environment variables and configuration requirements
+- Test changes in non-production environments first when possible
+
+Complete the deployment configuration and verify it is valid.`
+
+const PROMPT_PROFILER = `You are a performance engineer. Identify bottlenecks, memory leaks, and optimization opportunities.
+
+Guidelines:
+- Use profiling tools and benchmarks to measure performance
+- Analyze code paths for computational complexity
+- Check for: unnecessary allocations, N+1 queries, blocking I/O, unbounded caches
+- Measure: execution time, memory usage, CPU utilization
+- Compare before/after metrics when suggesting optimizations
+- Output a structured report with: bottleneck location, impact severity, recommended fix, estimated improvement
+- Prioritize high-impact optimizations over micro-optimizations
+- Consider trade-offs between readability and performance
+
+Complete the performance analysis and report findings with actionable recommendations.`
+
 export const Plugin = define({
   id: "agent",
   effect: Effect.fn(function* (ctx) {
@@ -196,6 +302,166 @@ export const Plugin = define({
         item.hidden = true
         item.system = PROMPT_SUMMARY
         item.permissions.push(...PermissionV2.merge(defaults, [{ action: "*", resource: "*", effect: "deny" }]))
+      })
+
+      draft.update(AgentV2.ID.make("reviewer"), (item) => {
+        item.description = "Code review agent for security, performance, and correctness analysis."
+        item.system = PROMPT_REVIEWER
+        item.mode = "subagent"
+        item.permissions.push(
+          ...PermissionV2.merge(
+            defaults,
+            [
+              { action: "*", resource: "*", effect: "deny" },
+              { action: "read", resource: "*", effect: "allow" },
+              { action: "grep", resource: "*", effect: "allow" },
+              { action: "glob", resource: "*", effect: "allow" },
+              { action: "webfetch", resource: "*", effect: "allow" },
+              { action: "websearch", resource: "*", effect: "allow" },
+            ],
+            readonlyExternalDirectory,
+          ),
+        )
+      })
+
+      draft.update(AgentV2.ID.make("tester"), (item) => {
+        item.description = "Test creation and execution agent."
+        item.system = PROMPT_TESTER
+        item.mode = "subagent"
+        item.steps = 50
+        item.permissions.push(
+          ...PermissionV2.merge(
+            defaults,
+            [
+              { action: "*", resource: "*", effect: "deny" },
+              { action: "read", resource: "*", effect: "allow" },
+              { action: "grep", resource: "*", effect: "allow" },
+              { action: "glob", resource: "*", effect: "allow" },
+              { action: "bash", resource: "*", effect: "allow" },
+              { action: "edit", resource: "*", effect: "deny" },
+              { action: "edit", resource: "**/*.test.*", effect: "allow" },
+              { action: "edit", resource: "**/*.spec.*", effect: "allow" },
+              { action: "edit", resource: "**/__tests__/**", effect: "allow" },
+            ],
+            readonlyExternalDirectory,
+          ),
+        )
+      })
+
+      draft.update(AgentV2.ID.make("security"), (item) => {
+        item.description = "Security audit agent for vulnerability scanning and secret detection."
+        item.system = PROMPT_SECURITY
+        item.mode = "subagent"
+        item.permissions.push(
+          ...PermissionV2.merge(
+            defaults,
+            [
+              { action: "*", resource: "*", effect: "deny" },
+              { action: "read", resource: "*", effect: "allow" },
+              { action: "grep", resource: "*", effect: "allow" },
+              { action: "glob", resource: "*", effect: "allow" },
+              { action: "bash", resource: "*", effect: "allow" },
+              { action: "webfetch", resource: "*", effect: "allow" },
+              { action: "websearch", resource: "*", effect: "allow" },
+            ],
+            readonlyExternalDirectory,
+          ),
+        )
+      })
+
+      draft.update(AgentV2.ID.make("documenter"), (item) => {
+        item.description = "Documentation generation and maintenance agent."
+        item.system = PROMPT_DOCUMENTER
+        item.mode = "subagent"
+        item.permissions.push(
+          ...PermissionV2.merge(
+            defaults,
+            [
+              { action: "*", resource: "*", effect: "deny" },
+              { action: "read", resource: "*", effect: "allow" },
+              { action: "grep", resource: "*", effect: "allow" },
+              { action: "glob", resource: "*", effect: "allow" },
+              { action: "bash", resource: "*", effect: "allow" },
+              { action: "webfetch", resource: "*", effect: "allow" },
+              { action: "edit", resource: "*", effect: "deny" },
+              { action: "edit", resource: "**/*.md", effect: "allow" },
+              { action: "edit", resource: "**/docs/**", effect: "allow" },
+              { action: "edit", resource: "**/*.mdx", effect: "allow" },
+            ],
+            readonlyExternalDirectory,
+          ),
+        )
+      })
+
+      draft.update(AgentV2.ID.make("migrator"), (item) => {
+        item.description = "Database migration creation and execution agent."
+        item.system = PROMPT_MIGRATOR
+        item.mode = "subagent"
+        item.permissions.push(
+          ...PermissionV2.merge(
+            defaults,
+            [
+              { action: "*", resource: "*", effect: "deny" },
+              { action: "read", resource: "*", effect: "allow" },
+              { action: "grep", resource: "*", effect: "allow" },
+              { action: "glob", resource: "*", effect: "allow" },
+              { action: "bash", resource: "*", effect: "allow" },
+              { action: "question", resource: "*", effect: "allow" },
+              { action: "edit", resource: "*", effect: "deny" },
+              { action: "edit", resource: "**/migrations/**", effect: "allow" },
+              { action: "edit", resource: "**/schema/**", effect: "allow" },
+            ],
+            readonlyExternalDirectory,
+          ),
+        )
+      })
+
+      draft.update(AgentV2.ID.make("deployer"), (item) => {
+        item.description = "Deployment, CI/CD, and infrastructure agent."
+        item.system = PROMPT_DEPLOYER
+        item.mode = "subagent"
+        item.permissions.push(
+          ...PermissionV2.merge(
+            defaults,
+            [
+              { action: "*", resource: "*", effect: "deny" },
+              { action: "read", resource: "*", effect: "allow" },
+              { action: "grep", resource: "*", effect: "allow" },
+              { action: "glob", resource: "*", effect: "allow" },
+              { action: "bash", resource: "*", effect: "allow" },
+              { action: "question", resource: "*", effect: "allow" },
+              { action: "webfetch", resource: "*", effect: "allow" },
+              { action: "edit", resource: "*", effect: "deny" },
+              { action: "edit", resource: "**/.github/**", effect: "allow" },
+              { action: "edit", resource: "**/Dockerfile*", effect: "allow" },
+              { action: "edit", resource: "**/docker-compose*", effect: "allow" },
+              { action: "edit", resource: "**/*.yml", effect: "allow" },
+              { action: "edit", resource: "**/*.yaml", effect: "allow" },
+            ],
+            readonlyExternalDirectory,
+          ),
+        )
+      })
+
+      draft.update(AgentV2.ID.make("profiler"), (item) => {
+        item.description = "Performance profiling and optimization agent."
+        item.system = PROMPT_PROFILER
+        item.mode = "subagent"
+        item.permissions.push(
+          ...PermissionV2.merge(
+            defaults,
+            [
+              { action: "*", resource: "*", effect: "deny" },
+              { action: "read", resource: "*", effect: "allow" },
+              { action: "grep", resource: "*", effect: "allow" },
+              { action: "glob", resource: "*", effect: "allow" },
+              { action: "bash", resource: "*", effect: "allow" },
+              { action: "webfetch", resource: "*", effect: "allow" },
+              { action: "websearch", resource: "*", effect: "allow" },
+            ],
+            readonlyExternalDirectory,
+          ),
+        )
       })
     })
   }),

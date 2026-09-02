@@ -11,8 +11,15 @@ import { ProviderTransform } from "@/provider/transform"
 
 import PROMPT_GENERATE from "./generate.txt"
 import PROMPT_COMPACTION from "./prompt/compaction.txt"
+import PROMPT_DEPLOYER from "./prompt/deployer.txt"
+import PROMPT_DOCUMENTER from "./prompt/documenter.txt"
 import PROMPT_EXPLORE from "./prompt/explore.txt"
+import PROMPT_MIGRATOR from "./prompt/migrator.txt"
+import PROMPT_PROFILER from "./prompt/profiler.txt"
+import PROMPT_REVIEWER from "./prompt/reviewer.txt"
+import PROMPT_SECURITY from "./prompt/security.txt"
 import PROMPT_SUMMARY from "./prompt/summary.txt"
+import PROMPT_TESTER from "./prompt/tester.txt"
 import PROMPT_TITLE from "./prompt/title.txt"
 import { Permission } from "@/permission"
 import { mergeDeep, pipe, sortBy, values } from "remeda"
@@ -261,6 +268,199 @@ const layer = Layer.effect(
               user,
             ),
             prompt: PROMPT_SUMMARY,
+          },
+          reviewer: {
+            name: "reviewer",
+            description: "Code review agent for security, performance, and correctness analysis.",
+            prompt: PROMPT_REVIEWER,
+            permission: Permission.merge(
+              defaults,
+              Permission.fromConfig({
+                "*": "deny",
+                read: "allow",
+                grep: "allow",
+                glob: "allow",
+                webfetch: "allow",
+                websearch: "allow",
+              }),
+              user,
+            ),
+            options: {},
+            mode: "subagent",
+            native: true,
+          },
+          tester: {
+            name: "tester",
+            description: "Test creation and execution agent.",
+            prompt: PROMPT_TESTER,
+            permission: Permission.merge(
+              defaults,
+              Permission.fromConfig({
+                "*": "deny",
+                read: "allow",
+                grep: "allow",
+                glob: "allow",
+                bash: "allow",
+                edit: {
+                  "*": "deny",
+                  "**/*.test.*": "allow",
+                  "**/*.spec.*": "allow",
+                  "**/__tests__/**": "allow",
+                },
+                write: {
+                  "*": "deny",
+                  "**/*.test.*": "allow",
+                  "**/*.spec.*": "allow",
+                  "**/__tests__/**": "allow",
+                },
+              }),
+              user,
+            ),
+            options: {},
+            mode: "subagent",
+            native: true,
+            steps: 50,
+          },
+          security: {
+            name: "security",
+            description: "Security audit agent for vulnerability scanning and secret detection.",
+            prompt: PROMPT_SECURITY,
+            permission: Permission.merge(
+              defaults,
+              Permission.fromConfig({
+                "*": "deny",
+                read: "allow",
+                grep: "allow",
+                glob: "allow",
+                bash: "allow",
+                webfetch: "allow",
+                websearch: "allow",
+              }),
+              user,
+            ),
+            options: {},
+            mode: "subagent",
+            native: true,
+          },
+          documenter: {
+            name: "documenter",
+            description: "Documentation generation and maintenance agent.",
+            prompt: PROMPT_DOCUMENTER,
+            permission: Permission.merge(
+              defaults,
+              Permission.fromConfig({
+                "*": "deny",
+                read: "allow",
+                grep: "allow",
+                glob: "allow",
+                bash: "allow",
+                webfetch: "allow",
+                edit: {
+                  "*": "deny",
+                  "**/*.md": "allow",
+                  "**/docs/**": "allow",
+                  "**/*.mdx": "allow",
+                },
+                write: {
+                  "*": "deny",
+                  "**/*.md": "allow",
+                  "**/docs/**": "allow",
+                  "**/*.mdx": "allow",
+                },
+              }),
+              user,
+            ),
+            options: {},
+            mode: "subagent",
+            native: true,
+          },
+          migrator: {
+            name: "migrator",
+            description: "Database migration creation and execution agent.",
+            prompt: PROMPT_MIGRATOR,
+            permission: Permission.merge(
+              defaults,
+              Permission.fromConfig({
+                "*": "deny",
+                read: "allow",
+                grep: "allow",
+                glob: "allow",
+                bash: "allow",
+                question: "allow",
+                edit: {
+                  "*": "deny",
+                  "**/migrations/**": "allow",
+                  "**/schema/**": "allow",
+                },
+                write: {
+                  "*": "deny",
+                  "**/migrations/**": "allow",
+                  "**/schema/**": "allow",
+                },
+              }),
+              user,
+            ),
+            options: {},
+            mode: "subagent",
+            native: true,
+          },
+          deployer: {
+            name: "deployer",
+            description: "Deployment, CI/CD, and infrastructure agent.",
+            prompt: PROMPT_DEPLOYER,
+            permission: Permission.merge(
+              defaults,
+              Permission.fromConfig({
+                "*": "deny",
+                read: "allow",
+                grep: "allow",
+                glob: "allow",
+                bash: "allow",
+                question: "allow",
+                webfetch: "allow",
+                edit: {
+                  "*": "deny",
+                  "**/.github/**": "allow",
+                  "**/Dockerfile*": "allow",
+                  "**/docker-compose*": "allow",
+                  "**/*.yml": "allow",
+                  "**/*.yaml": "allow",
+                },
+                write: {
+                  "*": "deny",
+                  "**/.github/**": "allow",
+                  "**/Dockerfile*": "allow",
+                  "**/docker-compose*": "allow",
+                  "**/*.yml": "allow",
+                  "**/*.yaml": "allow",
+                },
+              }),
+              user,
+            ),
+            options: {},
+            mode: "subagent",
+            native: true,
+          },
+          profiler: {
+            name: "profiler",
+            description: "Performance profiling and optimization agent.",
+            prompt: PROMPT_PROFILER,
+            permission: Permission.merge(
+              defaults,
+              Permission.fromConfig({
+                "*": "deny",
+                read: "allow",
+                grep: "allow",
+                glob: "allow",
+                bash: "allow",
+                webfetch: "allow",
+                websearch: "allow",
+              }),
+              user,
+            ),
+            options: {},
+            mode: "subagent",
+            native: true,
           },
         }
 

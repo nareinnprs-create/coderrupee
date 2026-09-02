@@ -3,6 +3,13 @@ const defaults: Record<string, string> = {
   build: "var(--icon-agent-build-base)",
   docs: "var(--icon-agent-docs-base)",
   plan: "var(--icon-agent-plan-base)",
+  reviewer: "var(--syntax-info)",
+  tester: "var(--syntax-success)",
+  security: "var(--icon-warning-base)",
+  documenter: "var(--syntax-property)",
+  migrator: "var(--syntax-constant)",
+  deployer: "var(--text-diff-delete-base)",
+  profiler: "var(--text-diff-add-base)",
 }
 
 const palette = [
