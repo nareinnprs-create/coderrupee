@@ -62,7 +62,7 @@ import { KVProvider, useKV } from "./context/kv"
 import { UpdateNotificationProvider, useUpdateNotification, type UpdateSource } from "./context/update-notification"
 import * as Model from "./util/model"
 import { ArgsProvider, useArgs, type Args } from "./context/args"
-import open from "open"
+import { openUrl } from "@coderrupee/core/open"
 import { PromptRefProvider, usePromptRef } from "./context/prompt"
 import { TuiConfigProvider, useTuiConfig, type TuiConfig } from "./config"
 import { createTuiApiAdapters } from "./plugin/adapters"
@@ -818,7 +818,7 @@ function App(props: { onSnapshot?: () => Promise<string[]>; pluginHost: TuiPlugi
         name: "docs.open",
         title: "Open docs",
         run: () => {
-          open("https://coderrupee.ai/docs").catch(() => {})
+          openUrl("https://coderrupee.ai/docs").catch(() => {})
           dialog.clear()
         },
         category: "System",
