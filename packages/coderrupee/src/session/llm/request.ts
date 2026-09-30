@@ -17,6 +17,21 @@ import { mergeDeep } from "remeda"
 
 const USER_AGENT = `coderrupee/${InstallationVersion}`
 
+// deprecated alias, remove next minor
+const SESSION_IDENTITY_HEADER_ALIASES = {
+  "x-opencode-session-id": "x-coderrupee-session-id",
+  "x-opencode-parent-session-id": "x-coderrupee-parent-session-id",
+} as const
+
+function normalizeSessionIdentityHeaders(source: Record<string, string>) {
+  return Object.fromEntries(
+    Object.entries(source).map(([key, value]) => [
+      key in SESSION_IDENTITY_HEADER_ALIASES ? SESSION_IDENTITY_HEADER_ALIASES[key as keyof typeof SESSION_IDENTITY_HEADER_ALIASES] : key,
+      value,
+    ]),
+  )
+}
+
 type PrepareInput = {
   readonly user: SessionV1.User
   readonly sessionID: string
@@ -185,6 +200,8 @@ export const prepare = Effect.fn("LLMRequestPrep.prepare")(function* (input: Pre
     params,
     messageTransformOptions: options,
     headers: {
+      "x-coderrupee-session-id": input.sessionID,
+      ...(input.parentSessionID ? { "x-coderrupee-parent-session-id": input.parentSessionID } : {}),
       ...(input.model.providerID.startsWith("coderrupee")
         ? {
             ...(coderrupeeProjectID ? { "x-coderrupee-project": coderrupeeProjectID } : {}),
@@ -199,8 +216,8 @@ export const prepare = Effect.fn("LLMRequestPrep.prepare")(function* (input: Pre
             "User-Agent": USER_AGENT,
           }),
       ...(input.parentSessionID ? { "x-parent-session-id": input.parentSessionID } : {}),
-      ...input.model.headers,
-      ...headers,
+      ...normalizeSessionIdentityHeaders(input.model.headers),
+      ...normalizeSessionIdentityHeaders(headers),
     },
   }
 })

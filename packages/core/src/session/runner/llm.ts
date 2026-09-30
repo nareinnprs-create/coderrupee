@@ -206,6 +206,8 @@ const layer = Layer.effect(
         model,
         http: {
           headers: {
+            "x-coderrupee-session-id": session.id,
+            ...(session.parentID ? { "x-coderrupee-parent-session-id": session.parentID } : {}),
             "x-session-affinity": session.id,
             "X-Session-Id": session.id,
             ...(session.parentID ? { "x-parent-session-id": session.parentID } : {}),
