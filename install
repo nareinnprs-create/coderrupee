@@ -181,23 +181,37 @@ else
     fi
 
     if [ -z "$requested_version" ]; then
-        url="https://github.com/coderrupee/coderrupee/releases/latest/download/$filename"
-        specific_version=$(curl -s https://api.github.com/repos/coderrupee/coderrupee/releases/latest | sed -n 's/.*"tag_name": *"v\([^"]*\)".*/\1/p')
+        # The coderrupee-ai npm package is published before the GitHub release, so start from npm and
+        # fall back to the newest 1.x entry in GitHub's release list until the release assets exist.
+        # GitHub's Latest release can lag npm, so it is never used as the version source.
+        specific_version=$(curl -fsSL --max-time 10 "https://registry.npmjs.org/coderrupee-ai/latest" 2>/dev/null | grep -o '"version": *"[^"]*"' | head -n 1 | sed 's/.*"\([^"]*\)"$/\1/' || true)
+        if [[ "$specific_version" =~ ^1\.[0-9]+\.[0-9]+$ ]]; then
+            asset_status=$(curl -sIL --max-time 10 -o /dev/null -w "%{http_code}" "https://github.com/coderrupee/coderrupee/releases/download/v${specific_version}/$filename" || true)
+            if [ "$asset_status" != "200" ]; then
+                specific_version=""
+            fi
+        else
+            specific_version=""
+        fi
+        if [ -z "$specific_version" ]; then
+            specific_version=$(curl -fsSL --max-time 30 "https://api.github.com/repos/coderrupee/coderrupee/releases?per_page=100" 2>/dev/null | grep -o '"tag_name": *"v1\.[0-9]*\.[0-9]*"' | head -n 1 | sed 's/.*"v\([^"]*\)"$/\1/' || true)
+        fi
 
-        if [[ $? -ne 0 || -z "$specific_version" ]]; then
+        if [[ -z "$specific_version" ]]; then
             echo -e "${RED}Failed to fetch version information${NC}"
             exit 1
         fi
+        url="https://github.com/coderrupee/coderrupee/releases/download/v${specific_version}/$filename"
     else
         # Strip leading 'v' if present
         requested_version="${requested_version#v}"
         url="https://github.com/coderrupee/coderrupee/releases/download/v${requested_version}/$filename"
         specific_version=$requested_version
 
-        # Verify the release exists before downloading
-        http_status=$(curl -sI -o /dev/null -w "%{http_code}" "https://github.com/coderrupee/coderrupee/releases/tag/v${requested_version}")
+        # Verify the release asset exists before downloading. A release that is still publishing has none yet.
+        http_status=$(curl -sIL -o /dev/null -w "%{http_code}" "$url" || true)
         if [ "$http_status" = "404" ]; then
-            echo -e "${RED}Error: Release v${requested_version} not found${NC}"
+            echo -e "${RED}Error: Release v${requested_version} not found. If it was just released, try again in a few minutes.${NC}"
             echo -e "${MUTED}Available releases: https://github.com/coderrupee/coderrupee/releases${NC}"
             exit 1
         fi

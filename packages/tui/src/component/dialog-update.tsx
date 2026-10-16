@@ -1,7 +1,7 @@
 import { TextAttributes } from "@opentui/core"
 import { createEffect, createMemo, createResource, createSignal, For, Match, Show, Switch } from "solid-js"
 import { useTheme } from "../context/theme"
-import type { UpdateState, UpdateTarget } from "../context/update-notification"
+import { isVersionGreater, type UpdateState, type UpdateTarget } from "../context/update-notification"
 import { useDialog } from "../ui/dialog"
 import { useBindings } from "../keymap"
 import { errorMessage } from "../util/error"
@@ -9,10 +9,16 @@ import { Spinner } from "./spinner"
 
 type Version = { current: string; latest?: string }
 
-// A newer release uses the normal update flow.
+// A newer release in the installed major version is a normal update; anything else offers nothing.
 export function updateTarget(version: Version): UpdateTarget | undefined {
-  if (version.latest && version.latest !== version.current) return { type: "latest", version: version.latest }
+  if (version.latest && isUpdate(version.current, version.latest)) return { type: "latest", version: version.latest }
   return undefined
+}
+
+// Only a newer release in the installed major version is a normal update.
+export function isUpdate(current: string, latest: string) {
+  const major = (value: string) => value.replace(/^v/, "").split(".")[0]
+  return major(latest) === major(current) && isVersionGreater(latest, current)
 }
 
 export function DialogUpdate(props: {
