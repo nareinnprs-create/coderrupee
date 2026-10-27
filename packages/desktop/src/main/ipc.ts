@@ -7,6 +7,7 @@ import type { DesktopMenuAction } from "@coderrupee/app/desktop-menu"
 import { parseDesktopNativeBundle, type DesktopNativeBundle } from "@coderrupee/app/i18n/desktop-native"
 
 import type { FatalRendererError, ServerReadyData, TitlebarTheme } from "../preload/types"
+import { sanitizeAppName } from "./app-name"
 import { runDesktopMenuAction } from "./desktop-menu-actions"
 import { setForceFocus } from "./debug"
 import { isTrustedSender, UntrustedSenderError } from "./renderer-origin"
@@ -56,6 +57,18 @@ type Deps = {
   setNativeTranslations: (bundle: DesktopNativeBundle) => void
 }
 
+// Renderer-supplied app names drive path lookups; an invalid name resolves
+// to "not found" (the handlers' negative result) instead of throwing so
+// renderer callers keep their existing contracts.
+function sanitizedAppName(channel: string, appName: string) {
+  try {
+    return sanitizeAppName(appName)
+  } catch (error) {
+    writeLog("ipc", "rejected app name", { channel, appName, error: String(error) }, "warn")
+    return null
+  }
+}
+
 // State-changing handlers only accept senders on the app's own origin
 // (packaged oc://renderer or the dev server). Read-only handlers stay open.
 function requireTrustedSender(channel: string, event: IpcMainInvokeEvent) {
@@ -90,8 +103,16 @@ export function registerIpcHandlers(deps: Deps) {
     requireTrustedSender("set-display-backend", event)
     return deps.setDisplayBackend(backend)
   })
-  ipcMain.handle("check-app-exists", (_event: IpcMainInvokeEvent, appName: string) => deps.checkAppExists(appName))
-  ipcMain.handle("resolve-app-path", (_event: IpcMainInvokeEvent, appName: string) => deps.resolveAppPath(appName))
+  ipcMain.handle("check-app-exists", (event: IpcMainInvokeEvent, appName: string) => {
+    const name = sanitizedAppName("check-app-exists", appName)
+    if (name === null) return false
+    return deps.checkAppExists(name)
+  })
+  ipcMain.handle("resolve-app-path", async (event: IpcMainInvokeEvent, appName: string) => {
+    const name = sanitizedAppName("resolve-app-path", appName)
+    if (name === null) return null
+    return deps.resolveAppPath(name)
+  })
   ipcMain.handle("updater-subscribe", (event) => {
     const id = event.sender.id
     updaterSubscriptions.set(
