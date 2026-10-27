@@ -15,6 +15,7 @@ import { displayName, projectForSession } from "@/pages/layout/helpers"
 import { createSessionTabs } from "@/pages/session/helpers"
 import { useSessionLayout } from "@/pages/session/session-layout"
 import { normalizeSessionInfo } from "@/utils/session"
+import { rankCommandPaletteCommands } from "./command-palette-frecency"
 
 export type CommandPaletteEntry = {
   id: string
@@ -98,7 +99,9 @@ export function createCommandPaletteModel(props: { filesOnly?: () => boolean; on
   })
   const commandEntries = createMemo(() => {
     const category = language.t("palette.group.commands")
-    return allowedCommands().map((option) => createCommandPaletteCommandEntry(option, category))
+    return rankCommandPaletteCommands(allowedCommands(), command.usage, Date.now()).map((option) =>
+      createCommandPaletteCommandEntry(option, category),
+    )
   })
   const preferredCommandEntries = createMemo(() => {
     const all = allowedCommands()
@@ -107,7 +110,9 @@ export function createCommandPaletteModel(props: { filesOnly?: () => boolean; on
     const base = picked.length ? picked : all.slice(0, ENTRY_LIMIT)
     const sorted = picked.length ? [...base].sort((a, b) => (order.get(a.id) ?? 0) - (order.get(b.id) ?? 0)) : base
     const category = language.t("palette.group.commands")
-    return sorted.map((option) => createCommandPaletteCommandEntry(option, category))
+    return rankCommandPaletteCommands(sorted, command.usage, Date.now()).map((option) =>
+      createCommandPaletteCommandEntry(option, category),
+    )
   })
 
   const tabState = createSessionTabs({
@@ -164,6 +169,7 @@ export function createCommandPaletteModel(props: { filesOnly?: () => boolean; on
     state.cleanup = undefined
     dialog.close()
     if (item.type === "command") {
+      if (item.option) command.recordUsage(item.option.id)
       item.option?.onSelect?.("palette")
       return
     }

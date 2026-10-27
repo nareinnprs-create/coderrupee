@@ -1,7 +1,7 @@
 import { createSimpleContext } from "@coderrupee/ui/context"
 import { useDialog } from "@coderrupee/ui/context/dialog"
 import { type Accessor, createEffect, createMemo, onCleanup, onMount } from "solid-js"
-import { createStore } from "solid-js/store"
+import { createStore, reconcile } from "solid-js/store"
 import { makeEventListener } from "@solid-primitives/event-listener"
 import { useLanguage } from "@/context/language"
 import { useSettings } from "@/context/settings"
@@ -99,6 +99,10 @@ export function resolveKeybindOption(candidates: CommandOption[] | undefined, ev
 }
 
 type CommandSource = "palette" | "keybind" | "slash"
+
+export type CommandUsageStat = { count: number; lastUsedAt: number }
+
+export type CommandUsageMap = Record<string, CommandUsageStat>
 
 export type CommandCatalogItem = {
   title: string
@@ -279,6 +283,11 @@ export const { use: useCommand, provider: CommandProvider } = createSimpleContex
       createStore<CommandCatalog>({}),
     )
 
+    const [usage, setUsage, , usageReady] = persisted(
+      Persist.global("command.usage.v1"),
+      createStore<CommandUsageMap>({}),
+    )
+
     const bind = (id: string, def: KeybindConfig | undefined) => {
       const custom = settings.keybinds.get(actionId(id))
       const config = custom ?? def
@@ -385,8 +394,16 @@ export const { use: useCommand, provider: CommandProvider } = createSimpleContex
       return map
     })
 
+    // The palette-open pseudo command is not listed in the palette, so its usage would be noise.
+    const recordUsage = (id: string) => {
+      if (!usageReady() || id === PALETTE_ID) return
+      const action = actionId(id)
+      setUsage(action, { count: (usage[action]?.count ?? 0) + 1, lastUsedAt: Date.now() })
+    }
+
     const run = (id: string, source?: CommandSource) => {
       const option = optionMap().get(id)
+      if (option) recordUsage(id)
       option?.onSelect?.(source)
     }
 
@@ -416,6 +433,7 @@ export const { use: useCommand, provider: CommandProvider } = createSimpleContex
       if (!option) return
       event.preventDefault()
       event.stopPropagation()
+      recordUsage(option.id)
       option.onSelect?.("keybind")
     }
 
@@ -465,6 +483,13 @@ export const { use: useCommand, provider: CommandProvider } = createSimpleContex
         setStore("suspendCount", (count) => Math.max(0, count + (enabled ? -1 : 1)))
       },
       suspended,
+      recordUsage,
+      resetUsage() {
+        setUsage(reconcile({}))
+      },
+      get usage() {
+        return usage
+      },
       get catalog() {
         return catalogOptions()
       },

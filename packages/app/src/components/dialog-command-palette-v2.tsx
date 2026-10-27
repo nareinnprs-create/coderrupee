@@ -22,6 +22,7 @@ import {
   uniqueCommandPaletteEntries,
   type CommandPaletteEntry,
 } from "./command-palette"
+import { rankCommandPaletteCommands } from "./command-palette-frecency"
 import "./dialog-command-palette-v2.css"
 
 function groups(entries: CommandPaletteEntry[]) {
@@ -73,7 +74,9 @@ export function DialogHomeCommandPaletteV2(props: {
   const state = { cleanup: undefined as (() => void) | void, committed: false }
   const commandEntries = createMemo(() => {
     const category = language.t("palette.group.commands")
-    return commandPaletteOptions(command.options).map((option) => createCommandPaletteCommandEntry(option, category))
+    return rankCommandPaletteCommands(commandPaletteOptions(command.options), command.usage, Date.now()).map((option) =>
+      createCommandPaletteCommandEntry(option, category),
+    )
   })
   const sessions = createServerSessionEntries({
     server: ServerConnection.key(props.server),
@@ -96,6 +99,7 @@ export function DialogHomeCommandPaletteV2(props: {
     state.cleanup = undefined
     dialog.close()
     if (item.type === "command") {
+      if (item.option) command.recordUsage(item.option.id)
       item.option?.onSelect?.("palette")
       return
     }
