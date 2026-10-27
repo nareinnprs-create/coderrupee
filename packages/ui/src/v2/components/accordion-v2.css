@@ -64,6 +64,16 @@
   letter-spacing: -0.04px;
   color: var(--accordion-v2-fg);
   text-align: left;
+
+  &:focus {
+    outline: none;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--v2-border-border-focus);
+    outline-offset: -2px;
+    border-radius: 6px;
+  }
 }
 
 [data-component="accordion-v2-trigger"] [data-slot="accordion-v2-trigger-content"] {
@@ -118,6 +128,13 @@
   align-items: flex-start;
   width: 100%;
   padding: 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-component="accordion-v2-content"][data-expanded],
+  [data-component="accordion-v2-content"][data-closed] {
+    animation: none;
+  }
 }
 
 @keyframes accordion-v2-down {

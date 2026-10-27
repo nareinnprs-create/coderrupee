@@ -86,6 +86,17 @@ function TabsV2Trigger(props: ParentProps<TabsV2TriggerProps>) {
   )
 }
 
+/**
+ * Keydown behavior for role="button" elements: Enter and Space activate.
+ * Returns true when the key activated the element.
+ */
+export function activateOnKeyDown(event: { key: string; preventDefault(): void }, activate: () => void) {
+  if (event.key !== "Enter" && event.key !== " ") return false
+  event.preventDefault()
+  activate()
+  return true
+}
+
 function TabsV2CloseButton(props: TabsV2CloseButtonProps) {
   const i18n = useI18n()
   const [split, rest] = splitProps(props, ["class", "classList", "onClick"])
@@ -106,6 +117,11 @@ function TabsV2CloseButton(props: TabsV2CloseButtonProps) {
         if (typeof split.onClick === "function") {
           split.onClick(e)
         }
+      }}
+      onKeyDown={(e) => {
+        // Native click() re-enters the onClick handler with a real mouse
+        // event, matching WAI-ARIA button activation semantics.
+        activateOnKeyDown(e, () => e.currentTarget.click())
       }}
       onMouseDown={(e) => {
         e.preventDefault()

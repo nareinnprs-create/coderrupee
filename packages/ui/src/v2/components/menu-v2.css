@@ -188,3 +188,9 @@
     transform: scale(1);
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  [data-component="menu-v2-content"] {
+    animation: none;
+  }
+}
