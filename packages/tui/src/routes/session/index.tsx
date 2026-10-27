@@ -53,6 +53,7 @@ import { DialogTimeline } from "./dialog-timeline"
 import { DialogForkFromTimeline } from "./dialog-fork-from-timeline"
 import { DialogSessionRename } from "../../component/dialog-session-rename"
 import { Sidebar } from "./sidebar"
+import { StatusBar } from "./status-bar"
 import { SubagentFooter } from "./subagent-footer.tsx"
 import { filetype } from "../../util/filetype"
 import parsers from "../../parsers-config"
@@ -128,6 +129,7 @@ const sessionBindingCommands = [
   "session.toggle.actions",
   "session.toggle.scrollbar",
   "session.toggle.generic_tool_output",
+  "session.toggle.status_bar",
   "session.first",
   "session.last",
   "session.messages_last_user",
@@ -266,6 +268,7 @@ export function Session() {
   const [diffWrapMode] = kv.signal<"word" | "none">("diff_wrap_mode", "word")
   const [_animationsEnabled, _setAnimationsEnabled] = kv.signal("animations_enabled", true)
   const [showGenericToolOutput, setShowGenericToolOutput] = kv.signal("generic_tool_output_visibility", false)
+  const [statusBarVisible, setStatusBarVisible] = kv.signal("session_status_bar_visible", true)
 
   const wide = createMemo(() => dimensions().width > 120)
   const sidebarVisible = createMemo(() => {
@@ -745,6 +748,19 @@ export function Session() {
       category: "Session",
       run: () => {
         setShowGenericToolOutput((prev) => !prev)
+        dialog.clear()
+      },
+    },
+    {
+      title: statusBarVisible() ? "Hide status bar" : "Show status bar",
+      value: "session.toggle.status_bar",
+      category: "Session",
+      slash: {
+        name: "status-bar",
+        aliases: ["toggle-status-bar"],
+      },
+      run: () => {
+        setStatusBarVisible((prev) => !prev)
         dialog.clear()
       },
     },
@@ -1331,6 +1347,7 @@ export function Session() {
                     />
                   </pluginRuntime.Slot>
                 </Show>
+                <StatusBar sessionID={route.sessionID} />
               </box>
             </Show>
             <Toast />
