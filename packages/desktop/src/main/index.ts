@@ -14,6 +14,7 @@ import contextMenu from "electron-context-menu"
 import type { ServerReadyData } from "../preload/types"
 import { checkAppExists, resolveAppPath } from "./apps"
 import { CHANNEL } from "./constants"
+import { parseDeepLinksFromArgv } from "./deep-links"
 import { registerIpcHandlers, sendDeepLinks, sendMenuCommand } from "./ipc"
 import { forwardInitializationFailure } from "./initialization"
 import { exportDebugLogs, initCrashReporter, initLogging, startNetLog, write as writeLog } from "./logging"
@@ -203,7 +204,7 @@ const main = Effect.gen(function* () {
   const shellEnv = preferAppEnv(app.getPath("userData"))
 
   app.on("second-instance", (_event: Event, argv: string[]) => {
-    const urls = argv.filter((arg: string) => arg.startsWith("coderrupee://"))
+    const urls = parseDeepLinksFromArgv(argv)
     if (urls.length) {
       logger.log("deep link received via second-instance", { urls })
       emitDeepLinks(urls)
@@ -416,6 +417,17 @@ const main = Effect.gen(function* () {
     if (BrowserWindow.getAllWindows().length > 0) return
     restoreMainWindows()
   })
+
+  // Cold start: on Windows and Linux the shell passes coderrupee:// urls in
+  // argv on first launch (macOS delivers them via open-url instead). Buffer
+  // them before window creation so the renderer can consume-initial-deep-links.
+  if (process.platform !== "darwin") {
+    const coldStartLinks = parseDeepLinksFromArgv(process.argv)
+    if (coldStartLinks.length) {
+      logger.log("deep link received at cold start", { urls: coldStartLinks })
+      emitDeepLinks(coldStartLinks)
+    }
+  }
 
   const windows = restoreMainWindows()
   if (windows.length) createMenu(menuDeps)
