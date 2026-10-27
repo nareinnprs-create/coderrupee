@@ -1,9 +1,9 @@
 import type { DesktopTheme, ResolvedTheme, ResolvedV2Theme } from "./types"
 import { resolveThemeVariant, themeToCss } from "./resolve"
 import { resolveThemeVariantV2, themeV2ToCss } from "./v2/resolve"
+import { THEME_STYLE_ID } from "./constants"
 
 let activeTheme: DesktopTheme | null = null
-const THEME_STYLE_ID = "coderrupee-theme"
 
 function ensureLoaderStyleElement(): HTMLStyleElement {
   const existing = document.getElementById(THEME_STYLE_ID) as HTMLStyleElement | null

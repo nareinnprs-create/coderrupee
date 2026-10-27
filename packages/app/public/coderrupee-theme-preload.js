@@ -26,7 +26,7 @@
   var css = localStorage.getItem("coderrupee-theme-css-" + mode)
   if (css) {
     var style = document.createElement("style")
-    style.id = "oc-theme-preload"
+    style.id = "coderrupee-theme-preload"
     style.textContent =
       ":root{color-scheme:" +
       mode +

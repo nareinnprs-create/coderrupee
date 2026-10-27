@@ -4,6 +4,7 @@ import { createEffect, onMount } from "solid-js"
 import { createStore } from "solid-js/store"
 import { makeEventListener } from "@solid-primitives/event-listener"
 import { createSimpleContext } from "../context/helper"
+import { THEME_PRELOAD_STYLE_ID, THEME_STYLE_ID } from "./constants"
 import oc2ThemeJson from "./themes/oc-2.json"
 import { resolveThemeVariant, themeToCss } from "./resolve"
 import { resolveThemeVariantV2, themeV2ToCss } from "./v2/resolve"
@@ -18,7 +19,6 @@ const STORAGE_KEYS = {
   THEME_CSS_DARK: "coderrupee-theme-css-dark",
 } as const
 
-const THEME_STYLE_ID = "oc-theme"
 let files: Record<string, () => Promise<{ default: DesktopTheme }>> | undefined
 let ids: string[] | undefined
 let known: Set<string> | undefined
@@ -148,7 +148,7 @@ function applyThemeCss(theme: DesktopTheme, themeId: string, mode: "light" | "da
   ${v2}
 }`
 
-  document.getElementById("oc-theme-preload")?.remove()
+  document.getElementById(THEME_PRELOAD_STYLE_ID)?.remove()
   ensureThemeStyleElement().textContent = fullCss
   document.documentElement.dataset.theme = themeId
   document.documentElement.dataset.colorScheme = mode
