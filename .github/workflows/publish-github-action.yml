@@ -24,7 +24,7 @@ jobs:
 
       - name: Publish
         run: |
-          git config --global user.email "coderrupee@sst.dev"
-          git config --global user.name "coderrupee"
+          git config --global user.email "narein.nprs@gmail.com"
+          git config --global user.name "Narein Rao"
           ./script/publish
         working-directory: ./github
