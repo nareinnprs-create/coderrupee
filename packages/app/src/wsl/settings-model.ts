@@ -2,7 +2,7 @@ import fuzzysort from "fuzzysort"
 import type {
   WslInstalledDistro,
   WslOnlineDistro,
-  WslOpencodeCheck,
+  WslCoderrupeeCheck,
   WslServersPlatform,
   WslServerRuntime,
   WslServersState,
@@ -51,10 +51,10 @@ function isHiddenDistro(name: string) {
 export const wslRuntimeRetryable = (runtime: WslServerRuntime) =>
   runtime.kind === "failed" || runtime.kind === "stopped"
 
-export function wslOpencodeAction(check?: WslOpencodeCheck) {
+export function wslCoderrupeeAction(check?: WslCoderrupeeCheck) {
   if (!check) return
   if (!check.resolvedPath) return "wsl.onboarding.installCoderrupee"
-  if (check.matchesDesktop === false) return "wsl.onboarding.updateOpencode"
+  if (check.matchesDesktop === false) return "wsl.onboarding.updateCoderrupee"
 }
 
 export function wslDistroReady(state: WslServersState | undefined, name: string) {
@@ -172,7 +172,7 @@ function addServerDistroStatus(input: {
     }
     return
   }
-  if (check.matchesDesktop === false) return { label: { key: "wsl.onboarding.updateOpencode" }, tone: "warning" }
+  if (check.matchesDesktop === false) return { label: { key: "wsl.onboarding.updateCoderrupee" }, tone: "warning" }
   if (!check.resolvedPath) return { label: { key: "wsl.onboarding.distroStatus.coderrupeeMissing" }, tone: "warning" }
   if (check.error) return { label: { key: "wsl.onboarding.installCoderrupee" }, tone: "warning" }
   return { label: { key: "wsl.onboarding.distroStatus.ready" }, tone: "success" }
@@ -185,22 +185,22 @@ function checkingStatus(): DistroStatus {
 function addServerPrimaryButton(input: {
   state: WslServersState | undefined
   selectedDistro: string | null
-  coderrupeeCheck: WslOpencodeCheck | null
+  coderrupeeCheck: WslCoderrupeeCheck | null
   adding: boolean
   probingAddable: boolean
 }): AddServerPrimaryButton {
   const ready = !!input.selectedDistro && wslDistroReady(input.state, input.selectedDistro)
   const probingSelected = input.probingAddable && !addServerSelectedDistroSettled(input.state, input.selectedDistro)
-  const probingOpencode =
+  const probingCoderrupee =
     probingSelected ||
     (ready &&
       (!input.coderrupeeCheck ||
         (!!input.selectedDistro &&
           input.state?.job?.kind === "probe-addable" &&
           input.state.job.distros.includes(input.selectedDistro))))
-  const installingOpencode =
+  const installingCoderrupee =
     input.state?.job?.kind === "install-coderrupee" && input.state.job.distro === input.selectedDistro
-  if (!ready || probingOpencode) {
+  if (!ready || probingCoderrupee) {
     return {
       variant: "contrast",
       label: probingSelected ? { key: "wsl.onboarding.distroStatus.checking" } : { key: "wsl.server.add" },
@@ -210,18 +210,18 @@ function addServerPrimaryButton(input: {
       width: null,
     }
   }
-  if (!addServerOpencodeReady(input.coderrupeeCheck)) {
+  if (!addServerCoderrupeeReady(input.coderrupeeCheck)) {
     const update = !!input.coderrupeeCheck?.resolvedPath && input.coderrupeeCheck.matchesDesktop === false
     return {
       variant: "neutral",
-      label: installingOpencode
-        ? { key: "wsl.onboarding.updatingOpencode" }
+      label: installingCoderrupee
+        ? { key: "wsl.onboarding.updatingCoderrupee" }
         : update
-          ? { key: "wsl.onboarding.updateOpencode" }
+          ? { key: "wsl.onboarding.updateCoderrupee" }
           : { key: "wsl.onboarding.installCoderrupee" },
       disabled: !!input.state?.job || input.adding,
       action: "install-coderrupee",
-      loading: installingOpencode,
+      loading: installingCoderrupee,
       width: update ? "138px" : "129px",
     }
   }
@@ -235,7 +235,7 @@ function addServerPrimaryButton(input: {
   }
 }
 
-function addServerOpencodeReady(check: WslOpencodeCheck | null) {
+function addServerCoderrupeeReady(check: WslCoderrupeeCheck | null) {
   return !!check?.resolvedPath && check.matchesDesktop !== false && !check.error
 }
 

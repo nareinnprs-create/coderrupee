@@ -6,7 +6,7 @@ import {
   autoProbePlan,
   createProbeFailureGate,
   runAddableProbePlan,
-  wslOpencodeAction,
+  wslCoderrupeeAction,
   wslRuntimeRetryable,
 } from "./settings-model"
 import type { WslServersState } from "./types"
@@ -38,9 +38,9 @@ describe("WSL server settings presentation", () => {
   })
 
   test("offers install and update only when CoderRupee needs attention", () => {
-    expect(wslOpencodeAction(undefined)).toBeUndefined()
+    expect(wslCoderrupeeAction(undefined)).toBeUndefined()
     expect(
-      wslOpencodeAction({
+      wslCoderrupeeAction({
         distro: "Debian",
         resolvedPath: null,
         version: null,
@@ -50,7 +50,7 @@ describe("WSL server settings presentation", () => {
       }),
     ).toBe("wsl.onboarding.installCoderrupee")
     expect(
-      wslOpencodeAction({
+      wslCoderrupeeAction({
         distro: "Debian",
         resolvedPath: "/usr/local/bin/coderrupee",
         version: "1.2.2",
@@ -58,9 +58,9 @@ describe("WSL server settings presentation", () => {
         matchesDesktop: false,
         error: null,
       }),
-    ).toBe("wsl.onboarding.updateOpencode")
+    ).toBe("wsl.onboarding.updateCoderrupee")
     expect(
-      wslOpencodeAction({
+      wslCoderrupeeAction({
         distro: "Debian",
         resolvedPath: "/usr/local/bin/coderrupee",
         version: "1.2.3",

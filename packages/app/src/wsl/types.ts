@@ -23,7 +23,7 @@ export type WslDistroProbe = {
   error: string | null
 }
 
-export type WslOpencodeCheck = {
+export type WslCoderrupeeCheck = {
   distro: string
   resolvedPath: string | null
   version: string | null
@@ -61,7 +61,7 @@ export type WslServersState = {
   installed: WslInstalledDistro[]
   online: WslOnlineDistro[]
   distroProbes: Record<string, WslDistroProbe>
-  coderrupeeChecks: Record<string, WslOpencodeCheck>
+  coderrupeeChecks: Record<string, WslCoderrupeeCheck>
   pendingRestart: boolean
   servers: WslServerItem[]
   job: WslJob | null

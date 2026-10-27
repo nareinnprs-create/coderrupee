@@ -15,7 +15,7 @@ import { ServerConnection } from "@/context/server"
 import { showToast } from "@/utils/toast"
 import { DialogAddWslServer } from "./dialog-add-server"
 import { useWslServers } from "./context"
-import { wslOpencodeAction, wslRuntimeRetryable } from "./settings-model"
+import { wslCoderrupeeAction, wslRuntimeRetryable } from "./settings-model"
 
 type Controller = ReturnType<typeof useServerManagementController>
 
@@ -95,7 +95,7 @@ export function WslServerSettings(props: {
         {(item) => {
           const key = ServerConnection.Key.make(item.config.id)
           const check = () => wsl.data?.coderrupeeChecks[item.config.distro]
-          const coderrupeeAction = () => wslOpencodeAction(check())
+          const coderrupeeAction = () => wslCoderrupeeAction(check())
           const busy = () => wsl.data?.job?.kind === "install-coderrupee" && wsl.data.job.distro === item.config.distro
           return (
             <div class="settings-v2-servers-row">

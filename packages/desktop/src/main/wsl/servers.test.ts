@@ -7,7 +7,7 @@ import {
   wslTerminalArgs,
 } from "./policy"
 import {
-  expectOpencodeVersion,
+  expectCoderrupeeVersion,
   pendingRestartAfterWslInstall,
   pollWslHealth,
   wslServerIdsToStartOnInitialize,
@@ -15,7 +15,7 @@ import {
 import { createWslServersController, type WslServerConfig } from "./servers"
 
 let persistedServers: WslServerConfig[] = []
-let releaseOpencodeResolve: (() => void) | undefined
+let releaseCoderrupeeResolve: (() => void) | undefined
 
 test("starts every configured WSL server on initialization", () => {
   expect(
@@ -27,8 +27,8 @@ test("starts every configured WSL server on initialization", () => {
 })
 
 test("rejects an update that did not install the desktop version", () => {
-  expect(() => expectOpencodeVersion("1.16.2", "1.16.2")).not.toThrow()
-  expect(() => expectOpencodeVersion("1.14.35", "1.16.2")).toThrow(
+  expect(() => expectCoderrupeeVersion("1.16.2", "1.16.2")).not.toThrow()
+  expect(() => expectCoderrupeeVersion("1.14.35", "1.16.2")).toThrow(
     "CoderRupee update finished but Debian still reports 1.14.35; expected 1.16.2",
   )
 })
@@ -106,7 +106,7 @@ test("derives a required Windows restart from the post-install runtime probe", (
 
 test("ignores stale background CoderRupee checks after removing a WSL server", async () => {
   persistedServers = []
-  releaseOpencodeResolve = undefined
+  releaseCoderrupeeResolve = undefined
   const controller = createWslServersController(
     "1.16.2",
     async () => ({
@@ -122,9 +122,9 @@ test("ignores stale background CoderRupee checks after removing a WSL server", a
   )
 
   await controller.addServer("Debian")
-  await waitFor(() => !!releaseOpencodeResolve)
+  await waitFor(() => !!releaseCoderrupeeResolve)
   await controller.removeServer("wsl:Debian")
-  releaseOpencodeResolve?.()
+  releaseCoderrupeeResolve?.()
   await new Promise((resolve) => setTimeout(resolve, 0))
 
   expect(controller.getState().servers).toEqual([])
@@ -133,7 +133,7 @@ test("ignores stale background CoderRupee checks after removing a WSL server", a
 
 test("ignores stale startup CoderRupee checks after removing a WSL server", async () => {
   persistedServers = [{ id: "wsl:Debian", distro: "Debian" }]
-  releaseOpencodeResolve = undefined
+  releaseCoderrupeeResolve = undefined
   const controller = createWslServersController(
     "1.16.2",
     async () => new Promise<never>(() => undefined),
@@ -141,9 +141,9 @@ test("ignores stale startup CoderRupee checks after removing a WSL server", asyn
   )
 
   await controller.initialize()
-  await waitFor(() => !!releaseOpencodeResolve)
+  await waitFor(() => !!releaseCoderrupeeResolve)
   await controller.removeServer("wsl:Debian")
-  releaseOpencodeResolve?.()
+  releaseCoderrupeeResolve?.()
   await new Promise((resolve) => setTimeout(resolve, 0))
 
   expect(controller.getState().servers).toEqual([])
@@ -162,7 +162,7 @@ test("probes addable distros in parallel before checking CoderRupee", async () =
       await new Promise<void>((resolve) => release.set(distro, resolve))
       return { name: distro, canExecute: true, hasBash: true, hasCurl: true, error: null }
     },
-    resolveOpencode: async (distro) => {
+    resolveCoderrupee: async (distro) => {
       coderrupee.push(distro)
       return "/home/me/.coderrupee/bin/coderrupee"
     },
@@ -193,7 +193,7 @@ test("does not check CoderRupee in addable distros that cannot execute commands"
       hasCurl: distro === "Debian",
       error: distro === "Debian" ? null : "Open Ubuntu once to finish setup",
     }),
-    resolveOpencode: async (distro) => {
+    resolveCoderrupee: async (distro) => {
       coderrupee.push(distro)
       return "/home/me/.coderrupee/bin/coderrupee"
     },
@@ -221,9 +221,9 @@ function testControllerOptions() {
       persistedServers = servers
     },
     readCommandVersion: async () => "1.16.2",
-    resolveOpencode: async () => {
+    resolveCoderrupee: async () => {
       await new Promise<void>((resolve) => {
-        releaseOpencodeResolve = resolve
+        releaseCoderrupeeResolve = resolve
       })
       return "/home/me/.coderrupee/bin/coderrupee"
     },
