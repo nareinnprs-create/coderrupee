@@ -360,11 +360,11 @@ export function createWslServersController(
       })
     },
 
-    async installOpencode(name: string) {
+    async installCoderrupee(name: string) {
       await runJob({ kind: "install-coderrupee", distro: name, startedAt: Date.now() }, async (abort) => {
         const result = await installWslOpencode(appVersion, name, { signal: abort.signal })
         if (result.code !== 0) {
-          throw new Error(summarize(result.stderr || result.stdout) || nativeT("desktop.wsl.error.installOpencode"))
+          throw new Error(summarize(result.stderr || result.stdout) || nativeT("desktop.wsl.error.installCoderrupee"))
         }
         await refreshOpencodeCheck(name, { signal: abort.signal })
         expectOpencodeVersion(state.coderrupeeChecks[name]?.version ?? null, appVersion, name)

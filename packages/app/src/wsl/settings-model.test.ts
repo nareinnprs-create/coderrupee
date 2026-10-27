@@ -48,7 +48,7 @@ describe("WSL server settings presentation", () => {
         matchesDesktop: null,
         error: null,
       }),
-    ).toBe("wsl.onboarding.installOpencode")
+    ).toBe("wsl.onboarding.installCoderrupee")
     expect(
       wslOpencodeAction({
         distro: "Debian",
@@ -208,7 +208,7 @@ describe("WSL server settings presentation", () => {
     })
 
     expect(model.distroStatuses.Debian).toEqual({
-      label: { key: "wsl.onboarding.installOpencode" },
+      label: { key: "wsl.onboarding.installCoderrupee" },
       tone: "warning",
     })
     expect(model.primaryButton.action).toBe("install-coderrupee")

@@ -75,7 +75,7 @@ export function registerWslIpcHandlers(controller: WslServersController) {
   })
   ipcMain.handle("wsl-servers-install-coderrupee", (event: IpcMainInvokeEvent, name: string) => {
     requireTrustedSender("wsl-servers-install-coderrupee", event)
-    return controller.installOpencode(requireWslIpcString("distro", name))
+    return controller.installCoderrupee(requireWslIpcString("distro", name))
   })
   ipcMain.handle("wsl-servers-open-terminal", (event: IpcMainInvokeEvent, name: string) => {
     requireTrustedSender("wsl-servers-open-terminal", event)
