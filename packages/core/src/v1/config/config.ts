@@ -154,6 +154,28 @@ export const Info = Schema.Struct({
     description:
       "Thresholds for truncating tool output. When output exceeds either limit, the full text is written to the truncation directory and a preview is returned.",
   }),
+  budget: Schema.optional(
+    Schema.Struct({
+      sessionMaxUsd: Schema.optional(Schema.Finite).annotate({
+        description:
+          "Session spend limit in USD. When a session reaches the limit the budget guard stops the run, or only warns with action 'warn-only'. Omit to disable the session budget guard (default).",
+      }),
+      totalMaxUsd: Schema.optional(Schema.Finite).annotate({
+        description:
+          "Reserved: spend limit across all sessions. Not enforced yet; enforcement needs a durable spend ledger, so only per-session budgets apply today.",
+      }),
+      warnAt: Schema.optional(Schema.Finite).annotate({
+        description: "Fraction of the limit where the warning fires, between 0 and 1 (default: 0.8)",
+      }),
+      action: Schema.optional(Schema.Literals(["stop", "warn-only"])).annotate({
+        description:
+          "What happens when the session limit is reached: 'stop' aborts the in-flight run (default), 'warn-only' logs and notes without stopping.",
+      }),
+    }),
+  ).annotate({
+    description:
+      "Cost budget guard. Entirely disabled when no session limit is set, so existing sessions are unaffected.",
+  }),
   compaction: Schema.optional(
     Schema.Struct({
       auto: Schema.optional(Schema.Boolean).annotate({
