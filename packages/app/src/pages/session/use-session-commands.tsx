@@ -12,7 +12,6 @@ import { useSettings } from "@/context/settings"
 import { useSync } from "@/context/sync"
 import { useTerminal } from "@/context/terminal"
 import { showToast } from "@/utils/toast"
-import { downloadSessionExport, fetchSessionExport, sessionExportFilename } from "@/utils/session-export"
 import { findLast } from "@coderrupee/core/util/array"
 import { createSessionTabs } from "@/pages/session/helpers"
 import { extractPromptFromParts } from "@/utils/prompt"
@@ -235,29 +234,13 @@ export const useSessionCommands = (actions: SessionCommandContext) => {
       )
   }
 
-  const exportSession = async () => {
+  const exportSession = () => {
     const sessionID = params.id
     if (!sessionID) return
-    try {
-      const data = await fetchSessionExport({
-        sessionID,
-        client: sdk().client,
-      })
-      const filename = sessionExportFilename(data.info)
-      downloadSessionExport(filename, data)
-      showToast({
-        variant: "success",
-        icon: "circle-check",
-        title: language.t("toast.session.export.success.title"),
-        description: language.t("toast.session.export.success.description", { filename }),
-      })
-    } catch (err) {
-      showToast({
-        variant: "error",
-        title: language.t("toast.session.export.failed.title"),
-        description: err instanceof Error ? err.message : language.t("toast.session.export.failed.description"),
-      })
-    }
+    void openDialog(
+      () => import("@/components/dialog-export-session"),
+      (x) => dialog.show(() => <x.DialogExportSession sessionID={sessionID} />),
+    )
   }
 
   const openFile = () => {

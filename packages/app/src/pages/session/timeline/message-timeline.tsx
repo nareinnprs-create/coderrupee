@@ -53,7 +53,7 @@ import type {
   UserMessage,
 } from "@coderrupee/sdk/v2"
 import { showToast } from "@/utils/toast"
-import { downloadSessionExport, fetchSessionExport, sessionExportFilename } from "@/utils/session-export"
+import { DialogExportSession } from "@/components/dialog-export-session"
 import { getDirectory, getFilename } from "@coderrupee/core/util/path"
 import { Popover as KobaltePopover } from "@kobalte/core/popover"
 import { normalize } from "@coderrupee/session-ui/session-diff"
@@ -791,27 +791,8 @@ export function MessageTimeline(props: {
     titleMutation.mutate({ id, title: next })
   }
 
-  const exportSession = async (sessionID: string) => {
-    try {
-      const data = await fetchSessionExport({
-        sessionID,
-        client: sdk().client,
-      })
-      const filename = sessionExportFilename(data.info)
-      downloadSessionExport(filename, data)
-      showToast({
-        variant: "success",
-        icon: "circle-check",
-        title: language.t("toast.session.export.success.title"),
-        description: language.t("toast.session.export.success.description", { filename }),
-      })
-    } catch (err) {
-      showToast({
-        variant: "error",
-        title: language.t("toast.session.export.failed.title"),
-        description: err instanceof Error ? err.message : language.t("toast.session.export.failed.description"),
-      })
-    }
+  const exportSession = (sessionID: string) => {
+    dialog.show(() => <DialogExportSession sessionID={sessionID} />)
   }
 
   const deleteSession = async (sessionID: string) => {
