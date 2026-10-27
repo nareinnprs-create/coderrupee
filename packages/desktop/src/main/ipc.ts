@@ -9,6 +9,8 @@ import { parseDesktopNativeBundle, type DesktopNativeBundle } from "@coderrupee/
 import type { FatalRendererError, ServerReadyData, TitlebarTheme } from "../preload/types"
 import { runDesktopMenuAction } from "./desktop-menu-actions"
 import { setForceFocus } from "./debug"
+import { isTrustedSender, UntrustedSenderError } from "./renderer-origin"
+import { write as writeLog } from "./logging"
 import { assertAttachmentBudget, createPickedFileAuthorizations } from "./attachment-picker"
 import { getStore, removeStoreFileIfEmpty } from "./store"
 import {
@@ -54,6 +56,14 @@ type Deps = {
   setNativeTranslations: (bundle: DesktopNativeBundle) => void
 }
 
+// State-changing handlers only accept senders on the app's own origin
+// (packaged oc://renderer or the dev server). Read-only handlers stay open.
+function requireTrustedSender(channel: string, event: IpcMainInvokeEvent) {
+  if (isTrustedSender(event, { devUrl: process.env.ELECTRON_RENDERER_URL })) return
+  writeLog("ipc", "blocked untrusted sender", { channel, url: event.senderFrame?.url }, "warn")
+  throw new UntrustedSenderError(channel)
+}
+
 export function registerIpcHandlers(deps: Deps) {
   const drafts = createDesktopDraftStore(join(app.getPath("userData"), "drafts.sqlite"))
   const updaterSubscriptions = createUpdaterSubscriptions()
@@ -66,18 +76,20 @@ export function registerIpcHandlers(deps: Deps) {
   ipcMain.handle("await-initialization", () => deps.awaitInitialization())
   ipcMain.handle("consume-initial-deep-links", () => deps.consumeInitialDeepLinks())
   ipcMain.handle("get-default-server-url", () => deps.getDefaultServerUrl())
-  ipcMain.handle("set-default-server-url", (_event: IpcMainInvokeEvent, url: string | null) =>
-    deps.setDefaultServerUrl(url),
-  )
+  ipcMain.handle("set-default-server-url", (event: IpcMainInvokeEvent, url: string | null) => {
+    requireTrustedSender("set-default-server-url", event)
+    return deps.setDefaultServerUrl(url)
+  })
   ipcMain.handle("is-first-launch-onboarding-pending", () => deps.isFirstLaunchOnboardingPending())
   ipcMain.handle("finish-first-launch-onboarding", (_event: IpcMainInvokeEvent, createDefaultProject: boolean) =>
     deps.finishFirstLaunchOnboarding(createDefaultProject),
   )
   ipcMain.handle("is-old-layout-eligible", () => deps.isOldLayoutEligible())
   ipcMain.handle("get-display-backend", () => deps.getDisplayBackend())
-  ipcMain.handle("set-display-backend", (_event: IpcMainInvokeEvent, backend: string | null) =>
-    deps.setDisplayBackend(backend),
-  )
+  ipcMain.handle("set-display-backend", (event: IpcMainInvokeEvent, backend: string | null) => {
+    requireTrustedSender("set-display-backend", event)
+    return deps.setDisplayBackend(backend)
+  })
   ipcMain.handle("check-app-exists", (_event: IpcMainInvokeEvent, appName: string) => deps.checkAppExists(appName))
   ipcMain.handle("resolve-app-path", (_event: IpcMainInvokeEvent, appName: string) => deps.resolveAppPath(appName))
   ipcMain.handle("updater-subscribe", (event) => {
@@ -92,13 +104,26 @@ export function registerIpcHandlers(deps: Deps) {
     event.sender.once("destroyed", () => updaterSubscriptions.delete(id))
   })
   ipcMain.handle("updater-unsubscribe", (event) => updaterSubscriptions.delete(event.sender.id))
-  ipcMain.handle("updater-check", () => deps.updater.check())
-  ipcMain.handle("updater-install", () => deps.updater.install())
-  ipcMain.handle("set-background-color", (_event: IpcMainInvokeEvent, color: string) => deps.setBackgroundColor(color))
-  ipcMain.handle("export-debug-logs", () => deps.exportDebugLogs())
-  ipcMain.handle("set-force-focus", (event: IpcMainInvokeEvent, enabled: boolean) =>
-    setForceFocus(event.sender, enabled),
-  )
+  ipcMain.handle("updater-check", (event: IpcMainInvokeEvent) => {
+    requireTrustedSender("updater-check", event)
+    return deps.updater.check()
+  })
+  ipcMain.handle("updater-install", (event: IpcMainInvokeEvent) => {
+    requireTrustedSender("updater-install", event)
+    return deps.updater.install()
+  })
+  ipcMain.handle("set-background-color", (event: IpcMainInvokeEvent, color: string) => {
+    requireTrustedSender("set-background-color", event)
+    deps.setBackgroundColor(color)
+  })
+  ipcMain.handle("export-debug-logs", (event: IpcMainInvokeEvent) => {
+    requireTrustedSender("export-debug-logs", event)
+    return deps.exportDebugLogs()
+  })
+  ipcMain.handle("set-force-focus", (event: IpcMainInvokeEvent, enabled: boolean) => {
+    requireTrustedSender("set-force-focus", event)
+    return setForceFocus(event.sender, enabled)
+  })
   ipcMain.handle("record-fatal-renderer-error", (_event: IpcMainInvokeEvent, error: FatalRendererError) =>
     deps.recordFatalRendererError(error),
   )

@@ -15,12 +15,11 @@ import { createUnresponsiveSampler } from "./unresponsive"
 import { nativeT } from "./native-translations"
 import { createWindowRegistry } from "./window-registry"
 import { safeWindowURL } from "./window-state"
+import { isRendererOriginUrl, rendererHost, rendererProtocol } from "./renderer-origin"
 import { resolveExternalURL, resolveLocalFilePath } from "./external-url"
 
 const root = dirname(fileURLToPath(import.meta.url))
 const rendererRoot = join(root, "../renderer")
-const rendererProtocol = "oc"
-const rendererHost = "renderer"
 const clipboardWritePermission = "clipboard-sanitized-write"
 const notificationPermission = "notifications"
 const rendererPermissions = new Set([clipboardWritePermission, notificationPermission])
@@ -506,13 +505,7 @@ function addRendererHeaders(value: string, headers: Record<string, any>) {
 }
 
 function isRendererUrl(value?: string, html = false) {
-  if (!value || !URL.canParse(value)) return false
-  const url = new URL(value)
-  if (html && !url.pathname.endsWith(".html")) return false
-  if (url.protocol === `${rendererProtocol}:` && url.host === rendererHost) return true
-  const devUrl = process.env.ELECTRON_RENDERER_URL
-  if (!devUrl || !URL.canParse(devUrl)) return false
-  return url.origin === new URL(devUrl).origin
+  return isRendererOriginUrl(value, { html, devUrl: process.env.ELECTRON_RENDERER_URL })
 }
 
 function wireZoom(win: BrowserWindow) {
