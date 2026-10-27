@@ -85,6 +85,7 @@ import { SessionSidePanel } from "@/pages/session/session-side-panel"
 import { sessionPanelLayout } from "@/pages/session/session-panel-layout"
 import { SessionReviewEmptyChangesV2 } from "@coderrupee/session-ui/v2/session-review-empty-changes-v2"
 import { SessionReviewEmptyNoGitV2 } from "@coderrupee/session-ui/v2/session-review-empty-no-git-v2"
+import { SessionReviewSkeletonV2 } from "@coderrupee/session-ui/v2/session-review-skeleton-v2"
 import { SessionReviewV2SidebarToggle } from "@coderrupee/session-ui/v2/session-review-v2"
 import { ReviewPanelV2 } from "@/pages/session/v2/review-panel-v2"
 import { createReviewPanelV2State } from "@/pages/session/v2/review-panel-v2-state"
@@ -1249,14 +1250,28 @@ export default function Page() {
     )
   }
 
+  const openSessionFromReview = () => {
+    if (isDesktop()) {
+      view().reviewPanel.close()
+      return
+    }
+    setStore("mobileTab", "session")
+  }
+
   const reviewEmptyV2 = () => {
     if ((reviewMode() === "git" || reviewMode() === "branch") && !reviewReady()) {
-      return <div class="px-6 py-4 text-text-weak">{language.t("session.review.loadingChanges")}</div>
+      return <SessionReviewSkeletonV2 />
     }
     if (reviewMode() === "turn" && nogit()) {
       return <SessionReviewEmptyNoGitV2 pending={gitMutation.isPending} onInitGit={initGit} />
     }
-    return <SessionReviewEmptyChangesV2 />
+    return (
+      <SessionReviewEmptyChangesV2
+        onRefresh={refreshVcs}
+        refreshing={!reviewReady()}
+        onOpenSession={openSessionFromReview}
+      />
+    )
   }
 
   const reviewContent = (input: {

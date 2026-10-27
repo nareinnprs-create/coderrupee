@@ -525,3 +525,57 @@
   letter-spacing: -0.04px;
   color: var(--v2-text-text-muted);
 }
+
+[data-slot="session-review-v2-empty-changes-actions"] {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+[data-component="session-review-skeleton-v2"] {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 24px;
+  padding-bottom: 160px;
+}
+
+[data-component="session-review-skeleton-v2"] [data-slot="session-review-skeleton-v2-file"] {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+[data-component="session-review-skeleton-v2"] [data-slot="session-review-skeleton-v2-bar"] {
+  height: 12px;
+  border-radius: 6px;
+  background: var(--v2-background-bg-layer-01);
+  animation: session-review-v2-skeleton-pulse 1.6s ease-in-out infinite;
+}
+
+[data-component="session-review-skeleton-v2"] [data-slot="session-review-skeleton-v2-bar"][data-kind="file"] {
+  height: 14px;
+}
+
+@keyframes session-review-v2-skeleton-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-component="session-review-skeleton-v2"] [data-slot="session-review-skeleton-v2-bar"] {
+    animation: none;
+  }
+}
