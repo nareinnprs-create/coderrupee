@@ -48,7 +48,7 @@ import { registerWslIpcHandlers } from "./wsl/ipc"
 import { spawnWslSidecar } from "./wsl/sidecar"
 import { migrate } from "./migrate"
 import { cleanupStoreFiles } from "./store-cleanup"
-import { startBackgroundCli } from "./background-cli"
+import { installCliStaged, startBackgroundCli } from "./background-cli"
 import { setNativeTranslations } from "./native-translations"
 
 const APP_NAMES: Record<string, string> = {
@@ -283,6 +283,7 @@ const main = Effect.gen(function* () {
   }
   registerIpcHandlers({
     killSidecar: () => killSidecar(),
+    installCli: () => installCliStaged(logger),
     relaunch,
     awaitInitialization: Effect.fnUntraced(
       function* () {
