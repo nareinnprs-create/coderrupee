@@ -1,5 +1,7 @@
 import { LayerNode } from "@coderrupee/core/effect/layer-node"
+import { NamedError } from "@coderrupee/core/util/error"
 import { PermissionV1 } from "@coderrupee/core/v1/permission"
+import { TuiEvent } from "@coderrupee/schema/tui-event"
 import { Image } from "@/image/image"
 import { SessionV1 } from "@coderrupee/core/v1/session"
 import { Cause, Deferred, Effect, Exit, Layer, Context, Scope, Schema } from "effect"
@@ -13,6 +15,7 @@ import { Session } from "./session"
 import { LLM } from "./llm"
 import { MessageV2 } from "./message-v2"
 import { isOverflow } from "./overflow"
+import { SessionBudget } from "./budget"
 import { PartID } from "./schema"
 import type { SessionID } from "./schema"
 import { SessionRetry } from "./retry"
@@ -70,6 +73,10 @@ interface ProcessorContext extends Input {
   snapshot: string | undefined
   blocked: boolean
   needsCompaction: boolean
+  budgetStop: boolean
+  // Session spend accumulated before this assistant message; the message's own
+  // cost accrues on assistantMessage.cost, so session spent is the sum.
+  baseCost: number
   currentText: SessionV1.TextPart | undefined
   reasoningMap: Record<string, SessionV1.ReasoningPart>
 }
@@ -100,6 +107,7 @@ const layer = Layer.effect(
       // may execute tools internally before emitting start-step events,
       // so capturing inside the event handler can be too late.
       const initialSnapshot = yield* snapshot.track()
+      const base = yield* session.get(input.sessionID).pipe(Effect.orElseSucceed(() => undefined))
       const ctx: ProcessorContext = {
         assistantMessage: input.assistantMessage,
         sessionID: input.sessionID,
@@ -109,6 +117,8 @@ const layer = Layer.effect(
         snapshot: initialSnapshot,
         blocked: false,
         needsCompaction: false,
+        budgetStop: false,
+        baseCost: base?.cost ?? 0,
         currentText: undefined,
         reasoningMap: {},
       }
@@ -253,6 +263,59 @@ const layer = Layer.effect(
       })
 
       const isFilePart = (value: unknown): value is SessionV1.FilePart => Schema.is(SessionV1.FilePart)(value)
+
+      // Budget guard (A3). Disabled unless config.budget.sessionMaxUsd is set.
+      // warn: surface once per session through the TUI toast event (or the log
+      // in warn-only mode). exceeded + action "stop": mark the message with a
+      // budget error and publish the session error event exactly like the
+      // interrupt path does; the stream takeUntil below then aborts the
+      // in-flight run and process() returns "stop". exceeded in warn-only mode
+      // only logs, once per session.
+      const enforceBudget = Effect.fn("SessionProcessor.enforceBudget")(function* () {
+        if (ctx.budgetStop) return
+        const budget = SessionBudget.resolve((yield* config.get()).budget)
+        if (!budget) return
+        const spent = ctx.baseCost + ctx.assistantMessage.cost
+        const result = SessionBudget.evaluate({
+          spent,
+          limit: budget.limits.sessionMaxUsd,
+          warnAt: budget.limits.warnAt,
+        })
+        if (result.level === "ok" || !result.message) return
+        if (result.level === "warn") {
+          if (!SessionBudget.firstNotice(input.sessionID, "warn")) return
+          if (budget.action === "warn-only") {
+            yield* Effect.logWarning("session cost budget warning", {
+              "session.id": input.sessionID,
+              messageID: input.assistantMessage.id,
+              spent,
+              limit: budget.limits.sessionMaxUsd,
+            })
+            return
+          }
+          yield* events.publish(TuiEvent.ToastShow, {
+            title: "Cost budget",
+            message: result.message,
+            variant: "warning",
+            duration: 8000,
+          })
+          return
+        }
+        if (budget.action === "warn-only") {
+          if (!SessionBudget.firstNotice(input.sessionID, "exceeded")) return
+          yield* Effect.logWarning("session cost budget exceeded (warn-only)", {
+            "session.id": input.sessionID,
+            messageID: input.assistantMessage.id,
+            spent,
+            limit: budget.limits.sessionMaxUsd,
+          })
+          return
+        }
+        ctx.budgetStop = true
+        const error = new NamedError.Unknown({ message: `${result.message} Run stopped.` }).toObject()
+        ctx.assistantMessage.error = error
+        yield* events.publish(Session.Event.Error, { sessionID: ctx.sessionID, error })
+      })
 
       const toolResultOutput = (
         value: Extract<StreamEvent, { type: "tool-result" }>,
@@ -457,6 +520,7 @@ const layer = Layer.effect(
             ctx.assistantMessage.finish = value.reason
             ctx.assistantMessage.cost += usage.cost
             ctx.assistantMessage.tokens = usage.tokens
+            yield* enforceBudget()
             yield* session.updatePart({
               id: PartID.ascending(),
               reason: value.reason,
@@ -655,7 +719,7 @@ const layer = Layer.effect(
 
             yield* stream.pipe(
               Stream.tap((event) => handleEvent(event)),
-              Stream.takeUntil(() => ctx.needsCompaction),
+              Stream.takeUntil(() => ctx.needsCompaction || ctx.budgetStop),
               Stream.runDrain,
             )
           }).pipe(
