@@ -6,6 +6,7 @@ import { type Accessor, createEffect, createMemo, createResource, onCleanup, typ
 import { useLanguage } from "@/context/language"
 import { LocalProvider } from "@/context/local"
 import { SDKProvider } from "@/context/sdk"
+import { useServerSDK } from "@/context/server-sdk"
 import { useSync } from "@/context/sync"
 import { decode64 } from "@/utils/base64"
 import { Schema } from "effect"
@@ -24,6 +25,7 @@ export function DirectoryDataProvider(
   const navigate = useNavigate()
   const params = useParams()
   const sync = useSync()
+  const serverSDK = useServerSDK()
   const serverSync = useServerSync()
   const directory = () => (typeof props.directory === "function" ? props.directory() : props.directory)
   const slug = createMemo(() => base64Encode(directory()))
@@ -66,6 +68,14 @@ export function DirectoryDataProvider(
           sessionID={params.id}
           onNavigateToSession={(sessionID: string) => navigate(href(sessionID))}
           onSessionHref={href}
+          onAbortSession={(sessionID: string) => {
+            // Same interrupt path the composer stop button uses; a no-op on
+            // the server when the session is already idle.
+            void serverSDK()
+              .ensureDirSdkContext(directory)
+              .api.session.interrupt({ sessionID })
+              .catch(() => {})
+          }}
         >
           <LocalProvider>{props.children}</LocalProvider>
         </DataProvider>

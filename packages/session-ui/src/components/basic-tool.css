@@ -188,9 +188,63 @@
   [data-component="task-tool-surface"] {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: 8px;
     min-width: 0;
     flex: 1 1 auto;
+  }
+
+  [data-component="task-tool-meta"] {
+    flex-basis: 100%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    padding-left: 24px;
+  }
+
+  [data-component="task-tool-activity"] {
+    flex: 0 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: var(--font-family-sans);
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--text-weak);
+  }
+
+  [data-component="task-tool-duration"] {
+    flex: none;
+    font-family: var(--font-family-sans);
+    font-variant-numeric: tabular-nums;
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--text-weak);
+  }
+
+  [data-component="task-tool-cancel"] {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: 24px;
+    height: 24px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--icon-weak);
+    cursor: pointer;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
+
+    &:hover {
+      background: var(--surface-base-active, rgba(255, 255, 255, 0.06));
+      color: var(--text-strong);
+    }
   }
 
   [data-slot="basic-tool-tool-info-structured"] {
@@ -312,6 +366,23 @@ body[data-new-layout] {
 
     [data-component="session-progress-indicator-v2"] {
       color: var(--task-agent-color, light-dark(var(--v2-text-text-base), #ffffff));
+    }
+
+    [data-component="task-tool-activity"],
+    [data-component="task-tool-duration"] {
+      font-family: var(--v2-font-family-sans, "Inter", sans-serif);
+      letter-spacing: -0.04px;
+      font-variation-settings: "slnt" 0;
+      color: var(--v2-text-text-faint);
+    }
+
+    [data-component="task-tool-cancel"] {
+      color: var(--v2-icon-icon-faint, var(--icon-weak));
+
+      &:hover {
+        background: var(--v2-background-bg-layer-02, var(--surface-base-active, rgba(255, 255, 255, 0.06)));
+        color: var(--v2-text-text-base);
+      }
     }
 
     &:hover,

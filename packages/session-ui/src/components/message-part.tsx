@@ -61,6 +61,8 @@ import { TextShimmer } from "@coderrupee/ui/text-shimmer"
 import { AnimatedCountList } from "./tool-count-summary"
 import { ToolStatusTitle } from "./tool-status-title"
 import { patchFiles } from "./apply-patch-file"
+import { durationParts } from "./duration"
+import { latestTaskActivity } from "./task-activity"
 import { partDefaultOpen } from "./part-default-open"
 import { animate } from "motion"
 import { attached, inline, kind, typeLabel } from "./message-file"
@@ -1460,6 +1462,10 @@ export interface ToolProps {
   sessionID?: string
   output?: string
   status?: string
+  time?: {
+    start: number
+    end?: number
+  }
   hideDetails?: boolean
   defaultOpen?: boolean
   open?: boolean
@@ -1617,6 +1623,7 @@ PART_MAPPING["tool"] = function ToolPartDisplay(props) {
               // @ts-expect-error
               output={part().state.output}
               status={part().state.status}
+              time={(part().state as { time?: { start: number; end?: number } }).time}
               hideDetails={props.hideDetails}
               defaultOpen={props.defaultOpen}
               open={controlledOpen()}
@@ -2000,6 +2007,37 @@ ToolRegistry.register({
     })
     const running = createMemo(() => props.status === "pending" || props.status === "running")
 
+    // Live child-session activity: the newest child tool label while the
+    // subagent session runs, elapsed duration once it completes. Child
+    // messages and parts reach the shared store through the existing sync
+    // layer; when the child has not been synced the lines simply stay absent.
+    const childActivity = createMemo(() => {
+      if (!running()) return
+      const id = childSessionId()
+      if (!id) return
+      const messages = data.store.message[id]
+      if (!messages?.length) return
+      return latestTaskActivity(messages, (messageID) => data.store.part[messageID], (part) => {
+        if (part.type !== "tool" || part.tool === "todowrite") return
+        return getToolInfo(part.tool, part.state.input, "metadata" in part.state ? part.state.metadata : undefined)
+          .title
+      })
+    })
+    const duration = createMemo(() => {
+      if (props.status !== "completed") return
+      const time = props.time
+      if (!time || typeof time.start !== "number" || typeof time.end !== "number") return
+      const parts = durationParts(time.end - time.start)
+      const numfmt = new Intl.NumberFormat(i18n.locale())
+      return parts.kind === "seconds"
+        ? i18n.t("ui.message.duration.seconds", { count: numfmt.format(parts.count) })
+        : i18n.t("ui.message.duration.minutesSeconds", {
+            minutes: numfmt.format(parts.minutes),
+            seconds: numfmt.format(parts.seconds),
+          })
+    })
+    const cancelable = createMemo(() => running() && !!childSessionId() && !!data.abortSession)
+
     const href = createMemo(() => sessionLink(childSessionId(), data.sessionHref))
     const clickable = createMemo(() => !!(childSessionId() && (data.navigateToSession || href())))
 
@@ -2057,6 +2095,36 @@ ToolRegistry.register({
               </Show>
             </div>
           </div>
+          <Show when={childActivity() || duration()}>
+            <div data-component="task-tool-meta">
+              <Show when={childActivity()}>
+                {(activity) => <span data-component="task-tool-activity">{activity()}</span>}
+              </Show>
+              <Show when={duration()}>
+                {(value) => <span data-component="task-tool-duration">{value()}</span>}
+              </Show>
+            </div>
+          </Show>
+          <Show when={cancelable()}>
+            <button
+              type="button"
+              data-component="task-tool-cancel"
+              aria-label={i18n.t("ui.common.cancel")}
+              onClick={(event) => {
+                event.preventDefault()
+                event.stopPropagation()
+                const id = childSessionId()
+                if (id) data.abortSession?.(id)
+              }}
+              onKeyDown={(event) => {
+                // Keep Enter/Space from bubbling to the card's link trigger.
+                if (event.key !== "Enter" && event.key !== " ") return
+                event.stopPropagation()
+              }}
+            >
+              <Icon name="stop" size="small" />
+            </button>
+          </Show>
         </div>
         <Show when={clickable()}>
           <div data-component="task-tool-action">

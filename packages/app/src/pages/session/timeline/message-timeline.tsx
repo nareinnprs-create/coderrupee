@@ -856,6 +856,35 @@ export function MessageTimeline(props: {
     ),
   )
 
+  // Subagent task cards show live child activity, so pull each running child
+  // session's messages and parts through the existing sync layer. Child part
+  // and status updates then stream in through the shared event store.
+  const taskChildSessions = createMemo(() => {
+    const id = sessionID()
+    if (!id) return []
+    const result: { sessionID: string; running: boolean }[] = []
+    for (const message of sessionMessages()) {
+      for (const part of getMsgParts(message.id)) {
+        if (part.type !== "tool" || part.tool !== "task") continue
+        const metadata = "metadata" in part.state ? part.state.metadata : undefined
+        const childID = metadata?.sessionId
+        if (typeof childID !== "string" || !childID) continue
+        result.push({
+          sessionID: childID,
+          running: part.state.status === "pending" || part.state.status === "running",
+        })
+      }
+    }
+    return result
+  })
+
+  createEffect(() => {
+    for (const task of taskChildSessions()) {
+      if (!task.running) continue
+      void sync().session.sync(task.sessionID).catch(() => {})
+    }
+  })
+
   const openTitleEditor = () => {
     if (!sessionID() || parentID()) return
     setTitle({ editing: true, draft: titleLabel() ?? "" })
