@@ -4,7 +4,7 @@ import { useKV } from "../../context/kv"
 import { useLocal } from "../../context/local"
 import { useSync } from "../../context/sync"
 import { useTheme } from "../../context/theme"
-import { branchLabel, contextUsage, costLabel, modelLabel } from "../../util/status-bar"
+import { branchLabel, contextUsage, costBudget, costLabel, costWarned, modelLabel } from "../../util/status-bar"
 
 export function StatusBar(props: { sessionID: string }) {
   const sync = useSync()
@@ -23,7 +23,13 @@ export function StatusBar(props: { sessionID: string }) {
       .context
     return contextUsage(message.tokens, limit)
   })
-  const cost = createMemo(() => costLabel(sync.session.get(props.sessionID)?.cost))
+  const sessionCost = createMemo(() => sync.session.get(props.sessionID)?.cost)
+  const budget = createMemo(() => costBudget(sync.data.config))
+  const cost = createMemo(() => {
+    const label = costLabel(sessionCost())
+    if (!label) return
+    return costWarned(sessionCost(), budget()) ? `${label} ▲` : label
+  })
   const branch = createMemo(() => branchLabel(sync.data.vcs?.branch))
 
   const segments = createMemo(() =>

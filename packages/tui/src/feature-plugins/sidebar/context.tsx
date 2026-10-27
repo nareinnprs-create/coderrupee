@@ -2,6 +2,7 @@ import type { AssistantMessage } from "@coderrupee/sdk/v2"
 import type { TuiPlugin, TuiPluginApi } from "@coderrupee/plugin/tui"
 import type { BuiltinTuiPlugin } from "../builtins"
 import { createMemo } from "solid-js"
+import { costBudget, costWarned } from "../../util/status-bar"
 
 const id = "internal:sidebar-context"
 
@@ -15,6 +16,8 @@ function View(props: { api: TuiPluginApi; session_id: string }) {
   const msg = createMemo(() => props.api.state.session.messages(props.session_id))
   const session = createMemo(() => props.api.state.session.get(props.session_id))
   const cost = createMemo(() => session()?.cost ?? 0)
+  const budget = createMemo(() => costBudget(props.api.state.config))
+  const costColor = createMemo(() => (costWarned(session()?.cost, budget()) ? theme().warning : theme().textMuted))
 
   const state = createMemo(() => {
     const last = msg().findLast((item): item is AssistantMessage => item.role === "assistant" && item.tokens.output > 0)
@@ -41,7 +44,7 @@ function View(props: { api: TuiPluginApi; session_id: string }) {
       </text>
       <text fg={theme().textMuted}>{state().tokens.toLocaleString()} tokens</text>
       <text fg={theme().textMuted}>{state().percent ?? 0}% used</text>
-      <text fg={theme().textMuted}>{money.format(cost())} spent</text>
+      <text fg={costColor()}>{money.format(cost())} spent</text>
     </box>
   )
 }

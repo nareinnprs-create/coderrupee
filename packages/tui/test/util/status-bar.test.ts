@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test"
-import { branchLabel, contextUsage, costLabel, modelLabel } from "../../src/util/status-bar"
+import { branchLabel, contextUsage, costBudget, costLabel, costWarned, modelLabel } from "../../src/util/status-bar"
 
 const tokens = (input: number, output: number, reasoning = 0, read = 0, write = 0) => ({
   input,
@@ -54,6 +54,55 @@ describe("util.status-bar", () => {
       expect(costLabel(undefined)).toBeUndefined()
       expect(costLabel(0)).toBeUndefined()
       expect(costLabel(-1)).toBeUndefined()
+    })
+  })
+
+  describe("costBudget", () => {
+    test("reads the budget object from a raw config value", () => {
+      expect(costBudget({ budget: { sessionMaxUsd: 5 } })).toEqual({ sessionMaxUsd: 5 })
+    })
+
+    test("returns undefined without a budget key or a config object", () => {
+      expect(costBudget(undefined)).toBeUndefined()
+      expect(costBudget({})).toBeUndefined()
+      expect(costBudget({ budget: "nope" })).toBeUndefined()
+      expect(costBudget("config")).toBeUndefined()
+    })
+  })
+
+  describe("costWarned", () => {
+    test("false below the default warn threshold", () => {
+      expect(costWarned(0.79, { sessionMaxUsd: 1 })).toBe(false)
+    })
+
+    test("true at exactly the warn threshold (0.8 default)", () => {
+      expect(costWarned(0.8, { sessionMaxUsd: 1 })).toBe(true)
+    })
+
+    test("honors a custom warnAt with the same equality boundary", () => {
+      expect(costWarned(0.49, { sessionMaxUsd: 1, warnAt: 0.5 })).toBe(false)
+      expect(costWarned(0.5, { sessionMaxUsd: 1, warnAt: 0.5 })).toBe(true)
+    })
+
+    test("falls back to the default warnAt for invalid values", () => {
+      expect(costWarned(0.5, { sessionMaxUsd: 1, warnAt: 0 })).toBe(false)
+      expect(costWarned(0.8, { sessionMaxUsd: 1, warnAt: 0 })).toBe(true)
+      expect(costWarned(0.8, { sessionMaxUsd: 1, warnAt: 2 })).toBe(true)
+      expect(costWarned(0.8, { sessionMaxUsd: 1, warnAt: Number.NaN })).toBe(true)
+    })
+
+    test("false without cost or without a usable limit", () => {
+      expect(costWarned(undefined, { sessionMaxUsd: 1 })).toBe(false)
+      expect(costWarned(0, { sessionMaxUsd: 1 })).toBe(false)
+      expect(costWarned(-1, { sessionMaxUsd: 1 })).toBe(false)
+      expect(costWarned(1, undefined)).toBe(false)
+      expect(costWarned(1, {})).toBe(false)
+      expect(costWarned(1, { sessionMaxUsd: 0 })).toBe(false)
+      expect(costWarned(1, { sessionMaxUsd: -5 })).toBe(false)
+    })
+
+    test("true beyond the limit", () => {
+      expect(costWarned(2, { sessionMaxUsd: 1 })).toBe(true)
     })
   })
 
