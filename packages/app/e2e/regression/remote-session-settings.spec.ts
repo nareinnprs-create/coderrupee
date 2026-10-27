@@ -26,7 +26,7 @@ test("session settings use the remote server context", async ({ page }) => {
   await expect(autoAccept).toBeVisible()
   await expect(input).toBeEnabled()
   permissionRequests.length = 0
-  await autoAccept.locator('[data-slot="switch-control"]').click()
+  await autoAccept.locator('[data-slot="switch-v2-control"]').click()
   await expect(input).toBeChecked()
   await expect
     .poll(() =>
@@ -61,7 +61,7 @@ test("auto-accept responds for an unfocused server session", async ({ page }) =>
   await expect(page.getByText(sessionA.title).first()).toBeVisible()
   await page.keyboard.press("Control+,")
   const autoAccept = page.locator(".settings-v2-dialog").locator('[data-action="settings-auto-accept-permissions"]')
-  await autoAccept.locator('[data-slot="switch-control"]').click()
+  await autoAccept.locator('[data-slot="switch-v2-control"]').click()
   await expect(autoAccept.getByRole("switch")).toBeChecked()
   await expect
     .poll(() =>

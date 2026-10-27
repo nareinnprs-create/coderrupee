@@ -1,22 +1,22 @@
-[data-component="dialog-v2"].settings-v2-wsl-dialog [data-slot="dialog-container"] {
+[data-component="dialog-v2"].settings-v2-wsl-dialog [data-slot="dialog-v2-container"] {
   width: 480px;
   max-width: calc(100vw - 32px);
   height: auto;
   align-items: stretch;
 }
 
-[data-component="dialog-v2"].settings-v2-wsl-dialog [data-slot="dialog-content"] {
+[data-component="dialog-v2"].settings-v2-wsl-dialog [data-slot="dialog-v2-content"] {
   align-items: stretch;
   width: 100%;
   overflow: hidden;
 }
 
-[data-component="dialog-v2"].settings-v2-wsl-dialog [data-slot="dialog-header"] {
+[data-component="dialog-v2"].settings-v2-wsl-dialog [data-slot="dialog-v2-header"] {
   align-items: center;
   padding: 24px 16px 0;
 }
 
-[data-component="dialog-v2"].settings-v2-wsl-dialog [data-slot="dialog-body"] {
+[data-component="dialog-v2"].settings-v2-wsl-dialog [data-slot="dialog-v2-body"] {
   display: flex;
   width: 100%;
   min-width: 0;
@@ -37,12 +37,12 @@
   padding: 16px 16px 1px;
 }
 
-[data-component="dialog-v2"].settings-v2-wsl-dialog [data-slot="dialog-footer"] {
+[data-component="dialog-v2"].settings-v2-wsl-dialog [data-slot="dialog-v2-footer"] {
   padding: 0 16px 24px;
   margin-top: 8px;
 }
 
-[data-component="dialog-v2"].settings-v2-wsl-not-installed-dialog [data-slot="dialog-container"] {
+[data-component="dialog-v2"].settings-v2-wsl-not-installed-dialog [data-slot="dialog-v2-container"] {
   width: 480px;
   max-width: calc(100vw - 32px);
   min-height: 264px;
@@ -52,14 +52,14 @@
   border-radius: 10px;
 }
 
-[data-component="dialog-v2"].settings-v2-wsl-not-installed-dialog [data-slot="dialog-content"] {
+[data-component="dialog-v2"].settings-v2-wsl-not-installed-dialog [data-slot="dialog-v2-content"] {
   align-items: stretch;
   min-height: 264px;
   border-radius: 10px;
   overflow: hidden;
 }
 
-[data-component="dialog-v2"].settings-v2-wsl-not-installed-dialog [data-slot="dialog-body"] {
+[data-component="dialog-v2"].settings-v2-wsl-not-installed-dialog [data-slot="dialog-v2-body"] {
   display: flex;
   flex: 1;
   flex-direction: column;

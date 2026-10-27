@@ -19,9 +19,9 @@ export function DiffChanges(props: {
 
   return (
     <Show when={total() > 0}>
-      <div data-component="diff-changes" classList={{ [props.class ?? ""]: true }}>
-        <span data-slot="diff-changes-additions">{`+${additions()}`}</span>
-        <span data-slot="diff-changes-deletions">{`-${deletions()}`}</span>
+      <div data-component="diff-changes-v2" classList={{ [props.class ?? ""]: true }}>
+        <span data-slot="diff-changes-v2-additions">{`+${additions()}`}</span>
+        <span data-slot="diff-changes-v2-deletions">{`-${deletions()}`}</span>
       </div>
     </Show>
   )

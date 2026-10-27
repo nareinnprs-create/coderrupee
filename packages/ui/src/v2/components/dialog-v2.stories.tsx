@@ -17,7 +17,7 @@ Compose with \`DialogHeader\`, \`DialogTitle\`, \`DialogTitleGroup\`, \`DialogBo
 - Focus trapping and aria attributes provided by Kobalte Dialog.
 
 ### Theming/tokens
-- Uses \`data-component="dialog-v2"\` and slot attributes.
+- Uses \`data-component="dialog-v2"\` and \`dialog-v2-*\` slot attributes.
 `
 
 export default {

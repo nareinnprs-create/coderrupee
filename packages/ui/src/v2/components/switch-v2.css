@@ -1,11 +1,11 @@
-[data-component="switch"] {
+[data-component="switch-v2"] {
   position: relative;
   display: flex;
   align-items: center;
   gap: 8px;
   cursor: default;
 
-  [data-slot="switch-input"] {
+  [data-slot="switch-v2-input"] {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -17,7 +17,7 @@
     border-width: 0;
   }
 
-  [data-slot="switch-control"] {
+  [data-slot="switch-v2-control"] {
     box-sizing: border-box;
     display: inline-flex;
     justify-content: flex-start;
@@ -38,7 +38,7 @@
       outline-color 90ms ease-out;
   }
 
-  [data-slot="switch-thumb"] {
+  [data-slot="switch-v2-thumb"] {
     box-sizing: border-box;
     width: 12px;
     height: 12px;
@@ -60,7 +60,7 @@
       background 90ms;
   }
 
-  [data-slot="switch-label"] {
+  [data-slot="switch-v2-label"] {
     display: inline-flex;
     align-items: center;
     height: 16px;
@@ -74,7 +74,7 @@
     font-variation-settings: "slnt" 0;
   }
 
-  [data-slot="switch-error"] {
+  [data-slot="switch-v2-error"] {
     color: var(--v2-state-fg-danger);
     font-size: 12px;
     font-weight: var(--font-weight-regular);
@@ -82,34 +82,34 @@
     letter-spacing: var(--letter-spacing-normal);
   }
 
-  [data-slot="switch-error"]:empty {
+  [data-slot="switch-v2-error"]:empty {
     display: none;
   }
 
-  &:hover:not([data-disabled], [data-readonly]) [data-slot="switch-control"] {
+  &:hover:not([data-disabled], [data-readonly]) [data-slot="switch-v2-control"] {
     background:
       linear-gradient(0deg, var(--v2-overlay-simple-overlay-hover), var(--v2-overlay-simple-overlay-hover)),
       linear-gradient(180deg, var(--v2-alpha-light-0) 0%, var(--v2-alpha-light-20) 100%),
       var(--v2-background-bg-layer-04);
   }
 
-  &:hover:not([data-disabled], [data-readonly]) [data-slot="switch-thumb"] {
+  &:hover:not([data-disabled], [data-readonly]) [data-slot="switch-v2-thumb"] {
     width: 13px;
     border-radius: 3px;
   }
 
-  &:not([data-readonly]) [data-slot="switch-input"]:focus-visible ~ [data-slot="switch-control"] {
+  &:not([data-readonly]) [data-slot="switch-v2-input"]:focus-visible ~ [data-slot="switch-v2-control"] {
     outline: 2px solid var(--v2-border-border-focus);
     outline-offset: 1px;
   }
 
-  &[data-checked] [data-slot="switch-control"] {
+  &[data-checked] [data-slot="switch-v2-control"] {
     background:
       linear-gradient(180deg, var(--v2-alpha-light-0) 0%, var(--v2-alpha-light-10) 100%), var(--v2-background-bg-accent);
     box-shadow: var(--v2-elevation-switch-on);
   }
 
-  &[data-checked] [data-slot="switch-thumb"] {
+  &[data-checked] [data-slot="switch-v2-thumb"] {
     transform: translateX(8px);
     border-radius: 2px;
     background:
@@ -121,11 +121,11 @@
       var(--v2-grey-300);
   }
 
-  &:dir(rtl)[data-checked] [data-slot="switch-thumb"] {
+  &:dir(rtl)[data-checked] [data-slot="switch-v2-thumb"] {
     transform: translateX(-8px);
   }
 
-  &[data-checked]:hover:not([data-disabled], [data-readonly]) [data-slot="switch-control"] {
+  &[data-checked]:hover:not([data-disabled], [data-readonly]) [data-slot="switch-v2-control"] {
     background:
       linear-gradient(
         0deg,
@@ -135,11 +135,11 @@
       linear-gradient(180deg, var(--v2-alpha-light-0) 0%, var(--v2-alpha-light-10) 100%), var(--v2-background-bg-accent);
   }
 
-  &[data-checked]:hover:not([data-disabled], [data-readonly]) [data-slot="switch-thumb"] {
+  &[data-checked]:hover:not([data-disabled], [data-readonly]) [data-slot="switch-v2-thumb"] {
     transform: translateX(7px);
   }
 
-  &:dir(rtl)[data-checked]:hover:not([data-disabled], [data-readonly]) [data-slot="switch-thumb"] {
+  &:dir(rtl)[data-checked]:hover:not([data-disabled], [data-readonly]) [data-slot="switch-v2-thumb"] {
     transform: translateX(-7px);
   }
 
@@ -147,11 +147,11 @@
     cursor: not-allowed;
   }
 
-  &[data-disabled] [data-slot="switch-control"] {
+  &[data-disabled] [data-slot="switch-v2-control"] {
     opacity: 0.5;
   }
 
-  &[data-invalid] [data-slot="switch-control"] {
+  &[data-invalid] [data-slot="switch-v2-control"] {
     border-color: var(--v2-state-border-danger);
   }
 

@@ -361,7 +361,7 @@
     background-color: var(--v2-background-bg-base);
   }
 
-  [data-component="diff-changes"] {
+  [data-component="diff-changes-v2"] {
     position: relative;
     z-index: 1;
   }

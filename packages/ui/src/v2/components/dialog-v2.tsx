@@ -23,20 +23,20 @@ export interface DialogTitleGroupProps {
 }
 
 export function DialogFooter(props: ParentProps) {
-  return <div data-slot="dialog-footer">{props.children}</div>
+  return <div data-slot="dialog-v2-footer">{props.children}</div>
 }
 
 export function DialogBody(props: ParentProps & { class?: ComponentProps<"div">["class"] }) {
   const [local] = splitProps(props, ["class", "children"])
   return (
-    <div data-slot="dialog-body" class={local.class}>
+    <div data-slot="dialog-v2-body" class={local.class}>
       {local.children}
     </div>
   )
 }
 
 export function DialogTitle(props: ParentProps) {
-  return <Kobalte.Title data-slot="dialog-header-title">{props.children}</Kobalte.Title>
+  return <Kobalte.Title data-slot="dialog-v2-header-title">{props.children}</Kobalte.Title>
 }
 
 export function DialogTitleGroup(props: DialogTitleGroupProps) {
@@ -44,9 +44,9 @@ export function DialogTitleGroup(props: DialogTitleGroupProps) {
   const description = children(() => props.description)
 
   return (
-    <div data-slot="dialog-title-group">
-      <Show when={title()}>{(t) => <Kobalte.Title data-slot="dialog-title">{t()}</Kobalte.Title>}</Show>
-      <Kobalte.Description data-slot="dialog-description">{description()}</Kobalte.Description>
+    <div data-slot="dialog-v2-title-group">
+      <Show when={title()}>{(t) => <Kobalte.Title data-slot="dialog-v2-title">{t()}</Kobalte.Title>}</Show>
+      <Kobalte.Description data-slot="dialog-v2-description">{description()}</Kobalte.Description>
     </div>
   )
 }
@@ -57,10 +57,10 @@ export function DialogHeader(props: DialogHeaderProps) {
   const hideClose = () => local.hideClose === true
 
   return (
-    <div data-slot="dialog-header" data-hide-close={hideClose() ? "" : undefined}>
+    <div data-slot="dialog-v2-header" data-hide-close={hideClose() ? "" : undefined}>
       {local.children}
       {!hideClose() && (
-        <Kobalte.CloseButton data-slot="dialog-close-button" aria-label={local.closeLabel ?? i18n.t("ui.common.close")}>
+        <Kobalte.CloseButton data-slot="dialog-v2-close-button" aria-label={local.closeLabel ?? i18n.t("ui.common.close")}>
           <svg
             width="16"
             height="16"
@@ -91,9 +91,9 @@ export function Dialog(props: DialogProps) {
       data-fit={local.fit ? true : undefined}
       data-size={local.size || "normal"}
     >
-      <div data-slot="dialog-container" class={local.containerClass}>
+      <div data-slot="dialog-v2-container" class={local.containerClass}>
         <Kobalte.Content
-          data-slot="dialog-content"
+          data-slot="dialog-v2-content"
           classList={{
             ...local.classList,
             [local.class ?? ""]: !!local.class,

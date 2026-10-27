@@ -8,7 +8,7 @@
   align-items: flex-start;
 }
 
-[data-component="dialog-v2"]:has(.command-palette-v2) [data-slot="dialog-container"] {
+[data-component="dialog-v2"]:has(.command-palette-v2) [data-slot="dialog-v2-container"] {
   width: min(calc(100vw - 24px), 640px);
   height: auto;
   min-height: 280px;

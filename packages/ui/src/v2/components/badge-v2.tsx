@@ -10,7 +10,7 @@ export function Tag(props: TagProps) {
   return (
     <span
       {...rest}
-      data-component="tag"
+      data-component="tag-v2"
       data-variant={split.variant ?? "neutral"}
       classList={{
         ...split.classList,

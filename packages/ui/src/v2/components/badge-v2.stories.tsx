@@ -22,7 +22,7 @@ Use alongside headings or lists for quick metadata.
 - Ensure text conveys meaning; avoid color-only distinction.
 
 ### Theming/tokens
-- Uses \`data-component="tag"\`.
+- Uses \`data-component="tag-v2"\`.
 
 `
 
