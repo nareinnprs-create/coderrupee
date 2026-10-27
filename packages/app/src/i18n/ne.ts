@@ -78,7 +78,7 @@ export const dict: Record<string, string> = {
   "desktop.wsl.error.installDistro": "डिस्ट्रो स्थापना गर्न असफल: {{distro}}",
   "desktop.wsl.error.installCoderrupee": "CoderRupee स्थापना असफल भयो",
   "desktop.wsl.error.alreadyAdded": "{{distro}} पहिले नै थपिएको छ",
-  "desktop.wsl.error.coderrupeeMissing": "Opencode यस distro मा स्थापित छैन",
+  "desktop.wsl.error.coderrupeeMissing": "CoderRupee यस distro मा स्थापित छैन",
   "desktop.wsl.error.coderrupeeCannotRun": "coderrupee स्थापित छ तर चलाउन सकिएन",
   "desktop.wsl.error.coderrupeeNotInstalled": "CoderRupee {{distro}} मा स्थापित छैन",
   "desktop.wsl.error.updateVersion":

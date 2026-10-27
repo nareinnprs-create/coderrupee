@@ -78,8 +78,8 @@ export const dict = {
   "desktop.wsl.error.installDistro": "Instalimi i shpërndarjes dështoi: {{distro}}",
   "desktop.wsl.error.installCoderrupee": "Instalimi i CoderRupee dështoi",
   "desktop.wsl.error.alreadyAdded": "{{distro}} është shtuar tashmë",
-  "desktop.wsl.error.coderrupeeMissing": "Opencode nuk është i instaluar në këtë shpërndarje",
-  "desktop.wsl.error.coderrupeeCannotRun": "Opencode është instaluar por nuk mund të ekzekutohet",
+  "desktop.wsl.error.coderrupeeMissing": "CoderRupee nuk është i instaluar në këtë shpërndarje",
+  "desktop.wsl.error.coderrupeeCannotRun": "CoderRupee është instaluar por nuk mund të ekzekutohet",
   "desktop.wsl.error.coderrupeeNotInstalled": "CoderRupee nuk është i instaluar në {{distro}}",
   "desktop.wsl.error.updateVersion":
     "Përditësimi i CoderRupee përfundoi, por {{distro}} ende raporton {{installed}}; pritet {{expected}}",

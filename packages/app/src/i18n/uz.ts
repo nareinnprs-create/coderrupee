@@ -78,7 +78,7 @@ export const dict = {
   "desktop.wsl.error.installDistro": "Distroni oʻrnatib boʻlmadi: {{distro}}",
   "desktop.wsl.error.installCoderrupee": "CoderRupee oʻrnatilmadi",
   "desktop.wsl.error.alreadyAdded": "{{distro}} allaqachon qo'shilgan",
-  "desktop.wsl.error.coderrupeeMissing": "Opencode ushbu tarqatishda o'rnatilmagan",
+  "desktop.wsl.error.coderrupeeMissing": "CoderRupee ushbu tarqatishda o'rnatilmagan",
   "desktop.wsl.error.coderrupeeCannotRun": "coderrupee o'rnatilgan, lekin ishga tushirilmadi",
   "desktop.wsl.error.coderrupeeNotInstalled": "CoderRupee {{distro}} da o'rnatilmagan",
   "desktop.wsl.error.updateVersion":
