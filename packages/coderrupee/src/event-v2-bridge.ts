@@ -1,4 +1,4 @@
-// Opencode publish boundary for core events. Attach routed instance location
+// Coderrupee publish boundary for core events. Attach routed instance location
 // so direct EventV2 consumers can isolate directory/workspace streams.
 import { LayerNode } from "@coderrupee/core/effect/layer-node"
 import { InstanceRef, WorkspaceRef } from "@/effect/instance-ref"

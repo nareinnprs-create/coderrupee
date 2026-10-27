@@ -10,7 +10,7 @@
 /** @jsxImportSource @opentui/solid */
 import { useTerminalDimensions } from "@opentui/solid"
 import { For, Match, Show, Switch, createEffect, createMemo, createSignal, onCleanup } from "solid-js"
-import { registerOpencodeSpinner } from "@coderrupee/tui/component/register-spinner"
+import { registerCoderrupeeSpinner } from "@coderrupee/tui/component/register-spinner"
 import { createColors, createFrames } from "@coderrupee/tui/ui/spinner"
 import {
   RUN_SUBAGENT_PANEL_ROWS,
@@ -56,7 +56,7 @@ import type {
 import type { RunTheme } from "./theme"
 import { modelInfo } from "./variant.shared"
 
-registerOpencodeSpinner()
+registerCoderrupeeSpinner()
 
 const EMPTY_BORDER = {
   topLeft: "",

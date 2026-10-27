@@ -30,7 +30,7 @@ const tools: readonly ToolFixture[] = [
   {
     icon: "✱",
     label:
-      'Grep "OPENCODE.*DB|database|sqlite|drizzle|dev.*db|data.*dir|xdg|APPDATA" in packages/coderrupee/src (151 matches)',
+      'Grep "CODERRUPEE.*DB|database|sqlite|drizzle|dev.*db|data.*dir|xdg|APPDATA" in packages/coderrupee/src (151 matches)',
   },
   {
     icon: "✱",
