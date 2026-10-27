@@ -40,8 +40,12 @@ import { DialogFooter, DialogHeader, DialogTitleGroup, DialogV2 } from "@coderru
 import { InlineInput } from "@coderrupee/ui/inline-input"
 import { ButtonV2 } from "@coderrupee/ui/v2/button-v2"
 import { SessionRetry } from "@coderrupee/session-ui/session-retry"
+import { Markdown } from "@coderrupee/session-ui/markdown"
+import { readPartText } from "@coderrupee/session-ui/message-part-text"
+import { durationParts } from "@coderrupee/session-ui/duration"
 import { isScrollKeyTarget, scrollKey, scrollKeyOwner, ScrollView } from "@coderrupee/ui/scroll-view"
 import { StickyAccordionHeader } from "@coderrupee/ui/sticky-accordion-header"
+import { Spinner } from "@coderrupee/ui/spinner"
 import { TextField } from "@coderrupee/ui/text-field"
 import { TextReveal } from "@coderrupee/ui/text-reveal"
 import { TextShimmer } from "@coderrupee/ui/text-shimmer"
@@ -49,6 +53,7 @@ import type {
   AssistantMessage,
   Message as MessageType,
   Part as PartType,
+  ReasoningPart,
   ToolPart,
   UserMessage,
 } from "@coderrupee/sdk/v2"
@@ -75,6 +80,7 @@ import { sessionTitle } from "@/utils/session-title"
 import { scheduleConnectedMeasure } from "./measure"
 import { observeElementOffsetReconnectAware } from "./observe-element-offset"
 import { createTimelineProjection } from "./projection"
+import { reasoningContent, reasoningExpanded } from "./reasoning-collapse"
 import { MessageComment, SummaryDiff, TimelineRow, TimelineRowMap } from "./rows"
 import { filterVirtualIndexes } from "./virtual-items"
 
@@ -129,16 +135,102 @@ const markBoundaryGesture = (input: {
   }
 }
 
-function TimelineThinkingRow(props: { reasoningHeading?: string; showReasoningSummaries: boolean }) {
+function TimelineThinkingRow(props: {
+  reasoningHeading?: string
+  showReasoningSummaries: boolean
+  part: Accessor<ReasoningPart | undefined>
+  content: Accessor<string>
+  streaming: Accessor<boolean>
+  open: Accessor<boolean>
+  onToggle: (open: boolean) => void
+}) {
   const language = useLanguage()
 
+  // A busy turn with no reasoning text yet is a transient indicator, not a
+  // collapsible block, so it keeps the shimmer presentation.
+  const duration = createMemo(() => {
+    const part = props.part()
+    if (!part) return
+    const end = part.time.end
+    if (end === undefined) return
+    const parts = durationParts(end - part.time.start)
+    const numfmt = new Intl.NumberFormat(language.intl())
+    return parts.kind === "seconds"
+      ? language.t("ui.message.duration.seconds", { count: numfmt.format(parts.count) })
+      : language.t("ui.message.duration.minutesSeconds", {
+          minutes: numfmt.format(parts.minutes),
+          seconds: numfmt.format(parts.seconds),
+        })
+  })
+
   return (
-    <div data-slot="session-turn-thinking">
-      <TextShimmer text={language.t("ui.sessionTurn.status.thinking")} />
-      <Show when={!props.showReasoningSummaries}>
-        <TextReveal text={props.reasoningHeading} class="session-turn-thinking-heading" travel={25} duration={700} />
-      </Show>
-    </div>
+    <Show
+      when={props.part()}
+      fallback={
+        <div data-slot="session-turn-thinking">
+          <TextShimmer text={language.t("ui.sessionTurn.status.thinking")} />
+          <Show when={!props.showReasoningSummaries}>
+            <TextReveal text={props.reasoningHeading} class="session-turn-thinking-heading" travel={25} duration={700} />
+          </Show>
+        </div>
+      }
+    >
+      {(part) => (
+        <div data-slot="session-turn-thinking-block" data-open={props.open() ? "" : undefined}>
+          <button
+            type="button"
+            data-slot="session-turn-thinking-trigger"
+            aria-expanded={props.open()}
+            class="flex w-full min-w-0 items-center gap-2 min-h-5 cursor-pointer border-none bg-transparent p-0 text-left text-13-medium text-text-weak"
+            onClick={() => props.onToggle(!props.open())}
+          >
+            <Show when={props.streaming()} fallback={<Icon name="brain" size="small" class="shrink-0" />}>
+              <Spinner class="size-4 shrink-0" />
+            </Show>
+            <span data-slot="session-turn-thinking-label" class="min-w-0 flex-1 truncate">
+              {props.reasoningHeading || language.t("ui.sessionTurn.status.thinking")}
+            </span>
+            <Show when={duration()}>
+              {(duration) => (
+                <span data-slot="session-turn-thinking-duration" class="shrink-0 text-12-regular text-text-faint">
+                  {duration()}
+                </span>
+              )}
+            </Show>
+            <span
+              data-slot="session-turn-thinking-chevron"
+              class="shrink-0 transition-transform duration-200 motion-reduce:transition-none"
+              classList={{ "rotate-180": props.open() }}
+            >
+              <Icon name="chevron-down" size="small" />
+            </span>
+          </button>
+          <div
+            data-slot="session-turn-thinking-content"
+            class="grid transition-[grid-template-rows,opacity] duration-200 ease-out motion-reduce:transition-none"
+            classList={{
+              "grid-rows-[1fr] opacity-100": props.open(),
+              "grid-rows-[0fr] opacity-0": !props.open(),
+            }}
+          >
+            <div class="min-h-0 overflow-hidden">
+              <Show when={props.open() || props.streaming()}>
+                <Show when={props.content()} keyed>
+                  {(content) => (
+                    <Markdown
+                      text={content}
+                      class="session-turn-thinking-body pt-1 text-14-regular text-text-weak"
+                      streaming={props.streaming()}
+                      cacheKey={part().id}
+                    />
+                  )}
+                </Show>
+              </Show>
+            </div>
+          </div>
+        </div>
+      )}
+    </Show>
   )
 }
 
@@ -409,6 +501,9 @@ export function MessageTimeline(props: {
   }
 
   const [toolOpen, setToolOpen] = createStore<Record<string, boolean | undefined>>(cached?.toolOpen ?? {})
+  // Per-message expand overrides for collapsed reasoning blocks. In-memory only:
+  // streaming blocks default to expanded and completed blocks to collapsed.
+  const [reasoningOpen, setReasoningOpen] = createStore<Record<string, boolean | undefined>>({})
   const [renderOverscan, setRenderOverscan] = createSignal(initialMeasurements?.length || coldBottomMount ? 6 : 20)
   let resizePinnedIndexes: number[] = []
   let resizePinFrame: number | undefined
@@ -1161,12 +1256,43 @@ export function MessageTimeline(props: {
       }
       case "Thinking": {
         const thinkingRow = row as Accessor<TimelineRowByTag<"Thinking">>
+        const part = createMemo(() => {
+          const messageID = thinkingRow().messageID
+          const partID = thinkingRow().partID
+          if (!messageID || !partID) return
+          const found = getMsgPart(messageID, partID)
+          if (found?.type !== "reasoning") return
+          return found
+        })
+        // Reasoning is finalized when the server stamps `time.end`; until then
+        // the block stays expanded unless the turn itself finished (interrupt).
+        const streaming = createMemo(() => {
+          const found = part()
+          if (!found) return true
+          if (found.time.end !== undefined) return false
+          const message = messageByID().get(found.messageID)
+          return message?.role === "assistant" && typeof message.time.completed !== "number"
+        })
+        const content = createMemo(() => {
+          const found = part()
+          if (!found) return ""
+          return reasoningContent(readPartText(sync().data.part_text_accum_delta, found))
+        })
+        const open = createMemo(() => reasoningExpanded(part() ? reasoningOpen[part()!.id] : undefined, streaming()))
         return (
           <TimelineRowFrame row={thinkingRow}>
             <div data-slot="session-turn-message-container" class="w-full px-4 md:px-5">
               <TimelineThinkingRow
                 reasoningHeading={thinkingRow().reasoningHeading}
                 showReasoningSummaries={settings.general.showReasoningSummaries()}
+                part={part}
+                content={content}
+                streaming={streaming}
+                open={open}
+                onToggle={(next) => {
+                  const partID = part()?.id
+                  if (partID) setReasoningOpen(partID, next)
+                }}
               />
             </div>
           </TimelineRowFrame>

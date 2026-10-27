@@ -122,27 +122,41 @@ export namespace Timeline {
 
     const assistantPartRefs = assistantMessages.flatMap((message, messageIndex) =>
       getMessageParts(message.id)
-        .filter((part) => renderable(part, showReasoning))
+        .filter((part) => (part.type === "reasoning" ? !!part.text?.trim() : renderable(part, showReasoning)))
         .map((part) => ({ messageID: message.id, messageIndex, part })),
     )
-    const assistantItems =
+    type AssistantItem =
+      | { type: "part"; group: PartGroup }
+      | { type: "reasoning"; ref: (typeof assistantPartRefs)[number] }
+      | { type: "interrupted" }
+    // With reasoning summaries hidden, reasoning blocks become collapsed rows
+    // interleaved with the grouped tool/text parts instead of being dropped.
+    const toItems = (refs: typeof assistantPartRefs): AssistantItem[] => {
+      const items: AssistantItem[] = []
+      let buffered: typeof refs = []
+      const flush = () => {
+        for (const group of groupParts(buffered)) items.push({ type: "part", group })
+        buffered = []
+      }
+      for (const ref of refs) {
+        if (!showReasoning && ref.part.type === "reasoning") {
+          flush()
+          items.push({ type: "reasoning", ref })
+          continue
+        }
+        buffered.push(ref)
+      }
+      flush()
+      return items
+    }
+    const assistantItems: AssistantItem[] =
       interrupted && !compaction
         ? [
-            ...groupParts(assistantPartRefs.filter((ref) => ref.messageIndex <= interruptedMessageIndex)).map(
-              (group) => ({
-                type: "part" as const,
-                group,
-              }),
-            ),
-            { type: "interrupted" as const },
-            ...groupParts(assistantPartRefs.filter((ref) => ref.messageIndex > interruptedMessageIndex)).map(
-              (group) => ({
-                type: "part" as const,
-                group,
-              }),
-            ),
+            ...toItems(assistantPartRefs.filter((ref) => ref.messageIndex <= interruptedMessageIndex)),
+            { type: "interrupted" },
+            ...toItems(assistantPartRefs.filter((ref) => ref.messageIndex > interruptedMessageIndex)),
           ]
-        : groupParts(assistantPartRefs).map((group) => ({ type: "part" as const, group }))
+        : toItems(assistantPartRefs)
     if (previousUserMessage) rows.push(new TimelineRow.TurnGap({ userMessageID: userMessage.id }))
 
     if (comments.length > 0 && !inlineComments)
@@ -180,6 +194,19 @@ export namespace Timeline {
         return
       }
 
+      if (item.type === "reasoning") {
+        const part = item.ref.part
+        rows.push(
+          new TimelineRow.Thinking({
+            userMessageID: userMessage.id,
+            reasoningHeading: part.type === "reasoning" ? reasoningHeading(part.text) : undefined,
+            messageID: item.ref.messageID,
+            partID: item.ref.part.id,
+          }),
+        )
+        return
+      }
+
       rows.push(
         new TimelineRow.AssistantPart({
           userMessageID: userMessage.id,
@@ -190,7 +217,13 @@ export namespace Timeline {
       assistantGroupIndex += 1
     })
 
-    if (isActive && status === "busy" && !error && (showReasoning ? assistantPartRefs.length === 0 : true)) {
+    const hasReasoningRows = assistantItems.some((item) => item.type === "reasoning")
+    if (
+      isActive &&
+      status === "busy" &&
+      !error &&
+      (showReasoning ? assistantPartRefs.length === 0 : !hasReasoningRows)
+    ) {
       const heading = assistantMessages
         .flatMap((message) => getMessageParts(message.id))
         .map((part) => (part.type === "reasoning" && part.text ? reasoningHeading(part.text) : undefined))

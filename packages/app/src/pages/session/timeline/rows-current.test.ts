@@ -204,4 +204,103 @@ describe("current session timeline rows", () => {
 
     expect(result.rows.map((row) => row._tag)).toEqual(["UserMessage", "AssistantPart"])
   })
+
+  test("interleaves collapsed reasoning rows between part groups when summaries are hidden", () => {
+    const source = [
+      { id: "msg_1", type: "user", text: "plan", time: { created: 1 } },
+      {
+        id: "msg_2",
+        type: "assistant",
+        agent: "build",
+        model: { id: "model", providerID: "provider" },
+        content: [
+          { type: "reasoning", text: "# Reading the layout\nDetails", time: { created: 2, completed: 3 } },
+          { type: "text", text: "answer" },
+        ],
+        time: { created: 4, completed: 5 },
+      },
+    ] satisfies SessionMessageInfo[]
+    const normalized = normalizeSessionMessages("ses_1", source)
+    const messages = new Map(normalized.messages.map((message) => [message.id, message]))
+    const partsOf = (messageID: string) => normalized.parts.get(messageID) ?? []
+    const users = normalized.messages.filter((message) => message.role === "user")
+
+    const hidden = Timeline.constructSessionMessageRows(source, (messageID) => messages.get(messageID), partsOf, false, "idle", false, users)
+
+    expect(hidden.rows.map(TimelineRow.key)).toEqual([
+      "user-message:msg_1",
+      "thinking:msg_1:msg_2:reasoning:0",
+      "assistant-part:msg_1:msg_2:text:0",
+    ])
+    const thinking = hidden.rows[1]
+    expect(thinking?._tag === "Thinking" && thinking.reasoningHeading).toBe("Reading the layout")
+    expect(thinking?._tag === "Thinking" && thinking.messageID).toBe("msg_2")
+    expect(thinking?._tag === "Thinking" && thinking.partID).toBe("msg_2:reasoning:0")
+
+    // With summaries shown, the same reasoning renders inline as a part row.
+    const shown = Timeline.constructSessionMessageRows(source, (messageID) => messages.get(messageID), partsOf, true, "idle", false, users)
+    expect(shown.rows.map(TimelineRow.key)).toEqual([
+      "user-message:msg_1",
+      "assistant-part:msg_1:msg_2:reasoning:0",
+      "assistant-part:msg_1:msg_2:text:0",
+    ])
+  })
+
+  test("keeps a streaming reasoning row bound to its part and drops the busy shimmer row", () => {
+    const source = [
+      { id: "msg_1", type: "user", text: "go", time: { created: 1 } },
+      {
+        id: "msg_2",
+        type: "assistant",
+        agent: "build",
+        model: { id: "model", providerID: "provider" },
+        content: [{ type: "reasoning", text: "thinking it through", time: { created: 2 } }],
+        time: { created: 3 },
+      },
+    ] satisfies SessionMessageInfo[]
+    const normalized = normalizeSessionMessages("ses_1", source)
+    const messages = new Map(normalized.messages.map((message) => [message.id, message]))
+    const users = normalized.messages.filter((message) => message.role === "user")
+
+    const result = Timeline.constructSessionMessageRows(
+      source,
+      (messageID) => messages.get(messageID),
+      (messageID) => normalized.parts.get(messageID) ?? [],
+      false,
+      "busy",
+      false,
+      users,
+    )
+
+    expect(result.rows.map(TimelineRow.key)).toEqual(["user-message:msg_1", "thinking:msg_1:msg_2:reasoning:0"])
+  })
+
+  test("shows the busy shimmer row while a hidden reasoning block has no text yet", () => {
+    const source = [
+      { id: "msg_1", type: "user", text: "go", time: { created: 1 } },
+      {
+        id: "msg_2",
+        type: "assistant",
+        agent: "build",
+        model: { id: "model", providerID: "provider" },
+        content: [{ type: "reasoning", text: "", time: { created: 2 } }],
+        time: { created: 3 },
+      },
+    ] satisfies SessionMessageInfo[]
+    const normalized = normalizeSessionMessages("ses_1", source)
+    const messages = new Map(normalized.messages.map((message) => [message.id, message]))
+    const users = normalized.messages.filter((message) => message.role === "user")
+
+    const result = Timeline.constructSessionMessageRows(
+      source,
+      (messageID) => messages.get(messageID),
+      (messageID) => normalized.parts.get(messageID) ?? [],
+      false,
+      "busy",
+      false,
+      users,
+    )
+
+    expect(result.rows.map(TimelineRow.key)).toEqual(["user-message:msg_1", "thinking:msg_1"])
+  })
 })

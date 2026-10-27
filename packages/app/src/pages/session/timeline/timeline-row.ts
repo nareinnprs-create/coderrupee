@@ -27,6 +27,10 @@ export namespace TimelineRow {
   export class Thinking extends Data.TaggedClass("Thinking")<{
     userMessageID: string
     reasoningHeading?: string
+    // Set when the row is bound to a reasoning part (collapsed-by-default block)
+    // rather than synthesized for a busy turn with no reasoning text yet.
+    messageID?: string
+    partID?: string
   }> {}
   export class DiffSummary extends Data.TaggedClass("DiffSummary")<{
     userMessageID: string
@@ -64,7 +68,9 @@ export namespace TimelineRow {
       case "AssistantPart":
         return `assistant-part:${row.userMessageID}:${row.group.key}`
       case "Thinking":
-        return `thinking:${row.userMessageID}`
+        return row.partID
+          ? `thinking:${row.userMessageID}:${row.partID}`
+          : `thinking:${row.userMessageID}`
       case "DiffSummary":
         return `diff-summary:${row.userMessageID}`
       case "Error":
