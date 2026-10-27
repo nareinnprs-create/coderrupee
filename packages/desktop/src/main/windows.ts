@@ -13,6 +13,7 @@ import { getStore, removeStoreFile } from "./store"
 import { PINCH_ZOOM_ENABLED_KEY, WINDOW_IDS_KEY } from "./store-keys"
 import { createUnresponsiveSampler } from "./unresponsive"
 import { nativeT } from "./native-translations"
+import { cspHeader, resolveCspMode } from "./csp"
 import { createWindowRegistry } from "./window-registry"
 import { safeWindowURL } from "./window-state"
 import { isRendererOriginUrl, rendererHost, rendererProtocol } from "./renderer-origin"
@@ -501,7 +502,13 @@ function isTrustedRendererUrl(value?: string) {
 function addRendererHeaders(value: string, headers: Record<string, any>) {
   upsertKeyValue(headers, "Access-Control-Allow-Origin", ["*"])
   upsertKeyValue(headers, "Access-Control-Allow-Headers", ["*"])
-  if (isRendererUrl(value, true)) upsertKeyValue(headers, documentPolicyHeader, [jsCallStacksDocumentPolicy])
+  if (isRendererUrl(value, true)) {
+    upsertKeyValue(headers, documentPolicyHeader, [jsCallStacksDocumentPolicy])
+    // D10: report-only by default; CODERRUPEE_CSP=enforce flips to the
+    // enforcing header. Vite dev allowances live only in the dev policy.
+    const header = cspHeader(Boolean(process.env.ELECTRON_RENDERER_URL), resolveCspMode(process.env.CODERRUPEE_CSP))
+    upsertKeyValue(headers, header.name, [header.value])
+  }
 }
 
 function isRendererUrl(value?: string, html = false) {
