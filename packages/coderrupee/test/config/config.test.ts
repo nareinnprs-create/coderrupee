@@ -399,6 +399,19 @@ it.effect("updates global config and omits empty shell key in jsonc", () =>
   ),
 )
 
+it.effect("persists the update channel to the global config", () =>
+  withGlobalConfig({ config: { channel: "stable" } }, ({ dir }) =>
+    Effect.gen(function* () {
+      yield* Config.use.updateGlobal({ channel: "beta" })
+
+      const writtenConfig = yield* FSUtil.use.readJson(path.join(dir, "coderrupee.json"))
+      expect(writtenConfig).toMatchObject({ channel: "beta" })
+      const global = yield* Config.use.getGlobal()
+      expect(global.channel).toBe("beta")
+    }),
+  ),
+)
+
 it.effect("logs global update diagnostics once without exposing values", () =>
   withGlobalConfig(
     {

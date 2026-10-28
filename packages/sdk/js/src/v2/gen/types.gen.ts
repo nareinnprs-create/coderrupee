@@ -1947,6 +1947,7 @@ export type Config = {
    * Check for new versions and show an update notice. Updates are never installed automatically; run /update or `coderrupee upgrade`. Set to false to disable update checks. true and 'notify' behave the same
    */
   autoupdate?: boolean | "notify"
+  channel?: "stable" | "beta"
   disabled_providers?: Array<string>
   enabled_providers?: Array<string>
   model?: string

@@ -1,8 +1,10 @@
 import { Config } from "@/config/config"
 import { AppRuntime } from "@/effect/app-runtime"
 import { Flag } from "@coderrupee/core/flag/flag"
+import { errorMessage } from "@/util/error"
 import { Installation } from "@/installation"
 import { InstallationVersion } from "@coderrupee/core/installation/version"
+import { UpdateHistory } from "@/installation/update-history"
 
 // Checking never installs anything. Updates only happen when the user runs `/update` or `coderrupee upgrade`.
 export function shouldNotify(input: {
@@ -21,7 +23,7 @@ export function shouldNotify(input: {
 export async function upgrade() {
   const config = await AppRuntime.runPromise(Config.Service.use((cfg) => cfg.getGlobal()))
   if (config.autoupdate === false || Flag.CODERRUPEE_DISABLE_AUTOUPDATE) return
-  const latest = await Installation.latest(await Installation.method()).catch(() => {})
+  const latest = await Installation.latest(await Installation.method(), config.channel).catch(() => {})
   if (!latest) return
   if (
     shouldNotify({
@@ -33,4 +35,39 @@ export async function upgrade() {
     })
   )
     return { type: "available" as const, version: latest }
+}
+
+// Only package-manager installs carry coderrupee-ai versions, so only they can reinstall a previous
+// release. brew, curl, choco, and scoop builds have no honest way to fetch an arbitrary old version.
+export function rollbackSupported(method: Installation.Method) {
+  return method === "npm" || method === "yarn" || method === "pnpm" || method === "bun"
+}
+
+// A rollback reinstalls the version that was installed before the most recent history entry. Because
+// every successful rollback appends its own entry, rolling back again points back the other way.
+export function rollbackTarget(history: UpdateHistory.Entry[]) {
+  return UpdateHistory.last(history)?.fromVersion
+}
+
+export type RollbackResult =
+  | { type: "empty" }
+  | { type: "unsupported"; method: Installation.Method }
+  | { type: "current"; version: string }
+  | { type: "failed"; message: string }
+  | { type: "done"; version: string }
+
+export async function rollback(): Promise<RollbackResult> {
+  const entry = UpdateHistory.last(UpdateHistory.read())
+  if (!entry) return { type: "empty" }
+  const method = await Installation.method()
+  if (!rollbackSupported(method)) return { type: "unsupported", method }
+  if (entry.fromVersion === InstallationVersion) return { type: "current", version: entry.fromVersion }
+  const error = await Installation.upgrade(method, entry.fromVersion).catch((err: unknown) => err)
+  if (error) return { type: "failed", message: errorMessage(error) }
+  UpdateHistory.record({
+    fromVersion: InstallationVersion,
+    toVersion: entry.fromVersion,
+    channel: UpdateHistory.currentChannel(),
+  })
+  return { type: "done", version: entry.fromVersion }
 }

@@ -1,7 +1,13 @@
 import { TextAttributes } from "@opentui/core"
 import { createEffect, createMemo, createResource, createSignal, For, Match, Show, Switch } from "solid-js"
 import { useTheme } from "../context/theme"
-import { isVersionGreater, type UpdateState, type UpdateTarget } from "../context/update-notification"
+import {
+  isVersionGreater,
+  type ChannelInfo,
+  type UpdateChannel,
+  type UpdateState,
+  type UpdateTarget,
+} from "../context/update-notification"
 import { useDialog } from "../ui/dialog"
 import { useBindings } from "../keymap"
 import { errorMessage } from "../util/error"
@@ -21,23 +27,48 @@ export function isUpdate(current: string, latest: string) {
   return major(latest) === major(current) && isVersionGreater(latest, current)
 }
 
+// Switching always moves to the opposite channel.
+export function otherChannel(channel: UpdateChannel): UpdateChannel {
+  return channel === "stable" ? "beta" : "stable"
+}
+
+// The confirmation shows the target version when one is discoverable on the other channel.
+export function switchDescription(info: ChannelInfo) {
+  const target = otherChannel(info.channel)
+  return info.switchVersion
+    ? `Latest ${target} version: ${info.switchVersion}`
+    : `Couldn't discover a ${target} version; you can still switch.`
+}
+
 export function DialogUpdate(props: {
   check: () => Promise<Version | undefined>
   state: () => UpdateState | undefined
   install: (target: UpdateTarget) => Promise<void>
   skip: (version: string) => void
   restart: () => void
+  channel?: () => Promise<ChannelInfo | undefined>
+  switchChannel?: (channel: UpdateChannel) => Promise<ChannelInfo | undefined>
 }) {
   const dialog = useDialog()
   const { theme } = useTheme()
   const [error, setError] = createSignal<string>()
   const [active, setActive] = createSignal(0)
-  const [check] = createResource(() =>
+  const [confirming, setConfirming] = createSignal<UpdateChannel>()
+  const [switching, setSwitching] = createSignal(false)
+  const [switchError, setSwitchError] = createSignal<string>()
+  const [check, checkActions] = createResource(() =>
     props.check().catch((error: unknown) => {
       setError(errorMessage(error))
       return undefined
     }),
   )
+  const [info, infoActions] = createResource(async () => {
+    try {
+      return await props.channel?.()
+    } catch {
+      return undefined
+    }
+  })
 
   const target = () => {
     const version = check()
@@ -47,13 +78,46 @@ export function DialogUpdate(props: {
   const state = createMemo(() => {
     const current = props.state()
     if (current?.type === "installing" || current?.type === "installed") return current
+    if (switching()) return { type: "checking" as const }
     if (check.loading) return { type: "checking" as const }
     if (current?.type === "failed") return current
     const next = target()
     if (!next) return { type: "check-failed" as const, message: error() ?? "Couldn't check for updates." }
     return { type: "available" as const, version: next.version }
   })
+  const confirmSwitch = async () => {
+    const next = confirming()
+    const switchChannel = props.switchChannel
+    if (!next || !switchChannel) return
+    setConfirming(undefined)
+    setSwitching(true)
+    setSwitchError(undefined)
+    try {
+      await switchChannel(next)
+      await infoActions.refetch()
+      await checkActions.refetch()
+    } catch (error) {
+      setSwitchError(errorMessage(error))
+    } finally {
+      setSwitching(false)
+    }
+  }
+  const switchButton = () => {
+    const current = info()
+    if (!props.switchChannel || !current) return undefined
+    return {
+      label: `Switch to ${otherChannel(current.channel)}`,
+      run: () => setConfirming(otherChannel(current.channel)),
+    }
+  }
   const buttons = createMemo(() => {
+    if (switching()) return []
+    const confirmed = confirming()
+    if (confirmed)
+      return [
+        { label: "Cancel", run: () => setConfirming(undefined) },
+        { label: `Switch to ${confirmed}`, run: () => void confirmSwitch() },
+      ]
     const current = state()
     if (current.type === "checking" || current.type === "installing") return []
     const next = target()
@@ -64,9 +128,12 @@ export function DialogUpdate(props: {
         dialog.clear()
       },
     }
-    if (current.type === "installed") return [close, { label: "Restart", run: props.restart }]
-    if (!next) return [close]
-    return [close, { label: "Update", run: () => props.install(next) }]
+    const change = switchButton()
+    if (current.type === "installed")
+      return [...(change ? [change] : []), close, { label: "Restart", run: props.restart }]
+    // Keep "Update" as the last (default) button so Enter still installs the update.
+    if (!next) return [...(change ? [change] : []), close]
+    return [close, ...(change ? [change] : []), { label: "Update", run: () => props.install(next) }]
   })
 
   createEffect(() => setActive(Math.max(0, buttons().length - 1)))
@@ -134,6 +201,34 @@ export function DialogUpdate(props: {
             </Switch>
           )}
         </Show>
+        <Show when={confirming()} keyed>
+          {(channel) => (
+            <box gap={1}>
+              <text fg={theme.text}>Switch to the {channel} channel?</text>
+              <Show when={info()} keyed>
+                {(value) => (
+                  <text fg={theme.textMuted} wrapMode="word">
+                    {switchDescription(value)}
+                  </text>
+                )}
+              </Show>
+            </box>
+          )}
+        </Show>
+        <Show when={switchError()} keyed>
+          {(message) => (
+            <text fg={theme.error} wrapMode="word">
+              {message}
+            </text>
+          )}
+        </Show>
+        <Show when={info()} keyed>
+          {(value) => (
+            <text fg={theme.textMuted} wrapMode="word">
+              {channelStatusLine(value)}
+            </text>
+          )}
+        </Show>
       </box>
       <Show when={buttons().length > 0}>
         <box flexDirection="row" justifyContent="flex-end" paddingBottom={1}>
@@ -153,4 +248,11 @@ export function DialogUpdate(props: {
       </Show>
     </box>
   )
+}
+
+// Status line shown under the update state: current channel plus the last recorded update.
+export function channelStatusLine(info: ChannelInfo) {
+  const last = info.lastUpdate
+  const history = last ? ` · last update ${last.fromVersion} → ${last.toVersion} on ${last.date.slice(0, 10)}` : ""
+  return `Channel: ${info.channel}${history}`
 }

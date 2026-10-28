@@ -3,6 +3,38 @@ import { UI } from "../ui"
 import * as prompts from "@clack/prompts"
 import { Installation } from "../../installation"
 import { InstallationVersion } from "@coderrupee/core/installation/version"
+import { rollback } from "../upgrade"
+import { errorMessage } from "@/util/error"
+import { UpdateHistory } from "@/installation/update-history"
+
+function upgradeEpilogue() {
+  const lines = [
+    "Update channels:",
+    "  stable  track the latest release (default)",
+    "  beta    track pre-release builds published to the npm beta dist-tag",
+    'Switch channels with the "channel" config key or /update → Switch channel.',
+    "Rollback reinstalls the version installed before the last update:",
+    "  coderrupee upgrade --rollback",
+  ]
+  const entry = UpdateHistory.last(UpdateHistory.read())
+  lines.push(`Channel: ${UpdateHistory.currentChannel()}`)
+  if (entry) lines.push(`Last update: ${entry.fromVersion} → ${entry.toVersion} on ${entry.date.slice(0, 10)}`)
+  return lines.join("\n")
+}
+
+async function runRollback() {
+  prompts.log.info("Rolling back to the previous version...")
+  const result = await rollback().catch((err: unknown) => ({ type: "failed" as const, message: errorMessage(err) }))
+  if (result.type === "empty") prompts.log.warn("Nothing to roll back: no update has been installed yet")
+  else if (result.type === "unsupported")
+    prompts.log.error(
+      `Rollback is not supported for ${result.method} installs; only npm, pnpm, bun, and yarn installs can reinstall a previous version`,
+    )
+  else if (result.type === "current")
+    prompts.log.warn(`coderrupee rollback skipped: ${result.version} is already installed`)
+  else if (result.type === "failed") prompts.log.error(result.message)
+  else prompts.log.success(`Rolled back to ${result.version}`)
+}
 
 export const UpgradeCommand = {
   command: "upgrade [target]",
@@ -19,12 +51,22 @@ export const UpgradeCommand = {
         type: "string",
         choices: ["curl", "npm", "pnpm", "bun", "brew", "choco", "scoop"],
       })
+      .option("rollback", {
+        describe: "reinstall the version that was installed before the last update",
+        type: "boolean",
+      })
+      .epilogue(upgradeEpilogue())
   },
-  handler: async (args: { target?: string; method?: string }) => {
+  handler: async (args: { target?: string; method?: string; rollback?: boolean }) => {
     UI.empty()
     UI.println(UI.logo("  "))
     UI.empty()
     prompts.intro("Upgrade")
+    if (args.rollback) {
+      await runRollback()
+      prompts.outro("Done")
+      return
+    }
     const detectedMethod = await Installation.method()
     const method = (args.method as Installation.Method) ?? detectedMethod
     if (method === "unknown") {
@@ -76,6 +118,11 @@ export const UpgradeCommand = {
       return
     }
     spinner.stop("Upgrade complete")
+    UpdateHistory.record({
+      fromVersion: InstallationVersion,
+      toVersion: target,
+      channel: UpdateHistory.currentChannel(),
+    })
     prompts.outro("Done")
   },
 }

@@ -8,6 +8,23 @@ import { DialogUpdate } from "../component/dialog-update"
 
 export type UpdateTarget = { readonly type: "latest"; readonly version: string }
 
+// Update channels map onto npm dist-tags: stable follows the latest release, beta follows the beta tag.
+export type UpdateChannel = "stable" | "beta"
+
+export type UpdateHistoryEntry = {
+  readonly fromVersion: string
+  readonly toVersion: string
+  readonly channel: string
+  readonly date: string
+}
+
+export type ChannelInfo = {
+  readonly channel: UpdateChannel
+  // Latest version discoverable on the other channel, when it differs from the installed one.
+  readonly switchVersion?: string
+  readonly lastUpdate?: UpdateHistoryEntry
+}
+
 export type UpdateState =
   | { readonly type: "installing"; readonly target: UpdateTarget }
   | { readonly type: "installed"; readonly target: UpdateTarget }
@@ -21,6 +38,8 @@ export type UpdateSource = {
   readonly subscribe: (notify: (notice: UpdateNotice) => void) => () => void
   readonly check: () => Promise<{ readonly current: string; readonly latest?: string }>
   readonly apply: (target: UpdateTarget) => Promise<void>
+  readonly channel?: () => Promise<ChannelInfo | undefined>
+  readonly switchChannel?: (channel: UpdateChannel) => Promise<ChannelInfo | undefined>
 }
 
 // Skipping a version hides it until a newer one ships.
@@ -76,6 +95,8 @@ export const { use: useUpdateNotification, provider: UpdateNotificationProvider 
           install={install}
           skip={(version) => kv.set("skipped_version", version)}
           restart={() => exit()}
+          channel={updater.channel}
+          switchChannel={updater.switchChannel}
         />
       ))
     }

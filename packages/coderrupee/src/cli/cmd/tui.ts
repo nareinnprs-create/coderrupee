@@ -10,7 +10,7 @@ import { withNetworkOptions, resolveNetworkOptionsNoConfig, hasArg } from "@/cli
 import { Filesystem } from "@/util/filesystem"
 import type { GlobalEvent } from "@coderrupee/sdk/v2"
 import type { EventSource } from "@coderrupee/tui/context/sdk"
-import type { UpdateNotice, UpdateSource } from "@coderrupee/tui"
+import type { UpdateNotice, UpdateSource, ChannelInfo } from "@coderrupee/tui"
 import { InstallationVersion } from "@coderrupee/core/installation/version"
 import { writeHeapSnapshot } from "v8"
 import { ServerAuth } from "@/server/auth"
@@ -51,9 +51,24 @@ function createEventSource(client: RpcClient): EventSource {
   }
 }
 
+// Requests against the server the TUI is attached to: the worker proxy in-process, or the real
+// server with auth headers when connecting over the network.
+type UpdateRequest = (path: string, init?: RequestInit) => Promise<Response>
+
+function updaterRequest(transport: { url: string; fetch?: typeof fetch; headers?: Record<string, string> }): UpdateRequest {
+  return async (path, init) => {
+    const doFetch = transport.fetch ?? fetch
+    return doFetch(transport.url + path, {
+      ...init,
+      headers: { ...transport.headers, ...init?.headers },
+    })
+  }
+}
+
 // The TUI process checks for updates every 10 minutes; installs only happen on this machine
-// when the user picks an option in the /update dialog.
-function createUpdater(latest: () => Promise<UpdateNotice | undefined>): UpdateSource {
+// when the user picks an option in the /update dialog. Channel reads and writes go through the
+// server's global config API, so the switch persists exactly like a config edit from settings.
+function createUpdater(latest: () => Promise<UpdateNotice | undefined>, request: UpdateRequest): UpdateSource {
   const listeners = new Set<(notice: UpdateNotice) => void>()
   let current: UpdateNotice | undefined
   const check = () =>
@@ -66,6 +81,29 @@ function createUpdater(latest: () => Promise<UpdateNotice | undefined>): UpdateS
       .catch(() => {})
   setTimeout(check, 1000).unref?.()
   setInterval(check, 10 * 60 * 1000).unref?.()
+  const configChannel = async () =>
+    await request("/global/config")
+      .then((response) => {
+        if (!response.ok) throw new Error("Couldn't read the global config")
+        return response.json() as Promise<{ channel?: "stable" | "beta" }>
+      })
+      .then((config) => config.channel)
+      .catch(() => undefined)
+  const channelInfo = async (): Promise<ChannelInfo | undefined> => {
+    const { Installation } = await import("@/installation")
+    const { UpdateHistory } = await import("@/installation/update-history")
+    const channel = (await configChannel()) ?? "stable"
+    const other = channel === "stable" ? "beta" : "stable"
+    const [switchLatest, lastUpdate] = await Promise.all([
+      Installation.latest(await Installation.method(), other).catch(() => undefined),
+      Promise.resolve(UpdateHistory.last(UpdateHistory.read())),
+    ])
+    return {
+      channel,
+      switchVersion: switchLatest && switchLatest !== InstallationVersion ? switchLatest : undefined,
+      lastUpdate,
+    }
+  }
   return {
     subscribe: (notify) => {
       if (current) notify(current)
@@ -75,14 +113,32 @@ function createUpdater(latest: () => Promise<UpdateNotice | undefined>): UpdateS
     check: async () => {
       const { Installation } = await import("@/installation")
       // A failed check leaves latest unset, which /update reports as "Couldn't check for updates."
-      const latest = await Installation.latest(await Installation.method()).catch(() => undefined)
+      const latest = await Installation.latest(await Installation.method(), await configChannel()).catch(
+        () => undefined,
+      )
       return { current: InstallationVersion, latest }
     },
     apply: async (target) => {
       const { Installation } = await import("@/installation")
+      const { UpdateHistory } = await import("@/installation/update-history")
       const method = await Installation.method()
       if (method === "unknown") throw new Error("Installation method not found")
-      return Installation.upgrade(method, target.version)
+      await Installation.upgrade(method, target.version)
+      UpdateHistory.record({
+        fromVersion: InstallationVersion,
+        toVersion: target.version,
+        channel: UpdateHistory.currentChannel(),
+      })
+    },
+    channel: channelInfo,
+    switchChannel: async (channel) => {
+      const response = await request("/global/config", {
+        method: "PATCH",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ channel }),
+      })
+      if (!response.ok) throw new Error(`Couldn't switch to the ${channel} channel`)
+      return channelInfo()
     },
   }
 }
@@ -300,7 +356,10 @@ export const TuiThreadCommand = cmd({
         return
       }
 
-      const updater = createUpdater(async () => await client.call("checkUpgrade", { directory: cwd }))
+      const updater = createUpdater(
+        async () => await client.call("checkUpgrade", { directory: cwd }),
+        updaterRequest(transport),
+      )
 
       try {
         const { Effect } = await import("effect")

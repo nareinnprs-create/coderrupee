@@ -72,6 +72,13 @@ export function isUpdate(current: string, latest: string) {
 // Preview builds follow their own dist-tag, source builds follow latest.
 const NPM_TAG = InstallationChannel === "local" ? "latest" : InstallationChannel
 
+// Update channels map onto npm dist-tags: stable follows the latest release, beta follows the beta tag.
+// Anything unknown falls back to latest so a bad config value can't hide updates.
+export function distTag(channel: string | undefined) {
+  if (channel === "beta") return "beta"
+  return "latest"
+}
+
 // Response schemas for external version APIs
 const NpmPackage = Schema.Struct({ version: Schema.String })
 const BrewInfoV2 = Schema.Struct({
@@ -84,7 +91,7 @@ const ChocoPackage = Schema.Struct({
 export interface Interface {
   readonly info: () => Effect.Effect<Info>
   readonly method: () => Effect.Effect<Method>
-  readonly latest: (method?: Method) => Effect.Effect<string>
+  readonly latest: (method?: Method, channel?: string) => Effect.Effect<string>
   readonly upgrade: (method: Method, target: string) => Effect.Effect<void, UpgradeFailedError>
 }
 
@@ -173,9 +180,9 @@ const layer: Layer.Layer<Service, never, HttpClient.HttpClient | AppProcess.Serv
       Effect.mapError(() => new UpgradeFailedError({ stderr: upgradeFailure("curl") })),
     )
 
-    const npmLatest = Effect.fnUntraced(function* () {
+    const npmLatest = Effect.fnUntraced(function* (tag: string) {
       const response = yield* httpOk.execute(
-        HttpClientRequest.get(`${yield* NpmConfig.registry(process.cwd())}/coderrupee-ai/${NPM_TAG}`).pipe(
+        HttpClientRequest.get(`${yield* NpmConfig.registry(process.cwd())}/coderrupee-ai/${tag}`).pipe(
           HttpClientRequest.acceptJson,
         ),
       )
@@ -246,12 +253,12 @@ const layer: Layer.Layer<Service, never, HttpClient.HttpClient | AppProcess.Serv
         return "unknown" as Method
       }),
       // Reports the installed version when there's no deliverable 1.x update for this install method.
-      latest: Effect.fn("Installation.latest")(function* (installMethod?: Method) {
+      latest: Effect.fn("Installation.latest")(function* (installMethod?: Method, channel?: string) {
         const method = installMethod || (yield* result.method())
         // A Homebrew Core install has no 1.x formula source, so `brew upgrade` can't deliver an update.
         if (method === "brew" && !(yield* getBrewFormula()).includes("/")) return InstallationVersion
         return yield* Effect.gen(function* () {
-          const found = yield* npmLatest()
+          const found = yield* npmLatest(channel ? distTag(channel) : NPM_TAG)
           if (!isUpdate(InstallationVersion, found)) return InstallationVersion
           if (method === "choco" && !(yield* chocoHas(found))) return InstallationVersion
           return found

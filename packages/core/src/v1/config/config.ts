@@ -73,6 +73,10 @@ export const Info = Schema.Struct({
     description:
       "Check for new versions and show an update notice. Updates are never installed automatically; run /update or `coderrupee upgrade`. Set to false to disable update checks. true and 'notify' behave the same",
   }),
+  channel: Schema.optional(Schema.Literals(["stable", "beta"])).annotate({
+    description:
+      "Update channel followed by /update and `coderrupee upgrade` checks. 'stable' tracks the latest release, 'beta' tracks pre-release builds published to the npm beta dist-tag. Defaults to stable",
+  }),
   disabled_providers: Schema.optional(Schema.mutable(Schema.Array(Schema.String))).annotate({
     description: "Disable providers that are loaded automatically",
   }),

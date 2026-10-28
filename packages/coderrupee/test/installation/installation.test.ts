@@ -194,6 +194,45 @@ describe("installation", () => {
         expect(Exit.isFailure(yield* Fiber.join(fiber))).toBe(true)
       }),
     )
+
+    const betaCalls: string[] = []
+    testEffect(registry("1.19.3-beta.1", betaCalls)).effect("reads beta-channel versions from the beta dist-tag", () =>
+      Effect.gen(function* () {
+        betaCalls.length = 0
+        expect(yield* Installation.use.latest("npm", "beta")).toBe("1.19.3-beta.1")
+        expect(betaCalls[0]).toBe("https://registry.npmjs.org/coderrupee-ai/beta")
+      }),
+    )
+
+    const stableCalls: string[] = []
+    testEffect(registry("1.19.2", stableCalls)).effect("reads stable-channel versions from the latest dist-tag", () =>
+      Effect.gen(function* () {
+        stableCalls.length = 0
+        expect(yield* Installation.use.latest("npm", "stable")).toBe("1.19.2")
+        expect(stableCalls[0]).toBe("https://registry.npmjs.org/coderrupee-ai/latest")
+      }),
+    )
+
+    testEffect(registry("2.0.0-beta.1", [])).effect("still refuses cross-major beta versions", () =>
+      Effect.gen(function* () {
+        expect(yield* Installation.use.latest("npm", "beta")).toBe(InstallationVersion)
+      }),
+    )
+  })
+
+  describe("update channels", () => {
+    test("maps the stable channel to the latest dist-tag", () => {
+      expect(Installation.distTag("stable")).toBe("latest")
+    })
+
+    test("maps the beta channel to the beta dist-tag", () => {
+      expect(Installation.distTag("beta")).toBe("beta")
+    })
+
+    test("falls back to the latest dist-tag for unknown or unset channels", () => {
+      expect(Installation.distTag(undefined)).toBe("latest")
+      expect(Installation.distTag("nightly")).toBe("latest")
+    })
   })
 
   describe("upgrade", () => {

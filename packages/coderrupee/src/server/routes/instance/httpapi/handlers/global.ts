@@ -5,6 +5,7 @@ import { EventV2 } from "@coderrupee/core/event"
 import { Installation } from "@/installation"
 import { disposeAllInstancesAndEmitGlobalDisposed } from "@/server/global-lifecycle"
 import { InstallationVersion } from "@coderrupee/core/installation/version"
+import { UpdateHistory } from "@/installation/update-history"
 import { Effect, Queue } from "effect"
 import * as Stream from "effect/Stream"
 import { HttpServerResponse } from "effect/unstable/http"
@@ -105,6 +106,11 @@ export const globalHandlers = HttpApiBuilder.group(RootHttpApi, "global", (handl
         ),
       )
       if (!result.success) return HttpServerResponse.jsonUnsafe(result, { status: 500 })
+      UpdateHistory.record({
+        fromVersion: InstallationVersion,
+        toVersion: target,
+        channel: UpdateHistory.currentChannel(),
+      })
       GlobalBus.emit("event", {
         directory: "global",
         payload: {
