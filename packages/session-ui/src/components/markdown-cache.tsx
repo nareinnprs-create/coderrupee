@@ -1,6 +1,7 @@
 import { checksum } from "@coderrupee/core/util/encode"
 import DOMPurify from "dompurify"
 import { parseMarkdown } from "./markdown-worker"
+import { PERF, perfCount } from "../utils/perf"
 
 export type MarkdownCacheEntry = {
   raw: string
@@ -8,7 +9,9 @@ export type MarkdownCacheEntry = {
   html: string
 }
 
-const max = 200
+// LRU cap for rendered markdown blocks; refreshed on write/touch, evicted
+// oldest-first beyond the cap. Tunable via this single constant.
+export const MARKDOWN_CACHE_MAX = 200
 const cache = new Map<string, MarkdownCacheEntry>()
 const config = {
   USE_PROFILES: { html: true, mathMl: true },
@@ -41,15 +44,28 @@ export function getCachedMarkdown(key: string) {
   return cache.get(key)
 }
 
+// Hit/miss lookup for a block body: a hit requires both the cached key and an
+// exact raw match. Counters feed the CODERRUPEE_PERF dump.
+export function lookupMarkdownBlock(key: string, raw: string) {
+  const cached = cache.get(key)
+  if (cached?.raw === raw) {
+    if (PERF.enabled) perfCount("markdown.cache.hit")
+    return cached
+  }
+  if (PERF.enabled) perfCount("markdown.cache.miss")
+  return undefined
+}
+
 export function touchCachedMarkdown(key: string, value: MarkdownCacheEntry) {
   cache.delete(key)
   cache.set(key, value)
 
-  if (cache.size <= max) return
+  if (cache.size <= MARKDOWN_CACHE_MAX) return
 
   const first = cache.keys().next().value
   if (!first) return
   cache.delete(first)
+  if (PERF.enabled) perfCount("markdown.cache.evict")
 }
 
 export async function preloadMarkdown(text: string, cacheKey: string) {

@@ -251,8 +251,12 @@ export type PartComponent = Component<MessagePartProps>
 
 export const PART_MAPPING: Record<string, PartComponent | undefined> = {}
 
-const TEXT_RENDER_PACE_MS = 24
-const TEXT_RENDER_IMMEDIATE = 512
+// Streaming text reveal pacing: when the streaming backlog exceeds
+// TEXT_RENDER_IMMEDIATE characters, text is revealed in snap-word chunks every
+// TEXT_RENDER_PACE_MS so markdown parse/render stays off the frame budget.
+// Tunable via these constants.
+export const TEXT_RENDER_PACE_MS = 24
+export const TEXT_RENDER_IMMEDIATE = 512
 const TEXT_RENDER_SNAP = /[\s.,!?;:)\]]/
 
 function step(size: number) {

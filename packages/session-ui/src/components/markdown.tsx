@@ -22,6 +22,7 @@ import {
   disposeMarkdownProjection,
   disposeStreamingCode,
   highlightStreamingCode,
+  MarkdownWorkerBackpressureError,
   MarkdownWorkerDisposedError,
   MarkdownWorkerSupersededError,
   MarkdownWorkerUnavailableError,
@@ -30,8 +31,14 @@ import {
 } from "./markdown-worker"
 import { markdownBlockKey, type MarkdownToken } from "./markdown-worker-protocol"
 import { shouldResetCodeTokens, type RenderedCodeState } from "./markdown-code-state"
-import { getCachedMarkdown, sanitizeMarkdown, touchCachedMarkdown, type MarkdownCacheEntry } from "./markdown-cache"
+import {
+  lookupMarkdownBlock,
+  sanitizeMarkdown,
+  touchCachedMarkdown,
+  type MarkdownCacheEntry,
+} from "./markdown-cache"
 import { inlineCodeKind } from "./markdown-inline-code-kind"
+import { PERF, perfCount } from "../utils/perf"
 
 type RenderedBlock =
   | (MarkdownCacheEntry & { key: string; mode: Exclude<Block["mode"], "code"> })
@@ -337,8 +344,8 @@ function initialResult(text: string, key: string | undefined, projection: Projec
     const blocks = projection.blocks.flatMap((block, index) => {
       if (block.mode === "code") return []
       const cacheKey = `${base}:${index}:${block.mode}`
-      const cached = getCachedMarkdown(cacheKey)
-      if (cached?.raw !== block.raw) return []
+      const cached = lookupMarkdownBlock(cacheKey, block.raw)
+      if (!cached) return []
       return [{ key: `${owner}:${cacheKey}`, mode: block.mode, ...cached }]
     })
     if (blocks.length === projection.blocks.length) return { text, blocks }
@@ -450,15 +457,24 @@ export function Markdown(
           }
 
           if (key) {
-            const cached = getCachedMarkdown(key)
-            if (cached?.raw === block.raw) {
+            const cached = lookupMarkdownBlock(key, block.raw)
+            if (cached) {
               touchCachedMarkdown(key, cached)
               return { key: blockKey, mode: block.mode, ...cached }
             }
           }
 
           const hash = checksum(block.raw)
-          const safe = sanitizeMarkdown(await parseMarkdown(block.src))
+          // A backpressure drop degrades only this block to the escaped-text
+          // fallback; the cache is not written, so it re-parses on a later mount.
+          const parsed = await parseMarkdown(block.src).catch((error) => {
+            if (error instanceof MarkdownWorkerBackpressureError) {
+              if (PERF.enabled) perfCount("markdown.parse.fallback")
+              return fallback(block.src)
+            }
+            throw error
+          })
+          const safe = sanitizeMarkdown(parsed)
           if (key && hash) touchCachedMarkdown(key, { raw: block.raw, hash, html: safe })
           return { key: blockKey, mode: block.mode, raw: block.raw, hash: hash ?? "", html: safe }
         }),

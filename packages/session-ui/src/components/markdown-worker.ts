@@ -6,23 +6,37 @@ import {
   type MarkdownWorkerResponse,
   type MarkdownWorkerState,
 } from "./markdown-worker-protocol"
+import {
+  createMarkdownParseGate,
+  MARKDOWN_PARSE_MAX_IN_FLIGHT,
+  MARKDOWN_PARSE_MAX_LAG_FRAMES,
+  type ParseGateTicket,
+} from "./markdown-parse-backpressure"
 import { createWorkerTransport } from "./markdown-worker-transport"
+import { PERF, perfGauge, perfSample } from "../utils/perf"
 import type { Projection } from "./markdown-stream"
+
+// Streaming code keys are LRU-evicted at this cap (refreshed on every use).
+export const MARKDOWN_HIGHLIGHT_KEY_LIMIT = 200
 
 type HighlightPending = {
   key: string
   complete: boolean
+  start: number
   resolve: (state: MarkdownWorkerState) => void
   reject: (error: Error) => void
 }
 
 type ProjectPending = {
   key: string
+  start: number
   resolve: (projection: Projection) => void
   reject: (error: Error) => void
 }
 
 type ParsePending = {
+  ticket?: ParseGateTicket
+  start: number
   resolve: (html: string) => void
   reject: (error: Error) => void
 }
@@ -36,6 +50,40 @@ const parses = new Map<number, ParsePending>()
 const states = new Map<string, MarkdownWorkerState>()
 const keys = new Set<string>()
 const latest = new Map<string, number>()
+
+// Backpressure for parse requests: admit at most MAX_IN_FLIGHT, drop the
+// oldest waiting request beyond the cap or after MAX_LAG_FRAMES lagging frames.
+let parseFrame = 0
+let parseFrameHandle: number | undefined
+const advanceParseFrame = () => {
+  parseFrame += 1
+  parseFrameHandle = parseGate.pending() > 0 ? requestAnimationFrame(advanceParseFrame) : undefined
+}
+const parseGate = createMarkdownParseGate({
+  maxInFlight: MARKDOWN_PARSE_MAX_IN_FLIGHT,
+  maxLagFrames: MARKDOWN_PARSE_MAX_LAG_FRAMES,
+  frames: () => parseFrame,
+  onDrop: (ticket) => {
+    for (const [id, parse] of parses) {
+      if (parse.ticket !== ticket) continue
+      parses.delete(id)
+      parse.reject(new MarkdownWorkerBackpressureError())
+      return
+    }
+  },
+})
+
+function ensureParseFrameClock() {
+  if (parseFrameHandle !== undefined) return
+  if (typeof requestAnimationFrame !== "function") return
+  parseFrameHandle = requestAnimationFrame(advanceParseFrame)
+}
+
+function releaseParse(result: ParsePending) {
+  if (result.ticket) parseGate.release(result.ticket)
+  perfGauge("markdown.parse.inflight", parseGate.pending())
+  if (result.start) perfSample("markdown.parse", performance.now() - result.start)
+}
 const transport = createWorkerTransport<Extract<MarkdownWorkerRequest, { type: "highlight" }>>({
   post: (request) => worker!.postMessage(request),
   supersede: (request) => {
@@ -58,8 +106,12 @@ const projectTransport = createWorkerTransport<Extract<MarkdownWorkerRequest, { 
 export function parseMarkdown(text: string) {
   const instance = getWorker()
   const id = ++nextID
+  const start = PERF.enabled ? performance.now() : 0
+  const ticket = parseGate.acquire()
+  perfGauge("markdown.parse.inflight", parseGate.pending())
+  ensureParseFrameClock()
   return new Promise<string>((resolve, reject) => {
-    parses.set(id, { resolve, reject })
+    parses.set(id, { ticket, start, resolve, reject })
     instance.postMessage({ type: "parse", id, text } satisfies MarkdownWorkerRequest)
   })
 }
@@ -67,8 +119,9 @@ export function parseMarkdown(text: string) {
 export function projectMarkdown(key: string, text: string, live: boolean) {
   getWorker()
   const id = ++nextID
+  const start = PERF.enabled ? performance.now() : 0
   return new Promise<Projection>((resolve, reject) => {
-    projects.set(id, { key, resolve, reject })
+    projects.set(id, { key, start, resolve, reject })
     projectTransport.send({ type: "project", id, key, text, live })
   })
 }
@@ -86,12 +139,13 @@ export function disposeMarkdownProjection(key: string) {
 export function highlightStreamingCode(key: string, text: string, language: string, complete = false) {
   const instance = getWorker()
   const id = ++nextID
+  const start = PERF.enabled ? performance.now() : 0
   latest.set(key, id)
   keys.delete(key)
   keys.add(key)
-  if (keys.size > 200) disposeStreamingCode(keys.values().next().value!)
+  if (keys.size > MARKDOWN_HIGHLIGHT_KEY_LIMIT) disposeStreamingCode(keys.values().next().value!)
   return new Promise<MarkdownWorkerState>((resolve, reject) => {
-    pending.set(id, { key, complete, resolve, reject })
+    pending.set(id, { key, complete, start, resolve, reject })
     transport.send({ type: "highlight", id, key, text, language, complete })
   })
 }
@@ -112,6 +166,7 @@ export function disposeStreamingCode(key: string) {
 export class MarkdownWorkerDisposedError extends Error {}
 export class MarkdownWorkerSupersededError extends Error {}
 export class MarkdownWorkerUnavailableError extends Error {}
+export class MarkdownWorkerBackpressureError extends Error {}
 
 function getWorker() {
   if (worker) return worker
@@ -127,6 +182,7 @@ function getWorker() {
       const result = parses.get(event.data.id)
       if (!result) return
       parses.delete(event.data.id)
+      releaseParse(result)
       result.resolve(event.data.html)
       return
     }
@@ -137,6 +193,7 @@ function getWorker() {
         return
       }
       projects.delete(event.data.id)
+      if (result.start) perfSample("markdown.project", performance.now() - result.start)
       result.resolve(event.data.projection)
       projectTransport.complete(event.data.key, event.data.id)
       return
@@ -145,12 +202,14 @@ function getWorker() {
       const parsed = parses.get(event.data.id)
       if (parsed) {
         parses.delete(event.data.id)
+        releaseParse(parsed)
         parsed.reject(new Error(event.data.message))
         return
       }
       const projected = projects.get(event.data.id)
       if (projected) {
         projects.delete(event.data.id)
+        if (projected.start) perfSample("markdown.project", performance.now() - projected.start)
         projected.reject(new Error(event.data.message))
         projectTransport.complete(projected.key, event.data.id)
         return
@@ -160,6 +219,7 @@ function getWorker() {
       const projected = projects.get(event.data.id)
       if (projected) {
         projects.delete(event.data.id)
+        if (projected.start) perfSample("markdown.project", performance.now() - projected.start)
         projected.reject(new MarkdownWorkerSupersededError())
         projectTransport.complete(projected.key, event.data.id)
         return
@@ -173,6 +233,7 @@ function getWorker() {
       return
     }
     pending.delete(event.data.id)
+    if (result.start) perfSample("markdown.highlight", performance.now() - result.start)
     if (!keys.has(key)) {
       result.reject(new MarkdownWorkerDisposedError())
       transport.complete(key, event.data.id)
@@ -208,6 +269,11 @@ function getWorker() {
     pending.clear()
     projects.clear()
     parses.clear()
+    parseGate.clear()
+    if (parseFrameHandle !== undefined) {
+      cancelAnimationFrame(parseFrameHandle)
+      parseFrameHandle = undefined
+    }
     states.clear()
     keys.clear()
     latest.clear()
