@@ -251,9 +251,22 @@ const createPlatform = (windowState: DesktopWindowState): Platform => {
       window.api.relaunch()
     },
 
-    notify: async (title, description, onClick) => {
-      const focused = await window.api.getWindowFocused().catch(() => document.hasFocus())
-      if (focused) return
+    notify: async (title, description, onClick, options) => {
+      // Route through the main-process Notification so OS notification
+      // permission and the Windows app user model ID are honored; click
+      // focus-and-routing uses the coderrupee://session deep link. Attention
+      // suppression (visible session, focused window, rate limits) is decided
+      // by the notification engine at the call sites, not here.
+      if (options?.directory) {
+        await window.api.notify({
+          title,
+          body: description,
+          urgency: options.urgency,
+          directory: options.directory,
+          sessionID: options.sessionID,
+        }).catch(() => undefined)
+        return
+      }
 
       const notification = new Notification(title, {
         body: description ?? "",

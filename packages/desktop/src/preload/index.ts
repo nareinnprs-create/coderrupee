@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer, webUtils } from "electron"
 import type { ElectronAPI, WslServersEvent } from "./types"
+import type { DesktopNotificationRequest } from "@coderrupee/app/notification-decision"
 import type { UpdaterState } from "@coderrupee/app/updater"
 
 const updaterCallbacks = new Set<(state: UpdaterState) => void>()
@@ -131,6 +132,7 @@ const api: ElectronAPI = {
   setBackgroundColor: (color: string) => ipcRenderer.invoke("set-background-color", color),
   exportDebugLogs: () => ipcRenderer.invoke("export-debug-logs"),
   setForceFocus: (enabled) => ipcRenderer.invoke("set-force-focus", enabled),
+  notify: (request: DesktopNotificationRequest) => ipcRenderer.invoke("notify", request),
   recordFatalRendererError: (error) => ipcRenderer.invoke("record-fatal-renderer-error", error),
   setNativeTranslations: (bundle) => ipcRenderer.invoke("set-native-translations", bundle),
 }

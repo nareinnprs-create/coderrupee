@@ -1,4 +1,8 @@
 import type { DesktopMenuAction } from "@coderrupee/app/desktop-menu"
+import type {
+  DesktopNotificationRequest,
+  DesktopNotificationResult,
+} from "@coderrupee/app/notification-decision"
 import type { WslServersPlatform } from "@coderrupee/app/wsl/types"
 import type { UpdaterState } from "@coderrupee/app/updater"
 import type { DesktopNativeBundle } from "@coderrupee/app/i18n/desktop-native"
@@ -111,6 +115,7 @@ export type ElectronAPI = {
   setBackgroundColor: (color: string) => Promise<void>
   exportDebugLogs: () => Promise<string>
   setForceFocus: (enabled: boolean) => Promise<void>
+  notify: (request: DesktopNotificationRequest) => Promise<DesktopNotificationResult>
   recordFatalRendererError: (error: FatalRendererError) => Promise<void>
   setNativeTranslations: (bundle: DesktopNativeBundle) => Promise<void>
 }

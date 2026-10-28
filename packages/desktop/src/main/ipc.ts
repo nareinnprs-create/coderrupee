@@ -1,10 +1,11 @@
 import { execFile } from "node:child_process"
 import { stat } from "node:fs/promises"
 import { basename, join } from "node:path"
-import { app, BrowserWindow, clipboard, dialog, ipcMain, shell } from "electron"
+import { app, BrowserWindow, clipboard, dialog, ipcMain, Notification, shell } from "electron"
 import type { IpcMainEvent, IpcMainInvokeEvent } from "electron"
 import type { DesktopMenuAction } from "@coderrupee/app/desktop-menu"
 import { parseDesktopNativeBundle, type DesktopNativeBundle } from "@coderrupee/app/i18n/desktop-native"
+import { buildSessionDeepLink, type DesktopNotificationRequest, type DesktopNotificationResult } from "@coderrupee/app/notification-decision"
 
 import type { FatalRendererError, ServerReadyData, TitlebarTheme } from "../preload/types"
 import { sanitizeAppName } from "./app-name"
@@ -14,6 +15,7 @@ import { isTrustedSender, UntrustedSenderError } from "./renderer-origin"
 import { write as writeLog } from "./logging"
 import { assertAttachmentBudget, createPickedFileAuthorizations } from "./attachment-picker"
 import { getStore, removeStoreFileIfEmpty } from "./store"
+import { parseNotificationRequest } from "./notifications"
 import {
   getPinchZoomEnabled,
   getWindowID,
@@ -76,6 +78,44 @@ function requireTrustedSender(channel: string, event: IpcMainInvokeEvent) {
   if (isTrustedSender(event, { devUrl: process.env.ELECTRON_RENDERER_URL })) return
   writeLog("ipc", "blocked untrusted sender", { channel, url: event.senderFrame?.url }, "warn")
   throw new UntrustedSenderError(channel)
+}
+
+// Native notifications come from the main process so they honor the OS
+// notification permission and the Windows app user model ID (set in index.ts
+// before any window exists). Click-through reuses the deep-link channel: the
+// renderer already routes coderrupee://session links to the exact session.
+async function showDesktopNotification(
+  win: BrowserWindow,
+  request: DesktopNotificationRequest,
+): Promise<DesktopNotificationResult> {
+  if (!Notification.isSupported()) {
+    writeLog("notify", "notification suppressed", { reason: "unsupported", title: request.title }, "warn")
+    return { shown: false }
+  }
+  // Electron only reports the static permission on darwin/win32; honor it when
+  // present so an OS-denied state suppresses instead of silently no-oping.
+  const permission = (Notification as typeof Notification & { permission?: string }).permission
+  if (permission === "denied") {
+    writeLog("notify", "notification suppressed", { reason: "permission", title: request.title }, "warn")
+    return { shown: false }
+  }
+
+  const notification = new Notification({
+    title: request.title,
+    body: request.body ?? "",
+    ...(request.urgency ? { urgency: request.urgency } : {}),
+  })
+  notification.on("click", () => {
+    notification.close()
+    if (win.isDestroyed()) return
+    win.show()
+    win.focus()
+    if (request.directory) {
+      sendDeepLinks(win, [buildSessionDeepLink(request.directory, request.sessionID)])
+    }
+  })
+  notification.show()
+  return { shown: true }
 }
 
 export function registerIpcHandlers(deps: Deps) {
@@ -149,6 +189,13 @@ export function registerIpcHandlers(deps: Deps) {
   ipcMain.handle("set-force-focus", (event: IpcMainInvokeEvent, enabled: boolean) => {
     requireTrustedSender("set-force-focus", event)
     return setForceFocus(event.sender, enabled)
+  })
+  ipcMain.handle("notify", async (event: IpcMainInvokeEvent, value: unknown): Promise<DesktopNotificationResult> => {
+    requireTrustedSender("notify", event)
+    const request = parseNotificationRequest(value)
+    const win = request ? BrowserWindow.fromWebContents(event.sender) : null
+    if (!request || !win) return { shown: false }
+    return showDesktopNotification(win, request)
   })
   ipcMain.handle("record-fatal-renderer-error", (_event: IpcMainInvokeEvent, error: FatalRendererError) =>
     deps.recordFatalRendererError(error),
