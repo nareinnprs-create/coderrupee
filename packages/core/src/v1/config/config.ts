@@ -33,6 +33,14 @@ export const Info = Schema.Struct({
   $schema: Schema.optional(Schema.String).annotate({
     description: "JSON schema reference for configuration validation",
   }),
+  auth: Schema.optional(
+    Schema.Struct({
+      storage: Schema.optional(Schema.Literals(["auto", "keyring", "plaintext"])).annotate({
+        description:
+          "How provider credentials are stored: 'keyring' keeps them in the OS credential store, 'plaintext' keeps the auth.json file, 'auto' (default) uses the keyring when one is available and migrates existing plaintext credentials",
+      }),
+    }),
+  ).annotate({ description: "Provider credential storage settings" }),
   shell: Schema.optional(Schema.String).annotate({ description: "Default shell to use for terminal and bash tool" }),
   logLevel: Schema.optional(LogLevelRef).annotate({ description: "Log level" }),
   server: Schema.optional(ConfigServerV1.Server).annotate({

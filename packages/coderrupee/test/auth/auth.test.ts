@@ -1,10 +1,18 @@
 import { describe, expect } from "bun:test"
 import { LayerNode } from "@coderrupee/core/effect/layer-node"
-import { Effect } from "effect"
+import { Effect, Layer } from "effect"
 import { Auth } from "../../src/auth"
+import { Keyring } from "../../src/auth/keyring"
 import { testEffect } from "../lib/effect"
 
-const it = testEffect(LayerNode.compile(Auth.node))
+// Hermetic: force the plaintext fallback so these tests never touch a real OS
+// keyring (they exercise key normalization, not storage selection).
+const unavailableKeyring = Layer.mock(Keyring.Service)({
+  backend: () => "none",
+  isAvailable: () => Effect.succeed(false),
+})
+
+const it = testEffect(LayerNode.compile(Auth.node, [[Keyring.node, unavailableKeyring]]))
 
 describe("Auth", () => {
   it.instance("set normalizes trailing slashes in keys", () =>
