@@ -4,6 +4,28 @@
 // sites guard on PERF.enabled so the off path stays allocation-free. Records
 // never leave the process: they surface through perfSummary(), perfTable(),
 // and the globalThis.__crPerf dump when the flag is on.
+//
+// MEASUREMENTS (item 13 gate, 2026-10-28, worker box, bun 1.3.14; harness
+// packages/app/e2e/performance/unit/item13-pure-perf.test.ts run against base
+// 2429663c0e and this branch with an identical fixture: 2080-part session ->
+// 2079 timeline rows, 159-delta markdown stream, 300-key worker burst, 500-file
+// review diff; the flag was unset during timing so instrumentation adds no
+// overhead to these numbers; base reruns back-to-back bound run-to-run noise):
+//
+//   metric                                         base           branch
+//   timeline.projection p50 (2080 parts)           18.8-22.6 ms   17.4 ms   (code path unchanged)
+//   virtualizer estimate error (total size)        62.77%         0.00%
+//   bottom-window first-measure correction         4828 px        0 px
+//   stale-reasoning restore size drift             23360 px       0 px
+//   stale-reasoning restore start misalignment     23360 px       0 px
+//   markdown flush p50 (159 deltas)                529-711 ms     556 ms    (code path unchanged)
+//   worker burst queue depth peak (300 keys)       300 unbounded  64 gated  (236 dropped-oldest, newest survives)
+//   review diff normalize p50 (500 files)          0.39-0.44 ms   0.41 ms   (code path unchanged)
+//
+// Estimate/restore rows compare against representative per-tag rendered
+// heights; per-row variance remains at runtime — what is eliminated is the
+// systematic per-tag bias of the flat 60px estimate and of expanded-height
+// reasoning snapshots.
 
 const RING_CAP = 512
 
