@@ -87,6 +87,7 @@ import { SessionReviewEmptyChangesV2 } from "@coderrupee/session-ui/v2/session-r
 import { SessionReviewEmptyNoGitV2 } from "@coderrupee/session-ui/v2/session-review-empty-no-git-v2"
 import { SessionReviewSkeletonV2 } from "@coderrupee/session-ui/v2/session-review-skeleton-v2"
 import { SessionReviewV2SidebarToggle } from "@coderrupee/session-ui/v2/session-review-v2"
+import { PERF, perfSample } from "@coderrupee/session-ui/perf"
 import { ReviewPanelV2 } from "@/pages/session/v2/review-panel-v2"
 import { createReviewPanelV2State } from "@/pages/session/v2/review-panel-v2-state"
 import { reviewDiffDirectory, reviewDiffNeedsLoad, reviewRootDirectory } from "@/pages/session/v2/review-diff-kinds"
@@ -689,14 +690,20 @@ export default function Page() {
       queryKey: [...vcsKey(), mode] as const,
       enabled,
       queryFn: mode
-        ? () =>
-            sdk()
+        ? () => {
+            const started = PERF.enabled ? performance.now() : 0
+            return sdk()
               .api.vcs.diff({ location: { directory: sdk().directory }, mode: mode === "git" ? "working" : mode })
-              .then((result) => result.data)
+              .then((result) => {
+                if (started) perfSample("review.diff-list", performance.now() - started)
+                return result.data
+              })
               .catch((error) => {
+                if (started) perfSample("review.diff-list", performance.now() - started)
                 console.debug("[session-review] failed to load vcs diff", { mode, error })
                 return []
               })
+          }
         : skipToken,
     }
   })
@@ -719,7 +726,7 @@ export default function Page() {
     if (reviewMode() === "git" || reviewMode() === "branch") return !vcsQuery.isPending
     return true
   }
-  const loadReviewDiff = async (file: string, version?: number): Promise<VcsFileDiff | undefined> => {
+  const loadReviewDiffRequest = async (file: string, version?: number): Promise<VcsFileDiff | undefined> => {
     const mode = vcsMode()
     if (!mode) return
     const root = reviewRootDirectory(sync().project?.worktree ?? sdk().directory)
@@ -762,6 +769,13 @@ export default function Page() {
     } catch (error) {
       console.debug("[session-review] failed to load bounded vcs diff", { mode, file, root, error })
     }
+  }
+
+  const loadReviewDiff = async (file: string, version?: number) => {
+    const started = PERF.enabled ? performance.now() : 0
+    const diff = await loadReviewDiffRequest(file, version)
+    if (started) perfSample("review.diff-load", performance.now() - started)
+    return diff
   }
 
   const newSessionWorktree = createMemo(() => {

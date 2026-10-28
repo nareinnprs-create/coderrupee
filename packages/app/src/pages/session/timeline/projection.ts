@@ -1,6 +1,7 @@
 import type { SessionMessageInfo } from "@coderrupee/client/promise"
 import type { AssistantMessage, Message, Part, SessionStatus, UserMessage } from "@coderrupee/sdk/v2"
 import { createMemo, type Accessor } from "solid-js"
+import { PERF, perfSample } from "@coderrupee/session-ui/perf"
 import { reuseTimelineRows } from "./row-reconciliation"
 import { Timeline, TimelineRow } from "./rows"
 
@@ -29,8 +30,9 @@ export function createTimelineProjection(input: {
     })
     return result
   })
-  const projection = createMemo(() =>
-    Timeline.constructSessionMessageRows(
+  const projection = createMemo(() => {
+    const started = PERF.enabled ? performance.now() : 0
+    const result = Timeline.constructSessionMessageRows(
       input.sessionMessages(),
       (messageID) => messageByID().get(messageID) as UserMessage | AssistantMessage | undefined,
       input.parts,
@@ -38,8 +40,10 @@ export function createTimelineProjection(input: {
       input.status().type,
       input.inlineComments(),
       input.userMessages(),
-    ),
-  )
+    )
+    if (PERF.enabled) perfSample("timeline.projection", performance.now() - started)
+    return result
+  })
   const activeMessageID = createMemo(() => projection().activeMessageID)
   const rows = createMemo((previous: TimelineRow.TimelineRow[] | undefined) =>
     reuseTimelineRows(previous, projection().rows),

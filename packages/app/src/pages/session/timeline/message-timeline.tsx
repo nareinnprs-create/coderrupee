@@ -82,7 +82,8 @@ import { observeElementOffsetReconnectAware } from "./observe-element-offset"
 import { createTimelineProjection } from "./projection"
 import { reasoningContent, reasoningExpanded } from "./reasoning-collapse"
 import { MessageComment, SummaryDiff, TimelineRow, TimelineRowMap } from "./rows"
-import { filterVirtualIndexes } from "./virtual-items"
+import { estimateRowSize, filterVirtualIndexes, normalizeThinkingMeasurements } from "./virtual-items"
+import { PERF, perfSample } from "@coderrupee/session-ui/perf"
 
 const emptyMessages: MessageType[] = []
 const emptyParts: PartType[] = []
@@ -516,7 +517,10 @@ export function MessageTimeline(props: {
     observeElementOffset: observeElementOffsetReconnectAware,
     initialOffset: () => (props.shouldAnchorBottom() ? Number.MAX_SAFE_INTEGER : 0),
     initialMeasurementsCache: initialMeasurements,
-    estimateSize: () => timelineFallbackItemSize,
+    estimateSize: (index) => {
+      const row = timelineRows()[index]
+      return (row && estimateRowSize(row)) || timelineFallbackItemSize
+    },
     scrollToFn: (offset, options, instance) => {
       // Expose the computed range before core writes an anchor correction so the browser does not clamp it to the old height.
       if (virtualContent) virtualContent.style.height = `${instance.getTotalSize()}px`
@@ -637,7 +641,10 @@ export function MessageTimeline(props: {
   onCleanup(() => {
     clearPrependAnchor()
     timelineCache.delete(ownerSessionKey)
-    timelineCache.set(ownerSessionKey, { measurements: virtualizer.takeSnapshot(), toolOpen: { ...toolOpen } })
+    timelineCache.set(ownerSessionKey, {
+      measurements: normalizeThinkingMeasurements(virtualizer.takeSnapshot()),
+      toolOpen: { ...toolOpen },
+    })
     while (timelineCache.size > 16) timelineCache.delete(timelineCache.keys().next().value!)
     if (resizePinFrame !== undefined) cancelAnimationFrame(resizePinFrame)
     if (overscanFrame !== undefined) cancelAnimationFrame(overscanFrame)
@@ -1368,6 +1375,7 @@ export function MessageTimeline(props: {
 
   function VirtualTimelineRow(props: { rowKey: string }) {
     let element: HTMLDivElement
+    const mountStart = PERF.enabled ? performance.now() : 0
     const initialItem = virtualItemByKey().get(props.rowKey)!
     const initialRow = timelineRowByKey().get(props.rowKey)!
     const item = createMemo(() => virtualItemByKey().get(props.rowKey) ?? initialItem)
@@ -1382,7 +1390,10 @@ export function MessageTimeline(props: {
     const [ready, setReady] = createSignal(initialItem.size <= timelineFallbackItemSize || !asyncFile())
     let contentMeasureFrame: number | undefined
 
-    onMount(() => virtualizer.measureElement(element))
+    onMount(() => {
+      if (PERF.enabled) perfSample("timeline.row-mount", performance.now() - mountStart)
+      virtualizer.measureElement(element)
+    })
 
     createEffect(
       on(
