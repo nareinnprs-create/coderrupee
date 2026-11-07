@@ -14,7 +14,7 @@
   z-index: 60;
   pointer-events: auto;
   background: var(--v2-background-bg-layer-01);
-  border-radius: 6px;
+  border-radius: var(--v2-radius-md);
   box-shadow: var(--v2-elevation-floating);
   transform-origin: top center;
   animation: select-v2-content-in 120ms ease-out;
@@ -54,11 +54,11 @@
   align-items: stretch;
   padding-block: 0;
   padding-inline: 0 6px;
-  gap: 8px;
+  gap: var(--v2-space-4);
   width: 280px;
-  height: 28px;
+  height: var(--v2-control-height-base);
   border: 0;
-  border-radius: 6px;
+  border-radius: var(--v2-radius-md);
   outline: 1px solid transparent;
   outline-offset: 0;
   background:
@@ -74,7 +74,7 @@
 }
 
 [data-component="select-v2"][data-appearance="large"] {
-  height: 32px;
+  height: var(--v2-control-height-lg);
   padding-block: 0;
   padding-inline: 0 8px;
 }

@@ -71,7 +71,7 @@
 [data-component="tabs-v2"] [data-slot="tabs-v2-trigger"]:focus-visible {
   outline: 2px solid var(--v2-border-border-focus);
   outline-offset: -2px;
-  border-radius: 6px;
+  border-radius: var(--v2-radius-md);
 }
 
 [data-component="tabs-v2"] [data-slot="tabs-v2-close-button"] {
@@ -111,9 +111,9 @@
 
 [data-component="tabs-v2"][data-variant="normal"][data-orientation="horizontal"] [data-slot="tabs-v2-list"],
 [data-component="tabs-v2"][data-variant="pill"][data-orientation="horizontal"] [data-slot="tabs-v2-list"] {
-  gap: 6px;
-  padding-inline: 8px;
-  height: 32px;
+  gap: var(--v2-space-3);
+  padding-inline: var(--v2-space-4);
+  height: var(--v2-control-height-lg);
   align-items: center;
   position: relative;
 }

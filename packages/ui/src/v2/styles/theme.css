@@ -142,6 +142,34 @@
 
     --font-family-text: "Inter", sans-serif;
     --v2-font-family-sans: "Inter", sans-serif;
+
+    /* ── Shared type, space, radius, control, and focus tokens ── */
+    --v2-type-body-size: 13px;
+    --v2-type-body-line: 20px;
+    --v2-type-caption-size: 12px;
+    --v2-type-caption-line: 16px;
+    --v2-type-label-size: 11px;
+    --v2-type-label-line: 16px;
+    --v2-type-letter-tight: -0.04px;
+    --v2-type-letter-label: 0.05px;
+    --v2-space-1: 2px;
+    --v2-space-2: 4px;
+    --v2-space-3: 6px;
+    --v2-space-4: 8px;
+    --v2-space-5: 12px;
+    --v2-space-6: 16px;
+    --v2-radius-xs: 2px;
+    --v2-radius-sm: 4px;
+    --v2-radius-md: 6px;
+    --v2-radius-lg: 8px;
+    --v2-radius-pill: 9999px;
+    --v2-control-height-sm: 24px;
+    --v2-control-height-base: 28px;
+    --v2-control-height-lg: 32px;
+    --v2-control-icon-sm: 16px;
+    --v2-control-icon-base: 20px;
+    --v2-focus-ring-width: 2px;
+    --v2-focus-ring-offset: 1px;
   }
 
   /* OS preference fallback (no JS needed) */
