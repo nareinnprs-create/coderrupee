@@ -119,3 +119,15 @@ export const commit = Effect.fn("SessionRevert.commit")(function* (session: Sess
     timestamp: yield* DateTime.now,
   })
 })
+
+export const truncate = Effect.fn("SessionRevert.truncate")(function* (input: {
+  readonly sessionID: SessionSchema.ID
+  readonly messageID: SessionMessage.ID
+}) {
+  const events = yield* EventV2.Service
+  yield* events.publish(SessionEvent.RevertEvent.Committed, {
+    sessionID: input.sessionID,
+    messageID: input.messageID,
+    timestamp: yield* DateTime.now,
+  })
+})
