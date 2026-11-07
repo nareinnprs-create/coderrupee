@@ -116,6 +116,19 @@ describe("doctor auth check", () => {
       else process.env.CODERRUPEE_AUTH_CONTENT = saved
     }
   })
+
+  test("reads credentials from the available keyring", async () => {
+    const result = await Doctor.authCheck.run(
+      mockContext({
+        keyring: {
+          backend: "test-keyring",
+          list: async () => ({ openai: JSON.stringify({ type: "api", key: "sk" }) }),
+        },
+      }),
+    )
+    expect(result.status).toBe("pass")
+    expect(result.detail).toContain("test-keyring keyring")
+  })
 })
 
 describe("doctor config check", () => {

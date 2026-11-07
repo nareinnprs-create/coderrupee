@@ -1,6 +1,6 @@
 export * as Doctor from "."
 
-import { Cause, Exit, Schema, SchemaIssue } from "effect"
+import { Cause, Effect, Exit, Schema, SchemaIssue } from "effect"
 import fs from "fs/promises"
 import { existsSync } from "node:fs"
 import path from "path"
@@ -51,6 +51,10 @@ export interface DoctorContext {
   readonly accessWritable: (dir: string) => Promise<boolean>
   readonly statfs: (dir: string) => Promise<{ bsize: number; bavail: number } | undefined>
   readonly detectMethod: () => Promise<Installation.Method>
+  readonly keyring?: {
+    readonly backend: string
+    readonly list: () => Promise<Record<string, string>>
+  }
 }
 
 export interface Check {
@@ -111,6 +115,21 @@ export function defaultContext(cwd = process.cwd()): DoctorContext {
       const { Installation } = await import("@/installation")
       return Installation.method()
     },
+  }
+}
+
+export async function defaultKeyring() {
+  try {
+    const { AppNodeBuilder } = await import("@coderrupee/core/effect/app-node-builder")
+    const { makeRuntime } = await import("@coderrupee/core/effect/runtime")
+    const { Keyring } = await import("@/auth/keyring")
+    const runtime = makeRuntime(Keyring.Service, AppNodeBuilder.build(Keyring.node))
+    return {
+      backend: runtime.runSync((service) => Effect.succeed(service.backend())),
+      list: () => runtime.runPromise((service) => service.list()),
+    }
+  } catch {
+    return undefined
   }
 }
 
@@ -179,6 +198,17 @@ export const authCheck: Check = {
           detail: "CODERRUPEE_AUTH_CONTENT is set but is not valid JSON; its content is ignored",
         }
       return summarizeAuth(parsed, `CODERRUPEE_AUTH_CONTENT environment variable (file ${file} unused)`, this.id, this.label)
+    }
+    if (ctx.keyring && ctx.keyring.backend !== "none") {
+      const stored = await ctx.keyring.list()
+      const entries = Object.entries(stored).map(([key, value]) => {
+        try {
+          return [key, JSON.parse(value)] as [string, unknown]
+        } catch {
+          return [key, value] as [string, unknown]
+        }
+      })
+      return summarizeAuth(entries, `${ctx.keyring.backend} keyring`, this.id, this.label)
     }
     if (!(await ctx.exists(file)))
       return {

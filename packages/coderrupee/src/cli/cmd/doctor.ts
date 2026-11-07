@@ -15,7 +15,9 @@ import { cmd } from "./cmd"
  * becomes 1.
  */
 export async function runDoctor(input: { json?: boolean; strict?: boolean; context?: DoctorContext } = {}) {
-  const report = await Doctor.runChecks({ context: input.context ?? Doctor.defaultContext() })
+  const keyring = input.context ? undefined : await Doctor.defaultKeyring()
+  const context = input.context ?? { ...Doctor.defaultContext(), ...(keyring ? { keyring } : {}) }
+  const report = await Doctor.runChecks({ context })
   if (input.json) {
     process.stdout.write(DoctorFormat.toJson(report) + EOL)
   } else {
