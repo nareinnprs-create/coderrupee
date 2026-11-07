@@ -65,12 +65,41 @@ const GlobalUpgradeResult = Schema.Union([
   }),
 ])
 
+const GlobalDiagnostics = Schema.Struct({
+  version: Schema.String,
+  channel: Schema.String,
+  keyring: Schema.Struct({ backend: Schema.String, credentials: Schema.Int }),
+  doctor: Schema.Struct({
+    checks: Schema.Array(Schema.Struct({
+      id: Schema.String,
+      label: Schema.String,
+      status: Schema.Literals(["pass", "warn", "fail", "info"]),
+      detail: Schema.optional(Schema.String),
+      hint: Schema.optional(Schema.String),
+    })),
+    ok: Schema.Boolean,
+  }),
+  history: Schema.Array(Schema.Struct({
+    fromVersion: Schema.String,
+    toVersion: Schema.String,
+    channel: Schema.String,
+    date: Schema.String,
+  })),
+})
+
+const GlobalRollbackResult = Schema.Union([
+  Schema.Struct({ success: Schema.Literal(true), version: Schema.String }),
+  Schema.Struct({ success: Schema.Literal(false), error: Schema.String }),
+])
+
 export const GlobalPaths = {
   health: "/global/health",
   event: "/global/event",
   config: "/global/config",
   dispose: "/global/dispose",
   upgrade: "/global/upgrade",
+  diagnostics: "/global/diagnostics",
+  rollback: "/global/rollback",
 } as const
 
 export const GlobalApi = HttpApi.make("global").add(
@@ -132,6 +161,24 @@ export const GlobalApi = HttpApi.make("global").add(
           identifier: "global.upgrade",
           summary: "Upgrade coderrupee",
           description: "Upgrade coderrupee to the specified version.",
+        }),
+      ),
+      HttpApiEndpoint.get("diagnostics", GlobalPaths.diagnostics, {
+        success: described(GlobalDiagnostics, "Get local diagnostics"),
+      }).annotateMerge(
+        OpenApi.annotations({
+          identifier: "global.diagnostics",
+          summary: "Get local diagnostics",
+          description: "Run local doctor checks and report keyring and update history status.",
+        }),
+      ),
+      HttpApiEndpoint.post("rollback", GlobalPaths.rollback, {
+        success: described(GlobalRollbackResult, "Rollback the last update"),
+      }).annotateMerge(
+        OpenApi.annotations({
+          identifier: "global.rollback",
+          summary: "Rollback the last update",
+          description: "Reinstall the version recorded before the last successful update.",
         }),
       ),
     )

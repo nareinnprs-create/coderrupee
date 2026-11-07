@@ -1,4 +1,5 @@
 import { Component, Show, createMemo, createResource } from "solid-js"
+import type { Config } from "@coderrupee/sdk/v2/client"
 import { createMediaQuery } from "@solid-primitives/media"
 import { ButtonV2 } from "@coderrupee/ui/v2/button-v2"
 import { SelectV2 } from "@coderrupee/ui/v2/select-v2"
@@ -9,6 +10,8 @@ import { useLanguage } from "@/context/language"
 import { usePlatform } from "@/context/platform"
 import { useUpdaterAction } from "../updater-action"
 import { useSettings } from "@/context/settings"
+import { useServerSDK } from "@/context/server-sdk"
+import { useServerSync } from "@/context/server-sync"
 import { ExternalLink } from "../external-link"
 import { SettingsListV2 } from "./parts/list"
 import { SettingsRowV2 } from "./parts/row"
@@ -28,6 +31,19 @@ import {
 import "./settings-v2.css"
 
 const schemeOptions: ("system" | "light" | "dark")[] = ["system", "light", "dark"]
+const updateChannels = ["stable", "beta"] as const
+
+type Diagnostics = {
+  version: string
+  channel: string
+  keyring: { backend: string; credentials: number }
+  doctor: { checks: { id: string; label: string; status: "pass" | "warn" | "fail" | "info"; detail?: string }[]; ok: boolean }
+  history: { fromVersion: string; toVersion: string; channel: string; date: string }[]
+}
+type ExtendedConfig = Config & {
+  channel?: (typeof updateChannels)[number]
+  budget?: { sessionMaxUsd?: number; warnAt?: number; action?: "stop" | "warn-only" }
+}
 const fontSettings = {
   ui: {
     action: "settings-ui-font",
@@ -528,6 +544,84 @@ export const SettingsGeneralV2: Component<{
     </div>
   )
 
+  const PlatformSection = () => {
+    const serverSync = useServerSync()
+    const serverSDK = useServerSDK()
+    const request = async <T,>(path: string, method: "GET" | "POST") => {
+      const response = await (platform.fetch ?? globalThis.fetch)(new URL(path, serverSDK().url), { method })
+      if (!response.ok) throw new Error(`Request failed: ${response.status}`)
+      return (await response.json()) as T
+    }
+    const [diagnostics, { refetch }] = createResource<Diagnostics>(async () => {
+      return request<Diagnostics>("/global/diagnostics", "GET")
+    })
+    const config = () => serverSync().data.config as ExtendedConfig
+    const updateConfig = (patch: Partial<ExtendedConfig>) => void serverSync().updateConfig({ ...config(), ...patch })
+    const rollback = async () => {
+      await request("/global/rollback", "POST")
+      await refetch()
+    }
+
+    return (
+      <div class="settings-v2-section">
+        <h3 class="settings-v2-section-title">{language.t("settings.general.section.platform")}</h3>
+        <SettingsListV2>
+          <SettingsRowV2
+            title={language.t("settings.general.row.updateChannel.title")}
+            description={language.t("settings.general.row.updateChannel.description")}
+          >
+            <SelectV2
+              appearance="inline"
+              options={[...updateChannels]}
+              current={(config().channel as (typeof updateChannels)[number] | undefined) ?? "stable"}
+              label={(option) => option}
+              onSelect={(option) => option && updateConfig({ channel: option })}
+            />
+          </SettingsRowV2>
+          <SettingsRowV2
+            title={language.t("settings.general.row.sessionBudget.title")}
+            description={language.t("settings.general.row.sessionBudget.description")}
+          >
+            <TextInputV2
+              type="number"
+              appearance="base"
+              min="0"
+              step="0.01"
+              value={config().budget?.sessionMaxUsd?.toString() ?? ""}
+              placeholder={language.t("settings.general.row.sessionBudget.placeholder")}
+              aria-label={language.t("settings.general.row.sessionBudget.title")}
+              onChange={(event) => {
+                const value = event.currentTarget.value
+                updateConfig({ budget: value ? { ...config().budget, sessionMaxUsd: Number(value) } : undefined })
+              }}
+            />
+          </SettingsRowV2>
+          <SettingsRowV2
+            title={language.t("settings.general.row.diagnostics.title")}
+            description={language.t("settings.general.row.diagnostics.description")}
+          >
+            <ButtonV2 size="normal" variant="neutral" onClick={() => void refetch()}>
+              {language.t("settings.general.row.diagnostics.action")}
+            </ButtonV2>
+          </SettingsRowV2>
+          <Show when={diagnostics.latest}>
+            {(report) => (
+              <div class="px-3 pb-3 text-12-regular text-text-weak">
+                <div>{language.t("settings.general.row.diagnostics.summary", { version: report().version, backend: report().keyring.backend })}</div>
+                <div>{language.t("settings.general.row.diagnostics.checks", { count: report().doctor.checks.length })}</div>
+                <Show when={report().history.length > 0}>
+                  <ButtonV2 size="small" variant="ghost" onClick={() => void rollback()}>
+                    {language.t("settings.general.row.rollback.action", { version: report().history.at(-1)?.fromVersion ?? "" })}
+                  </ButtonV2>
+                </Show>
+              </div>
+            )}
+          </Show>
+        </SettingsListV2>
+      </div>
+    )
+  }
+
   // We can probably remove this, right?
   const DisplaySection = () => (
     <Show when={desktop()}>
@@ -583,6 +677,8 @@ export const SettingsGeneralV2: Component<{
         <Show when={desktop()}>
           <UpdatesSection />
         </Show>
+
+        <PlatformSection />
 
         <DisplaySection />
 

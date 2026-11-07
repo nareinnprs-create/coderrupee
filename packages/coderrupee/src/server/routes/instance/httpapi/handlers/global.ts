@@ -6,6 +6,7 @@ import { Installation } from "@/installation"
 import { disposeAllInstancesAndEmitGlobalDisposed } from "@/server/global-lifecycle"
 import { InstallationVersion } from "@coderrupee/core/installation/version"
 import { UpdateHistory } from "@/installation/update-history"
+import { Doctor } from "@/doctor"
 import { Effect, Queue } from "effect"
 import * as Stream from "effect/Stream"
 import { HttpServerResponse } from "effect/unstable/http"
@@ -121,6 +122,34 @@ export const globalHandlers = HttpApiBuilder.group(RootHttpApi, "global", (handl
       return HttpServerResponse.jsonUnsafe(result)
     })
 
+    const diagnostics = Effect.fn("GlobalHttpApi.diagnostics")(function* () {
+      const keyring = yield* Effect.promise(() => Doctor.defaultKeyring())
+      const doctor = yield* Effect.promise(() => Doctor.runChecks({
+        context: { ...Doctor.defaultContext(), keyring },
+      }))
+      const credentials = keyring ? yield* Effect.promise(() => keyring.list().catch(() => ({}))) : {}
+      const entries = yield* Effect.sync(() => UpdateHistory.read())
+      return {
+        version: InstallationVersion,
+        channel: UpdateHistory.currentChannel(),
+        keyring: { backend: keyring?.backend ?? "none", credentials: Object.keys(credentials).length },
+        doctor: { checks: doctor.checks, ok: doctor.ok },
+        history: entries,
+      }
+    })
+
+    const rollback = Effect.fn("GlobalHttpApi.rollback")(function* () {
+      const entry = UpdateHistory.last(UpdateHistory.read())
+      if (!entry) return { success: false as const, error: "No update is available to roll back" }
+      const method = yield* installation.method()
+      if (method === "unknown") return { success: false as const, error: "Unknown installation method" }
+      const result = yield* installation.upgrade(method, entry.fromVersion).pipe(
+        Effect.as({ success: true as const, version: entry.fromVersion }),
+        Effect.catch((err) => Effect.succeed({ success: false as const, error: err instanceof Error ? err.message : String(err) })),
+      )
+      return result
+    })
+
     return handlers
       .handle("health", health)
       .handleRaw("event", event)
@@ -128,5 +157,7 @@ export const globalHandlers = HttpApiBuilder.group(RootHttpApi, "global", (handl
       .handle("configUpdate", configUpdate)
       .handle("dispose", dispose)
       .handle("upgrade", upgrade)
+      .handle("diagnostics", diagnostics)
+      .handle("rollback", rollback)
   }),
 )
