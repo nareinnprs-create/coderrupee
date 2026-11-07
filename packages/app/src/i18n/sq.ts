@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "Ndani komentet",
   "desktop.menu.reportBug": "Raportoni një gabim",
   "desktop.menu.ariaLabel": "Menuja CoderRupee",
+  "desktop.tray.show": "Shfaq CoderRupee",
+  "desktop.tray.hide": "Fshih CoderRupee",
+  "desktop.tray.notification.message": "CoderRupee vazhdon të punojë në sirtarin e sistemit.",
   "desktop.updater.dialog.checkFailed.message": "Kontrolli i përditësimit dështoi.",
   "desktop.updater.dialog.checkFailed.title": "Gabim i përditësimit",
   "desktop.updater.dialog.upToDate.message": "Ju jeni të përditësuar.",
@@ -985,6 +988,8 @@ export const dict = {
   "settings.general.row.newInterfaceNotice.dismiss": "Largoje",
   "settings.general.row.pinchZoom.title": "Pini për të zmadhuar",
   "settings.general.row.pinchZoom.description": "Lejo zmadhimin e kapjes së tastierës dhe gjestet e lëvizjes Ctrl",
+  "settings.general.row.closeToTray.title": "Mbyll në sirtarin e sistemit",
+  "settings.general.row.closeToTray.description": "Mbaje CoderRupee duke punuar në sirtarin e sistemit kur mbyllet dritarja",
   "settings.general.row.wayland.title": "Përdorni Wayland amtare",
   "settings.general.row.wayland.description": "Çaktivizo kthimin e X11 në Wayland. Kërkon rinisje.",
   "settings.general.row.wayland.tooltip":

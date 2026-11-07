@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "Споделете обратна връзка",
   "desktop.menu.reportBug": "Докладване за грешка",
   "desktop.menu.ariaLabel": "CoderRupee меню",
+  "desktop.tray.show": "Показване на CoderRupee",
+  "desktop.tray.hide": "Скриване на CoderRupee",
+  "desktop.tray.notification.message": "CoderRupee продължава да работи в системния панел.",
   "desktop.updater.dialog.checkFailed.message": "Проверката на актуализацията е неуспешна.",
   "desktop.updater.dialog.checkFailed.title": "Грешка при актуализиране",
   "desktop.updater.dialog.upToDate.message": "Вие сте в крак с времето.",
@@ -989,6 +992,8 @@ export const dict = {
   "settings.general.row.pinchZoom.title": "Щипнете, за да увеличите",
   "settings.general.row.pinchZoom.description":
     "Разрешаване на жестове с щипване и Ctrl-превъртане на тракпада за мащабиране",
+  "settings.general.row.closeToTray.title": "Затваряне в системния панел",
+  "settings.general.row.closeToTray.description": "CoderRupee да продължи да работи в системния панел при затваряне на прозореца",
   "settings.general.row.wayland.title": "Използвайте естествен Wayland",
   "settings.general.row.wayland.description": "Деактивирайте X11 резервен вариант на Wayland. Изисква рестартиране.",
   "settings.general.row.wayland.tooltip":

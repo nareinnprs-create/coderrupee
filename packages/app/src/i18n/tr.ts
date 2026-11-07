@@ -48,6 +48,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "Geri bildirim paylaş",
   "desktop.menu.reportBug": "Hata bildir",
   "desktop.menu.ariaLabel": "CoderRupee menüsü",
+  "desktop.tray.show": "CoderRupee'yu Göster",
+  "desktop.tray.hide": "CoderRupee'yu Gizle",
+  "desktop.tray.notification.message": "CoderRupee sistem tepsisinde çalışmaya devam eder.",
 
   "desktop.updater.dialog.checkFailed.message": "Güncellemeler kontrol edilemedi.",
   "desktop.updater.dialog.checkFailed.title": "Güncelleme hatası",
@@ -974,6 +977,8 @@ export const dict = {
   "settings.general.row.pinchZoom.title": "Sıkıştırarak yakınlaştır",
   "settings.general.row.pinchZoom.description":
     "İzleme dörtgeninde sıkıştırma ve Ctrl-kaydırma hareketleriyle yakınlaştırmaya izin ver",
+  "settings.general.row.closeToTray.title": "Tepsiye kapat",
+  "settings.general.row.closeToTray.description": "Pencere kapatıldığında CoderRupee'yu sistem tepsisinde çalışır durumda tut",
 
   "settings.general.row.wayland.title": "Yerel Wayland kullan",
   "settings.general.row.wayland.description":

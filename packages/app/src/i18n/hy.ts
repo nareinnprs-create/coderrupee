@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "Կիսվել կարծիք",
   "desktop.menu.reportBug": "Հաղորդել սխալի մասին",
   "desktop.menu.ariaLabel": "CoderRupee մենյու",
+  "desktop.tray.show": "Ցուցադրել CoderRupee-ը",
+  "desktop.tray.hide": "Թաքցնել CoderRupee-ը",
+  "desktop.tray.notification.message": "CoderRupee-ը շարունակում է աշխատել համակարգի խորանում։",
   "desktop.updater.dialog.checkFailed.message": "Թարմացման ստուգումը ձախողվեց։",
   "desktop.updater.dialog.checkFailed.title": "Թարմացման սխալ",
   "desktop.updater.dialog.upToDate.message": "Դուք արդիական եք",
@@ -985,6 +988,8 @@ export const dict = {
   "settings.general.row.newInterfaceNotice.dismiss": "Փակել",
   "settings.general.row.pinchZoom.title": "Սեղմեք՝ խոշորացնելու համար",
   "settings.general.row.pinchZoom.description": "Թույլատրել մատնաչափի սեղմումը և Ctrl-scroll ժեստերը մեծացնելու համար",
+  "settings.general.row.closeToTray.title": "Փակել խորանում",
+  "settings.general.row.closeToTray.description": "Պատուհանը փակելիս CoderRupee-ը շարունակի աշխատել համակարգի խորանում",
   "settings.general.row.wayland.title": "Օգտագործել բնիկ Wayland",
   "settings.general.row.wayland.description": "Անջատել X11-ի հետադարձ կապը Wayland-ում: Պահանջվում է վերագործարկում:",
   "settings.general.row.wayland.tooltip":

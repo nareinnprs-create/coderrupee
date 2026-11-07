@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "Feedback delen",
   "desktop.menu.reportBug": "Een bug melden",
   "desktop.menu.ariaLabel": "CoderRupee-menu",
+  "desktop.tray.show": "CoderRupee weergeven",
+  "desktop.tray.hide": "CoderRupee verbergen",
+  "desktop.tray.notification.message": "CoderRupee blijft actief in het systeemvak.",
   "desktop.updater.dialog.checkFailed.message": "Controleren op updates is mislukt.",
   "desktop.updater.dialog.checkFailed.title": "Updatefout",
   "desktop.updater.dialog.upToDate.message": "Je bent helemaal bijgewerkt.",
@@ -992,6 +995,8 @@ export const dict = {
   "settings.general.row.pinchZoom.title": "Knijp om te zoomen",
   "settings.general.row.pinchZoom.description":
     "Sta knijp- en Ctrl-scroll-bewegingen op het trackpad toe om in te zoomen",
+  "settings.general.row.closeToTray.title": "Sluiten naar het systeemvak",
+  "settings.general.row.closeToTray.description": "Laat CoderRupee in het systeemvak actief blijven wanneer het venster wordt gesloten",
   "settings.general.row.wayland.title": "Native Wayland gebruiken",
   "settings.general.row.wayland.description": "Schakel X11-fallback uit op Wayland. Vereist opnieuw opstarten.",
   "settings.general.row.wayland.tooltip":

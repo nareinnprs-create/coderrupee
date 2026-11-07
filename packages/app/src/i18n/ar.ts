@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "إرسال الملاحظات",
   "desktop.menu.reportBug": "الإبلاغ عن خلل",
   "desktop.menu.ariaLabel": "قائمة CoderRupee",
+  "desktop.tray.show": "إظهار CoderRupee",
+  "desktop.tray.hide": "إخفاء CoderRupee",
+  "desktop.tray.notification.message": "يظل CoderRupee قيد التشغيل في شريط النظام.",
 
   "desktop.updater.dialog.checkFailed.message": "فشل التحقق من وجود تحديثات.",
   "desktop.updater.dialog.checkFailed.title": "خطأ في التحديث",
@@ -899,6 +902,8 @@ export const dict = {
   "settings.general.row.pinchZoom.title": "التكبير بالمقاربة والمباعدة",
   "settings.general.row.pinchZoom.description":
     "السماح بإيماءات مقاربة الأصابع ومباعدتها على لوحة التعقب والتمرير مع الضغط على Ctrl للتكبير",
+  "settings.general.row.closeToTray.title": "الإغلاق إلى شريط النظام",
+  "settings.general.row.closeToTray.description": "إبقاء CoderRupee قيد التشغيل في شريط النظام عند إغلاق النافذة",
   "settings.general.row.wayland.title": "استخدام Wayland الأصلي",
   "settings.general.row.wayland.description": "تعطيل الرجوع إلى X11 على Wayland. يتطلب إعادة التشغيل.",
   "settings.general.row.wayland.tooltip":

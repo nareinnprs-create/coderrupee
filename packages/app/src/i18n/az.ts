@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "Rəy bildir",
   "desktop.menu.reportBug": "Xəta bildir",
   "desktop.menu.ariaLabel": "CoderRupee menyusu",
+  "desktop.tray.show": "CoderRupee-nu göstər",
+  "desktop.tray.hide": "CoderRupee-nu gizlət",
+  "desktop.tray.notification.message": "CoderRupee sistem qutusunda işləməyə davam edir.",
   "desktop.updater.dialog.checkFailed.message": "Yeniləmələri yoxlamaq mümkün olmadı.",
   "desktop.updater.dialog.checkFailed.title": "Yeniləmə xətası",
   "desktop.updater.dialog.upToDate.message": "Ən son versiyadan istifadə edirsiniz.",
@@ -991,6 +994,8 @@ export const dict = {
   "settings.general.row.pinchZoom.title": "Böyütmək üçün çimdikləyin",
   "settings.general.row.pinchZoom.description":
     "Trekpadda çimdikləmə və Ctrl-sürüşdürmə jestləri ilə miqyaslamağa icazə verin",
+  "settings.general.row.closeToTray.title": "Qutuya bağla",
+  "settings.general.row.closeToTray.description": "Pəncərə bağlananda CoderRupee-nu sistem qutusunda işlək vəziyyətdə saxla",
   "settings.general.row.wayland.title": "Nativ Wayland-dan istifadə et",
   "settings.general.row.wayland.description": "Wayland-da X11 geri dönüşünü deaktiv et. Yenidən başlatma tələb olunur.",
   "settings.general.row.wayland.tooltip":

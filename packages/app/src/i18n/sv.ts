@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "Skicka feedback",
   "desktop.menu.reportBug": "Rapportera ett fel",
   "desktop.menu.ariaLabel": "CoderRupee-meny",
+  "desktop.tray.show": "Visa CoderRupee",
+  "desktop.tray.hide": "Dölj CoderRupee",
+  "desktop.tray.notification.message": "CoderRupee fortsätter köras i systemfältet.",
   "desktop.updater.dialog.checkFailed.message": "Det gick inte att söka efter uppdateringar.",
   "desktop.updater.dialog.checkFailed.title": "Uppdateringsfel",
   "desktop.updater.dialog.upToDate.message": "Du har den senaste versionen.",
@@ -983,6 +986,8 @@ export const dict = {
   "settings.general.row.newInterfaceNotice.dismiss": "Avfärda",
   "settings.general.row.pinchZoom.title": "Nyp för att zooma",
   "settings.general.row.pinchZoom.description": "Tillåt nypgester på styrplattan och Ctrl-rullning för att zooma",
+  "settings.general.row.closeToTray.title": "Stäng till systemfältet",
+  "settings.general.row.closeToTray.description": "Låt CoderRupee fortsätta köras i systemfältet när fönstret stängs",
   "settings.general.row.wayland.title": "Använd inbyggt Wayland-stöd",
   "settings.general.row.wayland.description": "Inaktivera X11-reservläget på Wayland. Kräver omstart.",
   "settings.general.row.wayland.tooltip":

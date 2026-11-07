@@ -91,6 +91,9 @@ const desktop = [
   "A port lekérése sikertelen",
   "A fájl nem lett kiválasztva a választóban",
   "A kiválasztott mellékletek meghaladják a(z) {{limit}} MB-os korlátot",
+  "CoderRupee megjelenítése",
+  "CoderRupee elrejtése",
+  "A CoderRupee tovább fut a tálcán.",
 ]
 
 export const dict = {
@@ -989,6 +992,8 @@ export const dict = {
   "settings.general.row.pinchZoom.title": "Csípje össze a nagyításhoz",
   "settings.general.row.pinchZoom.description":
     "Engedélyezze az érintőpad összecsípését és a Ctrl-görgetést a nagyításhoz",
+  "settings.general.row.closeToTray.title": "Bezárás a tálcára",
+  "settings.general.row.closeToTray.description": "Ablak bezárásakor a CoderRupee tovább fuson a tálcán",
   "settings.general.row.wayland.title": "Használja a natív Wayland-t",
   "settings.general.row.wayland.description": "A X11 tartalék letiltása a Wayland-n. Újraindítást igényel.",
   "settings.general.row.wayland.tooltip":

@@ -26,6 +26,8 @@ export type ServerReadyData = {
   password: string | null
 }
 
+export type SidecarSupervisorState = "stopped" | "starting" | "running" | "crashed" | "restarting" | "failed"
+
 export type WslServersAPI = WslServersPlatform
 export type UpdaterAPI = {
   subscribe: (cb: (state: UpdaterState) => void) => Promise<() => void>
@@ -109,6 +111,9 @@ export type ElectronAPI = {
   getPinchZoomEnabled: () => Promise<boolean>
   setPinchZoomEnabled: (enabled: boolean) => Promise<void>
   onPinchZoomEnabledChanged: (cb: (enabled: boolean) => void) => () => void
+  getCloseToTrayEnabled: () => Promise<boolean>
+  setCloseToTrayEnabled: (enabled: boolean) => Promise<void>
+  onCloseToTrayEnabledChanged: (cb: (enabled: boolean) => void) => () => void
   onZoomFactorChanged: (cb: (factor: number) => void) => () => void
   setTitlebar: (theme: TitlebarTheme) => Promise<void>
   runDesktopMenuAction: (action: DesktopMenuAction) => Promise<void>

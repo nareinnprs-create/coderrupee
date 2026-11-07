@@ -972,6 +972,9 @@ export const dict = {
   "settings.general.row.newInterfaceNotice.dismiss": "Dismiss",
   "settings.general.row.pinchZoom.title": "Pinch to zoom",
   "settings.general.row.pinchZoom.description": "Allow trackpad pinch and Ctrl-scroll gestures to zoom",
+  "settings.general.row.closeToTray.title": "Close to tray",
+  "settings.general.row.closeToTray.description":
+    "Keep CoderRupee running in the system tray when the window is closed",
 
   "settings.general.row.wayland.title": "Use native Wayland",
   "settings.general.row.wayland.description": "Disable X11 fallback on Wayland. Requires restart.",

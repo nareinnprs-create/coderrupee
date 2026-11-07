@@ -879,6 +879,8 @@ export const dict = {
   "settings.general.row.newInterfaceNotice.dismiss": "Hylkää",
   "settings.general.row.pinchZoom.title": "Zoomaa nipistämällä",
   "settings.general.row.pinchZoom.description": "Salli zoomaus ohjauslevyn nipistyseleellä ja Ctrl-vierityksellä",
+  "settings.general.row.closeToTray.title": "Sulje ilmoitusalueelle",
+  "settings.general.row.closeToTray.description": "Pidä CoderRupee käynnissä ilmoitusalueella ikkunan sulkemisen jälkeen",
   "settings.general.row.wayland.title": "Käytä alkuperäistä Waylandia",
   "settings.general.row.wayland.description":
     "Poista X11-varatila käytöstä Waylandissa. Vaatii uudelleenkäynnistyksen.",
@@ -1101,6 +1103,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "Anna palautetta",
   "desktop.menu.reportBug": "Ilmoita ohjelmavirheestä",
   "desktop.menu.ariaLabel": "CoderRupee-valikko",
+  "desktop.tray.show": "Näytä CoderRupee",
+  "desktop.tray.hide": "Piilota CoderRupee",
+  "desktop.tray.notification.message": "CoderRupee pysyy käynnissä ilmoitusalueella.",
   "desktop.updater.dialog.checkFailed.message": "Päivitysten tarkistus epäonnistui.",
   "desktop.updater.dialog.checkFailed.title": "Päivitysvirhe",
   "desktop.updater.dialog.upToDate.message": "Olet ajan tasalla.",

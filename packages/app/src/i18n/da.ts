@@ -843,6 +843,8 @@ export const dict = {
   "settings.general.row.newInterfaceNotice.dismiss": "Afvis",
   "settings.general.row.pinchZoom.title": "Knib for at zoome",
   "settings.general.row.pinchZoom.description": "Tillad knibebevægelser på pegefeltet og Ctrl-rulning for at zoome",
+  "settings.general.row.closeToTray.title": "Luk til systembakken",
+  "settings.general.row.closeToTray.description": "Lad CoderRupee køre i systembakken, når vinduet lukkes",
   "settings.general.row.wayland.title": "Brug indbygget Wayland",
   "settings.general.row.wayland.description": "Deaktiver X11-fallback på Wayland. Kræver genstart.",
   "settings.general.row.wayland.tooltip":
@@ -1174,6 +1176,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "Giv feedback",
   "desktop.menu.reportBug": "Rapportér en fejl",
   "desktop.menu.ariaLabel": "CoderRupee-menu",
+  "desktop.tray.show": "Vis CoderRupee",
+  "desktop.tray.hide": "Skjul CoderRupee",
+  "desktop.tray.notification.message": "CoderRupee fortsætter med at køre i systembakken.",
 
   "desktop.updater.dialog.checkFailed.message": "Søgningen efter opdateringer mislykkedes.",
   "desktop.updater.dialog.checkFailed.title": "Opdateringsfejl",

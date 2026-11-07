@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "Споделете повратни информации",
   "desktop.menu.reportBug": "Пријавете бубачка",
   "desktop.menu.ariaLabel": "CoderRupee мени",
+  "desktop.tray.show": "Прикажи CoderRupee",
+  "desktop.tray.hide": "Сокриј CoderRupee",
+  "desktop.tray.notification.message": "CoderRupee продолжува да работи во системската лента.",
   "desktop.updater.dialog.checkFailed.message": "Проверката за ажурирање не успеа.",
   "desktop.updater.dialog.checkFailed.title": "Грешка во ажурирањето",
   "desktop.updater.dialog.upToDate.message": "Ажуриран си.",
@@ -988,6 +991,8 @@ export const dict = {
   "settings.general.row.pinchZoom.title": "Стиснете за да зумирате",
   "settings.general.row.pinchZoom.description":
     "Дозволете зумирање на гестовите за стискање на подлогата и Ctrl-scroll",
+  "settings.general.row.closeToTray.title": "Затвори во системската лента",
+  "settings.general.row.closeToTray.description": "Задржи го CoderRupee да работи во системската лента по затворање на прозорецот",
   "settings.general.row.wayland.title": "Користете мајчин Wayland",
   "settings.general.row.wayland.description": "Оневозможи резервни X11 на Wayland. Потребно е рестартирање.",
   "settings.general.row.wayland.tooltip":

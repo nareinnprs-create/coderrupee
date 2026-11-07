@@ -44,6 +44,9 @@ export const dict: Record<string, string> = {
   "desktop.menu.shareFeedback": "प्रतिक्रिया साझा गर्नुहोस्",
   "desktop.menu.reportBug": "बग रिपोर्ट गर्नुहोस्",
   "desktop.menu.ariaLabel": "CoderRupee मेनु",
+  "desktop.tray.show": "CoderRupee देखाउनुहोस्",
+  "desktop.tray.hide": "CoderRupee लुकाउनुहोस्",
+  "desktop.tray.notification.message": "CoderRupee ट्रेमा चलिरहनेछ।",
   "desktop.updater.dialog.checkFailed.message": "अद्यावधिक जाँच असफल भयो।",
   "desktop.updater.dialog.checkFailed.title": "अपडेट त्रुटि",
   "desktop.updater.dialog.upToDate.message": "तपाईं अद्यावधिक हुनुहुन्छ।",
@@ -979,6 +982,8 @@ export const dict: Record<string, string> = {
   "settings.general.row.pinchZoom.title": "जुम गर्न पिन्च गर्नुहोस्",
   "settings.general.row.pinchZoom.description":
     "ट्र्याकप्याड पिन्च र Ctrl-स्क्रोल इशाराहरूलाई जुम गर्न अनुमति दिनुहोस्",
+  "settings.general.row.closeToTray.title": "ट्रेमा बन्द गर्नुहोस्",
+  "settings.general.row.closeToTray.description": "सञ्झ्याल बन्द हुँदा CoderRupee ट्रेमा चालू राख्नुहोस्",
   "settings.general.row.wayland.title": "नेटिभ Wayland प्रयोग गर्नुहोस्",
   "settings.general.row.wayland.description": "Wayland मा X11 फलब्याक असक्षम गर्नुहोस्। पुन: सुरु गर्न आवश्यक छ।",
   "settings.general.row.wayland.tooltip": "Linux मा मिश्रित रिफ्रेस-रेट मनिटरहरूसँग, नेटिभ Wayland थप स्थिर हुन सक्छ।",

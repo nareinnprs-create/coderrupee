@@ -47,6 +47,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "Del tilbakemelding",
   "desktop.menu.reportBug": "Rapporter en feil",
   "desktop.menu.ariaLabel": "CoderRupee-meny",
+  "desktop.tray.show": "Vis CoderRupee",
+  "desktop.tray.hide": "Skjul CoderRupee",
+  "desktop.tray.notification.message": "CoderRupee fortsetter å kjøre i systemkurven.",
 
   "desktop.updater.dialog.checkFailed.message": "Søket etter oppdateringer mislyktes.",
   "desktop.updater.dialog.checkFailed.title": "Oppdateringsfeil",
@@ -1262,6 +1265,8 @@ export const dict = {
   "settings.general.row.newInterfaceNotice.dismiss": "Avvis",
   "settings.general.row.pinchZoom.title": "Knip for å zoome",
   "settings.general.row.pinchZoom.description": "Tillat knipebevegelser på styreflaten og Ctrl-rulling for å zoome",
+  "settings.general.row.closeToTray.title": "Lukk til systemkurven",
+  "settings.general.row.closeToTray.description": "La CoderRupee kjøre i systemkurven når vinduet lukkes",
   "settings.updates.action.downloading": "Laster ned...",
   "settings.updates.action.installing": "Installerer...",
 } satisfies Partial<Record<Keys, string>>

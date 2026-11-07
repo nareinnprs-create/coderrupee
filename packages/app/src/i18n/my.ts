@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "အကြံပြုချက်ကို မျှဝေပါ။",
   "desktop.menu.reportBug": "ချွတ်ယွင်းချက်တစ်ခုကို သတင်းပို့ပါ။",
   "desktop.menu.ariaLabel": "CoderRupee မီနူး",
+  "desktop.tray.show": "CoderRupee ကို ပြပါ",
+  "desktop.tray.hide": "CoderRupee ကို ဖျော့ပါ",
+  "desktop.tray.notification.message": "CoderRupee သည် စနစ်တိတ်တွင် ဆက်လက်လည်ပတ်နေမည်။",
   "desktop.updater.dialog.checkFailed.message": "အပ်ဒိတ်စစ်ဆေးမှု မအောင်မြင်ပါ။",
   "desktop.updater.dialog.checkFailed.title": "အပ်ဒိတ် အမှား",
   "desktop.updater.dialog.upToDate.message": "သင်သည် ခေတ်မီနေပါသည်။",
@@ -995,6 +998,8 @@ export const dict = {
   "settings.general.row.pinchZoom.title": "ဇူးမ်ချဲ့ရန် ဖိပါ။",
   "settings.general.row.pinchZoom.description":
     "ဇူးမ်လုပ်ရန် trackpad pinch နှင့် Ctrl-scroll gestures ကို ခွင့်ပြုပါ။",
+  "settings.general.row.closeToTray.title": "စနစ်တိတ်သို့ ပိတ်ပါ",
+  "settings.general.row.closeToTray.description": "ဝင်းဒိုး ပိတ်သောအခါ CoderRupee ကို စနစ်တိတ်တွင် ဆက်လက်လည်ပတ်စေပါ",
   "settings.general.row.wayland.title": "ဇာတိ Wayland ကို သုံးပါ။",
   "settings.general.row.wayland.description": "Wayland ရှိ X11 လှည့်ကွက်ကို ပိတ်ပါ။ ပြန်လည်စတင်ရန် လိုအပ်သည်။",
   "settings.general.row.wayland.tooltip":

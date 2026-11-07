@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "ចែករំលែកមតិកែលម្អ",
   "desktop.menu.reportBug": "រាយការណ៍អំពីបញ្ហា",
   "desktop.menu.ariaLabel": "ម៉ឺនុយ CoderRupee",
+  "desktop.tray.show": "បង្ហាញ CoderRupee",
+  "desktop.tray.hide": "លាក់ CoderRupee",
+  "desktop.tray.notification.message": "CoderRupee នឹងដំណើរការបន្តនៅក្នុងថាសប្រព័ន្ធ។",
   "desktop.updater.dialog.checkFailed.message": "ការត្រួតពិនិត្យការអាប់ដេតបានបរាជ័យ។",
   "desktop.updater.dialog.checkFailed.title": "កំហុសក្នុងការអាប់ដេត",
   "desktop.updater.dialog.upToDate.message": "អ្នកទាន់សម័យហើយ។",
@@ -973,6 +976,8 @@ export const dict = {
   "settings.general.row.newInterfaceNotice.dismiss": "ច្រានចោល",
   "settings.general.row.pinchZoom.title": "ខ្ទាស់ដើម្បីពង្រីក",
   "settings.general.row.pinchZoom.description": "អនុញ្ញាត​ឱ្យ​ចុច​បន្ទះ​បន្ទះ​និង​កាយវិការ​បញ្ជា​-​រមូរ​ដើម្បី​ពង្រីក",
+  "settings.general.row.closeToTray.title": "បិទទៅថាសប្រព័ន្ធ",
+  "settings.general.row.closeToTray.description": "ឲ្យ CoderRupee ដំណើរការបន្តនៅក្នុងថាសប្រព័ន្ធ ពេលបិទផ្ទាំង",
   "settings.general.row.wayland.title": "ប្រើ Wayland ដើម",
   "settings.general.row.wayland.description": "បិទដំណើរការ X11 fallback នៅលើ Wayland។ ទាមទារការចាប់ផ្តើមឡើងវិញ។",
   "settings.general.row.wayland.tooltip":

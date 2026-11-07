@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "Envoyer des commentaires",
   "desktop.menu.reportBug": "Signaler un bogue",
   "desktop.menu.ariaLabel": "Menu CoderRupee",
+  "desktop.tray.show": "Afficher CoderRupee",
+  "desktop.tray.hide": "Masquer CoderRupee",
+  "desktop.tray.notification.message": "CoderRupee continue de s'exécuter dans la zone de notification.",
 
   "desktop.updater.dialog.checkFailed.message": "La recherche de mises à jour a échoué.",
   "desktop.updater.dialog.checkFailed.title": "Erreur de mise à jour",
@@ -911,6 +914,8 @@ export const dict = {
   "settings.general.row.pinchZoom.title": "Pincer pour zoomer",
   "settings.general.row.pinchZoom.description":
     "Autoriser les gestes de pincement du pavé tactile et Ctrl-défilement pour zoomer",
+  "settings.general.row.closeToTray.title": "Fermer dans la zone de notification",
+  "settings.general.row.closeToTray.description": "Garder CoderRupee actif dans la zone de notification à la fermeture de la fenêtre",
   "settings.general.row.wayland.title": "Utiliser Wayland natif",
   "settings.general.row.wayland.description": "Désactiver le repli X11 sur Wayland. Nécessite un redémarrage.",
   "settings.general.row.wayland.tooltip":

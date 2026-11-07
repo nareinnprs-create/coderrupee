@@ -313,6 +313,10 @@ const createPlatform = (windowState: DesktopWindowState): Platform => {
 
     setPinchZoomEnabled,
 
+    getCloseToTrayEnabled: () => window.api.getCloseToTrayEnabled(),
+
+    setCloseToTrayEnabled: (enabled: boolean) => window.api.setCloseToTrayEnabled(enabled),
+
     runDesktopMenuAction,
 
     checkAppExists: async (appName: string) => {

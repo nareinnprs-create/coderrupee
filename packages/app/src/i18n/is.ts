@@ -91,6 +91,9 @@ const desktop = [
   "Ekki tókst að sækja gátt",
   "Skráin var ekki valin í skráavalinu",
   "Valin viðhengi fara yfir {{limit}} MB hámarkið",
+  "Sýna CoderRupee",
+  "Fela CoderRupee",
+  "CoderRupee heldur áfram að keyra í kerfisbakkanum.",
 ]
 
 export const dict = {
@@ -979,6 +982,8 @@ export const dict = {
   "settings.general.row.newInterfaceNotice.dismiss": "Segja frá",
   "settings.general.row.pinchZoom.title": "Klíptu til að þysja",
   "settings.general.row.pinchZoom.description": "Leyfðu að klípa og Ctrl-fletta bendingar til að þysja",
+  "settings.general.row.closeToTray.title": "Loka í kerfisbakkanum",
+  "settings.general.row.closeToTray.description": "Láta CoderRupee halda áfram að keyra í kerfisbakkanum þegar glugganum er lokað",
   "settings.general.row.wayland.title": "Notaðu innfæddan Wayland",
   "settings.general.row.wayland.description": "Slökktu á X11 fallback á Wayland. Krefst endurræsingar.",
   "settings.general.row.wayland.tooltip":

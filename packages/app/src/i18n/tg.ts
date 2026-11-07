@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "Мубодилаи фикру ақида",
   "desktop.menu.reportBug": "Дар бораи хато хабар диҳед",
   "desktop.menu.ariaLabel": "CoderRupee меню",
+  "desktop.tray.show": "Нишон додани CoderRupee",
+  "desktop.tray.hide": "Пинҳон кардани CoderRupee",
+  "desktop.tray.notification.message": "CoderRupee дар қуттии низомӣ кор мекунад.",
   "desktop.updater.dialog.checkFailed.message": "Санҷиши навсозӣ ноком шуд.",
   "desktop.updater.dialog.checkFailed.title": "Хатои навсозӣ",
   "desktop.updater.dialog.upToDate.message": "Шумо навсозӣ доред.",
@@ -985,6 +988,8 @@ export const dict = {
   "settings.general.row.pinchZoom.title": "Барои калон кардан чимч кунед",
   "settings.general.row.pinchZoom.description":
     "Ба имову ишораи паймоиш ва Ctrl-и паймоиш иҷозат диҳед, ки калонтар кунед",
+  "settings.general.row.closeToTray.title": "Ба қуттии низомӣ пӯшидан",
+  "settings.general.row.closeToTray.description": "Ҳангоми пӯшидани равзана CoderRupee-ро дар қуттии низомӣ коркарда нигоҳ доред",
   "settings.general.row.wayland.title": "Истифодаи аслӣ Wayland",
   "settings.general.row.wayland.description":
     "Хомӯш кардани X11 бозгашт дар Wayland. Аз нав оғоз карданро талаб мекунад.",

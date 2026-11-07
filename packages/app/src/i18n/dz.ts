@@ -44,6 +44,9 @@ export const dict: Record<string, string> = {
   "desktop.menu.shareFeedback": "བསམ་འཆར་བརྗེ་རེས།",
   "desktop.menu.reportBug": "རྐྱེན་ཅིག་སྙན་ཞུ་འབད།",
   "desktop.menu.ariaLabel": "CoderRupee དཀར་ཆག།",
+  "desktop.tray.show": "CoderRupee སྟོན།",
+  "desktop.tray.hide": "CoderRupee སྦ་བ།",
+  "desktop.tray.notification.message": "CoderRupee འཕྲུལ་ཆས་སྒྲོམ་ནང་ལས་ཀ་འབད་ནི་ཡོད།",
   "desktop.updater.dialog.checkFailed.message": "དུས་མཐུན་ཞིབ་དཔྱད་འཐུས་ཤོར་འབྱུང་ཡོདཔ།",
   "desktop.updater.dialog.checkFailed.title": "དུས་མཐུན་འཛོལ་བ།",
   "desktop.updater.dialog.upToDate.message": "ཁྱོད་དུས་དང་བསྟུན།",
@@ -998,6 +1001,8 @@ export const dict: Record<string, string> = {
   "settings.general.row.newInterfaceNotice.dismiss": "ཁུངས༌མེད༌བརྩི༌ནི",
   "settings.general.row.pinchZoom.title": "རྒྱས་ཟུམ་འབད་ནི་ལུ་ ཨེབ་གཏང་།",
   "settings.general.row.pinchZoom.description": "ཊེག་པེཌི་པིནཆི་དང་ Ctrl-བཤུད་སྒྲིལ་བརྡ་མཚོན་ཚུ་རྒྱས་ཟུམ་འབད་བཅུག།",
+  "settings.general.row.closeToTray.title": "སྒྲོམ་ནང་ལུ་ཁ་བསྒྲིགས",
+  "settings.general.row.closeToTray.description": "ཝིན་ཌོ་ཁ་བསྒྱིངས་པ་ཅིན་ཡང་ CoderRupee སྒྲོམ་ནང་ལས་ཀ་འབད་ནི་ལུ་བཞག",
   "settings.general.row.wayland.title": "ས་གནས་ཀྱི་ Waylandལག་ལེན་འཐབ།",
   "settings.general.row.wayland.description": "Waylandགུ་ཨེགསི་༡༡ ཕོལབེཀ་ལྕོགས་མིན་བཟོ། ལོག་འགོ་བཙུགས་དགོཔ་ཨིན།",
   "settings.general.row.wayland.tooltip":

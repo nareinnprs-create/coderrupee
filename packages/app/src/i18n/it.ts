@@ -903,6 +903,8 @@ export const dict = {
   "settings.general.row.pinchZoom.title": "Pizzica per ingrandire",
   "settings.general.row.pinchZoom.description":
     "Consenti i gesti di pizzicamento del trackpad e di scorrimento Ctrl per eseguire lo zoom",
+  "settings.general.row.closeToTray.title": "Chiudi nell'area di notifica",
+  "settings.general.row.closeToTray.description": "Mantieni CoderRupee in esecuzione nell'area di notifica alla chiusura della finestra",
   "settings.general.row.wayland.title": "Usa Wayland nativo",
   "settings.general.row.wayland.description": "Disabilita il fallback X11 su Wayland. Richiede il riavvio.",
   "settings.general.row.wayland.tooltip":
@@ -1125,6 +1127,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "Invia feedback",
   "desktop.menu.reportBug": "Segnala un bug",
   "desktop.menu.ariaLabel": "Menu CoderRupee",
+  "desktop.tray.show": "Mostra CoderRupee",
+  "desktop.tray.hide": "Nascondi CoderRupee",
+  "desktop.tray.notification.message": "CoderRupee continua a essere eseguito nell'area di notifica.",
   "desktop.updater.dialog.checkFailed.message": "Impossibile verificare la disponibilità di aggiornamenti.",
   "desktop.updater.dialog.checkFailed.title": "Errore di aggiornamento",
   "desktop.updater.dialog.upToDate.message": "La versione è aggiornata.",

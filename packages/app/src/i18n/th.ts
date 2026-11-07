@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "ส่งข้อคิดเห็น",
   "desktop.menu.reportBug": "รายงานข้อบกพร่อง",
   "desktop.menu.ariaLabel": "เมนู CoderRupee",
+  "desktop.tray.show": "แสดง CoderRupee",
+  "desktop.tray.hide": "ซ่อน CoderRupee",
+  "desktop.tray.notification.message": "CoderRupee จะยังคงทำงานอยู่ในถาดระบบ",
 
   "desktop.updater.dialog.checkFailed.message": "การตรวจหาการอัปเดตล้มเหลว",
   "desktop.updater.dialog.checkFailed.title": "ข้อผิดพลาดในการอัปเดต",
@@ -952,6 +955,8 @@ export const dict = {
   "settings.general.row.newInterfaceNotice.dismiss": "ปิด",
   "settings.general.row.pinchZoom.title": "บีบนิ้วเพื่อซูม",
   "settings.general.row.pinchZoom.description": "อนุญาตให้ใช้ท่าบีบนิ้วบนแทร็คแพดและ Ctrl-scroll เพื่อซูม",
+  "settings.general.row.closeToTray.title": "ปิดไปที่ถาดระบบ",
+  "settings.general.row.closeToTray.description": "ให้ CoderRupee ทำงานต่อในถาดระบบเมื่อปิดหน้าต่าง",
   "settings.general.row.wayland.title": "ใช้ Wayland แบบเนทีฟ",
   "settings.general.row.wayland.description": "ปิดใช้งาน X11 fallback บน Wayland ต้องรีสตาร์ท",
   "settings.general.row.wayland.tooltip": "บน Linux ที่มีจอภาพรีเฟรชเรตแบบผสม Wayland แบบเนทีฟอาจเสถียรกว่า",

@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "Chia sẻ phản hồi",
   "desktop.menu.reportBug": "Báo cáo lỗi",
   "desktop.menu.ariaLabel": "Menu CoderRupee",
+  "desktop.tray.show": "Hiện CoderRupee",
+  "desktop.tray.hide": "Ẩn CoderRupee",
+  "desktop.tray.notification.message": "CoderRupee vẫn chạy trong khay hệ thống.",
 
   "desktop.updater.dialog.checkFailed.message": "Không kiểm tra được bản cập nhật.",
   "desktop.updater.dialog.checkFailed.title": "Lỗi cập nhật",
@@ -991,6 +994,8 @@ export const dict = {
   "settings.general.row.newInterfaceNotice.dismiss": "Bỏ qua",
   "settings.general.row.pinchZoom.title": "Chụm để thu phóng",
   "settings.general.row.pinchZoom.description": "Cho phép chụm bàn di chuột và cử chỉ cuộn Ctrl để thu phóng",
+  "settings.general.row.closeToTray.title": "Đóng vào khay hệ thống",
+  "settings.general.row.closeToTray.description": "Giữ CoderRupee chạy trong khay hệ thống khi đóng cửa sổ",
   "settings.general.row.wayland.title": "Sử dụng Wayland gốc",
   "settings.general.row.wayland.description": "Tắt tính năng dự phòng X11 trên Wayland. Yêu cầu khởi động lại.",
   "settings.general.row.wayland.tooltip":

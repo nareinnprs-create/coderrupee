@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "Fikr-mulohaza ulashing",
   "desktop.menu.reportBug": "Xato haqida xabar berish",
   "desktop.menu.ariaLabel": "CoderRupee menyusi",
+  "desktop.tray.show": "CoderRupee'ni ko'rsatish",
+  "desktop.tray.hide": "CoderRupee'ni yashirish",
+  "desktop.tray.notification.message": "CoderRupee tizim panelida ishlashda davom etadi.",
   "desktop.updater.dialog.checkFailed.message": "Yangilanish tekshiruvi amalga oshmadi.",
   "desktop.updater.dialog.checkFailed.title": "Yangilash xatosi",
   "desktop.updater.dialog.upToDate.message": "Siz yangilangansiz.",
@@ -990,6 +993,8 @@ export const dict = {
   "settings.general.row.pinchZoom.title": "Kattalashtirish uchun chimchilang",
   "settings.general.row.pinchZoom.description":
     "Kattalashtirish uchun trekpadni chimchilash va Ctrl-aylantirish imo-ishoralariga ruxsat bering",
+  "settings.general.row.closeToTray.title": "Tizim paneliga yig'ish",
+  "settings.general.row.closeToTray.description": "Oyna yopilganda CoderRupee tizim panelida ishlashda davom etsin",
   "settings.general.row.wayland.title": "Mahalliy Wayland dan foydalaning",
   "settings.general.row.wayland.description":
     "Wayland da X11 zaxirasini o'chirib qo'ying. Qayta ishga tushirishni talab qiladi.",

@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "प्रतिक्रिया साझा करें",
   "desktop.menu.reportBug": "बग रिपोर्ट करें",
   "desktop.menu.ariaLabel": "CoderRupee मेन्यू",
+  "desktop.tray.show": "CoderRupee दिखाएँ",
+  "desktop.tray.hide": "CoderRupee छिपाएँ",
+  "desktop.tray.notification.message": "CoderRupee ट्रे में चलता रहेगा।",
 
   "desktop.updater.dialog.checkFailed.message": "अपडेट की जाँच विफल रही।",
   "desktop.updater.dialog.checkFailed.title": "अपडेट त्रुटि",
@@ -986,6 +989,8 @@ export const dict = {
   "settings.general.row.newInterfaceNotice.dismiss": "हटाएँ",
   "settings.general.row.pinchZoom.title": "ज़ूम करने के लिए पिंच करें",
   "settings.general.row.pinchZoom.description": "ट्रैकपैड पिंच और Ctrl-स्क्रॉल जेस्चर को ज़ूम करने की अनुमति दें",
+  "settings.general.row.closeToTray.title": "ट्रे में बंद करें",
+  "settings.general.row.closeToTray.description": "विंडो बंद होने पर CoderRupee को ट्रे में चालू रखें",
   "settings.general.row.wayland.title": "नेटिव Wayland का उपयोग करें",
   "settings.general.row.wayland.description": "Wayland पर X11 फ़ॉलबैक अक्षम करें। पुनः आरंभ करना आवश्यक है।",
   "settings.general.row.wayland.tooltip":

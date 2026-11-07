@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "Надіслати відгук",
   "desktop.menu.reportBug": "Повідомити про помилку",
   "desktop.menu.ariaLabel": "Меню CoderRupee",
+  "desktop.tray.show": "Показати CoderRupee",
+  "desktop.tray.hide": "Сховати CoderRupee",
+  "desktop.tray.notification.message": "CoderRupee продовжить працювати в області повідомлень.",
 
   "desktop.updater.dialog.checkFailed.message": "Не вдалося перевірити наявність оновлень.",
   "desktop.updater.dialog.checkFailed.title": "Помилка оновлення",
@@ -1076,6 +1079,8 @@ export const dict = {
   "settings.general.row.pinchZoom.title": "Масштабування щипком",
   "settings.general.row.pinchZoom.description":
     "Дозволити масштабування жестом щипка на трекпаді та прокручуванням із Ctrl",
+  "settings.general.row.closeToTray.title": "Згортати в область повідомлень",
+  "settings.general.row.closeToTray.description": "Тримати CoderRupee запущеним в області повідомлень після закриття вікна",
 
   "settings.general.row.wayland.title": "Використовувати нативний Wayland",
   "settings.general.row.wayland.description": "Вимкнути резервний X11 на Wayland. Потребує перезапуску.",

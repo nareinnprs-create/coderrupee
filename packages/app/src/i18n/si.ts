@@ -44,6 +44,9 @@ export const dict: Record<string, string> = {
   "desktop.menu.shareFeedback": "ප්‍රතිපෝෂණ බෙදා ගන්න",
   "desktop.menu.reportBug": "දෝෂයක් වාර්තා කරන්න",
   "desktop.menu.ariaLabel": "CoderRupee මෙනුව",
+  "desktop.tray.show": "CoderRupee පෙන්වන්න",
+  "desktop.tray.hide": "CoderRupee සඟවන්න",
+  "desktop.tray.notification.message": "CoderRupee පද්ධති දැල්ලේ ධාවනය වෙමින් පවතී.",
   "desktop.updater.dialog.checkFailed.message": "යාවත්කාලීන පරීක්ෂාව අසාර්ථක විය.",
   "desktop.updater.dialog.checkFailed.title": "යාවත්කාලීන දෝෂයකි",
   "desktop.updater.dialog.upToDate.message": "ඔබ යාවත්කාලීනයි.",
@@ -975,6 +978,8 @@ export const dict: Record<string, string> = {
   "settings.general.row.pinchZoom.title": "විශාලනය කිරීමට පින්ච් කරන්න",
   "settings.general.row.pinchZoom.description":
     "විශාලනය කිරීමට ට්‍රැක්පෑඩ් පින්ච් කිරීමට සහ Ctrl-අනුචලන අභිනයන්ට ඉඩ දෙන්න",
+  "settings.general.row.closeToTray.title": "දැල්ලට වසන්න",
+  "settings.general.row.closeToTray.description": "ජනේලය වසා ඇති විට CoderRupee පද්ධති දැල්ලේ ධාවනය වෙමින් තබන්න",
   "settings.general.row.wayland.title": "දේශීය Wayland භාවිත කරන්න",
   "settings.general.row.wayland.description": "Wayland හි X11 ආපසු හැරීම අක්‍රීය කරන්න. නැවත ආරම්භ කිරීම අවශ්‍ය වේ.",
   "settings.general.row.wayland.tooltip":

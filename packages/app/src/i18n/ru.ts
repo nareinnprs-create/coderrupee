@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "Отправить отзыв",
   "desktop.menu.reportBug": "Сообщить об ошибке",
   "desktop.menu.ariaLabel": "Меню CoderRupee",
+  "desktop.tray.show": "Показать CoderRupee",
+  "desktop.tray.hide": "Скрыть CoderRupee",
+  "desktop.tray.notification.message": "CoderRupee продолжит работать в области уведомлений.",
 
   "desktop.updater.dialog.checkFailed.message": "Не удалось проверить наличие обновлений.",
   "desktop.updater.dialog.checkFailed.title": "Ошибка обновления",
@@ -972,6 +975,8 @@ export const dict = {
   "settings.general.row.pinchZoom.title": "Масштабирование сведением пальцев",
   "settings.general.row.pinchZoom.description":
     "Разрешить масштабирование сведением пальцев на трекпаде и прокруткой с нажатой клавишей Ctrl",
+  "settings.general.row.closeToTray.title": "Сворачивать в область уведомлений",
+  "settings.general.row.closeToTray.description": "Держать CoderRupee запущенным в области уведомлений при закрытии окна",
   "settings.general.row.wayland.title": "Использовать нативный Wayland",
   "settings.general.row.wayland.description": "Отключить резервный режим X11 в Wayland. Требуется перезапуск.",
   "settings.general.row.wayland.tooltip":

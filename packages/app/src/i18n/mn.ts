@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "Санал хүсэлтээ хуваалцах",
   "desktop.menu.reportBug": "Алдаа мэдээлэх",
   "desktop.menu.ariaLabel": "CoderRupee цэс",
+  "desktop.tray.show": "CoderRupee харах",
+  "desktop.tray.hide": "CoderRupee нуух",
+  "desktop.tray.notification.message": "CoderRupee системийн мэдэгдлийн бүсэд ажиллах болно.",
   "desktop.updater.dialog.checkFailed.message": "Шинэчлэлтийг шалгаж чадсангүй.",
   "desktop.updater.dialog.checkFailed.title": "Шинэчлэлтийн алдаа",
   "desktop.updater.dialog.upToDate.message": "Та шинэчлэгдсэн байна.",
@@ -989,6 +992,8 @@ export const dict = {
   "settings.general.row.pinchZoom.title": "Томруулахын тулд чимхээрэй",
   "settings.general.row.pinchZoom.description":
     "Trackpad чимхэх, Ctrl-г гүйлгэх дохиог ашиглан томруулахыг зөвшөөрнө үү",
+  "settings.general.row.closeToTray.title": "Мэдэгдлийн бүсэд хаах",
+  "settings.general.row.closeToTray.description": "Цонхыг хаахад CoderRupee-г системийн мэдэгдлийн бүсэд ажиллуулсаар байлгана",
   "settings.general.row.wayland.title": "Эх хэлийг ашиглах Wayland",
   "settings.general.row.wayland.description": "Wayland дээрх X11 нөөцийг идэвхгүй болгох. Дахин эхлүүлэх шаардлагатай.",
   "settings.general.row.wayland.tooltip":

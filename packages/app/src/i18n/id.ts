@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "Bagikan umpan balik",
   "desktop.menu.reportBug": "Laporkan bug",
   "desktop.menu.ariaLabel": "Menu CoderRupee",
+  "desktop.tray.show": "Tampilkan CoderRupee",
+  "desktop.tray.hide": "Sembunyikan CoderRupee",
+  "desktop.tray.notification.message": "CoderRupee tetap berjalan di baki sistem.",
 
   "desktop.updater.dialog.checkFailed.message": "Pemeriksaan pembaruan gagal.",
   "desktop.updater.dialog.checkFailed.title": "Kesalahan pembaruan",
@@ -1060,6 +1063,8 @@ export const dict = {
   "settings.general.row.pinchZoom.title": "Cubit untuk zum",
   "settings.general.row.pinchZoom.description":
     "Izinkan gerakan cubit pada trackpad dan Ctrl-gulir untuk melakukan zum",
+  "settings.general.row.closeToTray.title": "Tutup ke baki sistem",
+  "settings.general.row.closeToTray.description": "Biarkan CoderRupee tetap berjalan di baki sistem saat jendela ditutup",
 
   "settings.general.row.wayland.title": "Gunakan Wayland asli",
   "settings.general.row.wayland.description": "Nonaktifkan sistem cadangan X11 di Wayland. Memerlukan mulai ulang.",

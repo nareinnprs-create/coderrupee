@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "ޝެއާ ފީޑްބެކް",
   "desktop.menu.reportBug": "ބަގެއް ރިޕޯޓްކުރުން",
   "desktop.menu.ariaLabel": "CoderRupee މެނޫ",
+  "desktop.tray.show": "CoderRupee ދައްކާ",
+  "desktop.tray.hide": "CoderRupee ފޮރުވާ",
+  "desktop.tray.notification.message": "CoderRupee ސިސްޓަމް ޓްރޭގައި ދަނީ ހިންގަމުންނެވެ.",
   "desktop.updater.dialog.checkFailed.message": "އަޕްޑޭޓް ޗެކް ފެއިލްވެއްޖެއެވެ.",
   "desktop.updater.dialog.checkFailed.title": "އަޕްޑޭޓް އެރަރ",
   "desktop.updater.dialog.upToDate.message": "ޔޫ އާ އަޕް ޓު ޑޭޓް.",
@@ -995,6 +998,8 @@ export const dict = {
   "settings.general.row.pinchZoom.title": "ޒޫމް ކުރަން ޕިންޗް ކޮށްލާށެވެ",
   "settings.general.row.pinchZoom.description":
     "ޓްރެކްޕެޑް ޕިންޗް އަދި Ctrl-ސްކްރޯލް ޖެޝަރސް ޒޫމް ކުރުމަށް ހުއްދަ ދިނުން",
+  "settings.general.row.closeToTray.title": "ޓްރެއަށް ބަންދުކުރޭ",
+  "settings.general.row.closeToTray.description": "ވިންޑޯ ބަންދުވެއްޖެހެން CoderRupee ސިސްޓަމް ޓްރޭގައި ހިންގަމުން ހުންނާށޭ",
   "settings.general.row.wayland.title": "ނެޓިވް Wayland ބޭނުން ކުރާށެވެ",
   "settings.general.row.wayland.description": "Wayland ގައި X11 ފޯލްބެކް ޑިސެބަލް ކުރާށެވެ. ރީސްޓާޓް ކުރަން ޖެހެއެވެ.",
   "settings.general.row.wayland.tooltip":

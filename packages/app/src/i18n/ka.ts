@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "გაზიარება გამოხმაურება",
   "desktop.menu.reportBug": "შეცდომის შესახებ შეტყობინება",
   "desktop.menu.ariaLabel": "CoderRupee მენიუ",
+  "desktop.tray.show": "CoderRupee-ის ჩვენება",
+  "desktop.tray.hide": "CoderRupee-ის დამალვა",
+  "desktop.tray.notification.message": "CoderRupee სისტემურ ზონაში გაშვებული დარჩება.",
   "desktop.updater.dialog.checkFailed.message": "განახლების შემოწმება ვერ მოხერხდა.",
   "desktop.updater.dialog.checkFailed.title": "განახლების შეცდომა",
   "desktop.updater.dialog.upToDate.message": "თქვენ განახლებული ხართ.",
@@ -978,6 +981,8 @@ export const dict = {
   "settings.general.row.newInterfaceNotice.dismiss": "დატოვება",
   "settings.general.row.pinchZoom.title": "დააჭირე გასადიდებლად",
   "settings.general.row.pinchZoom.description": "Trackpad pinch და Ctrl-scroll ჟესტებით მასშტაბირება",
+  "settings.general.row.closeToTray.title": "დახურვა სისტემურ ზონაში",
+  "settings.general.row.closeToTray.description": "ფანჯრის დახურვისას CoderRupee გაშვებული დარჩეს სისტემურ ზონაში",
   "settings.general.row.wayland.title": "გამოიყენე მშობლიური Wayland",
   "settings.general.row.wayland.description": "X11-ის გამორთვა Wayland-ზე. საჭიროებს გადატვირთვას.",
   "settings.general.row.wayland.tooltip":

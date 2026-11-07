@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "Kongsi Maklum Balas",
   "desktop.menu.reportBug": "Laporkan Pepijat",
   "desktop.menu.ariaLabel": "Menu CoderRupee",
+  "desktop.tray.show": "Tunjukkan CoderRupee",
+  "desktop.tray.hide": "Sembunyikan CoderRupee",
+  "desktop.tray.notification.message": "CoderRupee kekal berjalan dalam dulang sistem.",
   "desktop.updater.dialog.checkFailed.message": "Semakan kemas kini gagal.",
   "desktop.updater.dialog.checkFailed.title": "Ralat Kemas Kini",
   "desktop.updater.dialog.upToDate.message": "Anda menggunakan versi terkini.",
@@ -978,6 +981,8 @@ export const dict = {
   "settings.general.row.newInterfaceNotice.dismiss": "Tutup",
   "settings.general.row.pinchZoom.title": "Cubit untuk zum",
   "settings.general.row.pinchZoom.description": "Benarkan gerak isyarat cubit pada pad jejak dan Ctrl-tatal untuk zum",
+  "settings.general.row.closeToTray.title": "Tutup ke dulang sistem",
+  "settings.general.row.closeToTray.description": "Kekalkan CoderRupee berjalan dalam dulang sistem apabila tetingkap ditutup",
   "settings.general.row.wayland.title": "Guna Wayland asli",
   "settings.general.row.wayland.description": "Lumpuhkan sandaran X11 pada Wayland. Memerlukan mula semula.",
   "settings.general.row.wayland.tooltip":

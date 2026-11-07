@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "Enviar comentários",
   "desktop.menu.reportBug": "Relatar um bug",
   "desktop.menu.ariaLabel": "Menu do CoderRupee",
+  "desktop.tray.show": "Mostrar CoderRupee",
+  "desktop.tray.hide": "Ocultar CoderRupee",
+  "desktop.tray.notification.message": "O CoderRupee continua em execução na bandeja do sistema.",
 
   "desktop.updater.dialog.checkFailed.message": "Falha ao verificar atualizações.",
   "desktop.updater.dialog.checkFailed.title": "Erro de atualização",
@@ -904,6 +907,8 @@ export const dict = {
   "settings.general.row.pinchZoom.title": "Zoom com gesto de pinça",
   "settings.general.row.pinchZoom.description":
     "Permitir gestos de pinça no trackpad e de Ctrl+rolagem para aplicar zoom",
+  "settings.general.row.closeToTray.title": "Fechar para a bandeja",
+  "settings.general.row.closeToTray.description": "Manter o CoderRupee em execução na bandeja do sistema ao fechar a janela",
   "settings.general.row.wayland.title": "Usar Wayland nativo",
   "settings.general.row.wayland.description": "Desabilitar fallback X11 no Wayland. Requer reinicialização.",
   "settings.general.row.wayland.tooltip":

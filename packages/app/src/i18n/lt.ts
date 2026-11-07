@@ -91,6 +91,9 @@ const desktop = [
   "Nepavyko gauti prievado",
   "Failas nebuvo pasirinktas failų parinkiklyje",
   "Pasirinkti priedai viršija {{limit}} MB ribą",
+  "Rodyti CoderRupee",
+  "Slėpti CoderRupee",
+  "CoderRupee toliau veikia sistemos dėkle.",
 ]
 
 export const dict = {
@@ -993,6 +996,8 @@ export const dict = {
   "settings.general.row.newInterfaceNotice.dismiss": "Atsisakyti",
   "settings.general.row.pinchZoom.title": "Suimkite, kad padidintumėte mastelį",
   "settings.general.row.pinchZoom.description": "Leiskite priartinti valdiklį ir Ctrl slinkimo gestus",
+  "settings.general.row.closeToTray.title": "Uždaryti į sistemos dėklą",
+  "settings.general.row.closeToTray.description": "Po lango uždarymo palikti CoderRupee veikti sistemos dėkle",
   "settings.general.row.wayland.title": "Naudokite vietinį Wayland",
   "settings.general.row.wayland.description": "Išjungti atsarginį X11 Wayland. Reikia paleisti iš naujo.",
   "settings.general.row.wayland.tooltip":

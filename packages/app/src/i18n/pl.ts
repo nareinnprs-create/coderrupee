@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "Prześlij opinię",
   "desktop.menu.reportBug": "Zgłoś błąd",
   "desktop.menu.ariaLabel": "Menu CoderRupee",
+  "desktop.tray.show": "Pokaż CoderRupee",
+  "desktop.tray.hide": "Ukryj CoderRupee",
+  "desktop.tray.notification.message": "CoderRupee nadal działa w zasobniku.",
 
   "desktop.updater.dialog.checkFailed.message": "Nie udało się sprawdzić dostępności aktualizacji.",
   "desktop.updater.dialog.checkFailed.title": "Błąd aktualizacji",
@@ -905,6 +908,8 @@ export const dict = {
   "settings.general.row.pinchZoom.title": "Powiększanie gestem szczypania",
   "settings.general.row.pinchZoom.description":
     "Zezwalaj na powiększanie gestem szczypania na gładziku lub przez przewijanie z wciśniętym klawiszem Ctrl",
+  "settings.general.row.closeToTray.title": "Zamknij do zasobnika",
+  "settings.general.row.closeToTray.description": "Pozostaw CoderRupee działające w zasobniku systemowym po zamknięciu okna",
   "settings.general.row.wayland.title": "Użyj natywnego protokołu Wayland",
   "settings.general.row.wayland.description":
     "Wyłącz awaryjne korzystanie z X11 w środowisku Wayland. Wymaga ponownego uruchomienia.",

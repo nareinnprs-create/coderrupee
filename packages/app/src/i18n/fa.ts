@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "بازخورد را به اشتراک بگذارید",
   "desktop.menu.reportBug": "گزارش یک اشکال",
   "desktop.menu.ariaLabel": "منوی CoderRupee",
+  "desktop.tray.show": "نمایش CoderRupee",
+  "desktop.tray.hide": "پنهان کردن CoderRupee",
+  "desktop.tray.notification.message": "CoderRupee به کار خود در سینی سیستم ادامه می‌دهد.",
   "desktop.updater.dialog.checkFailed.message": "بررسی به‌روزرسانی انجام نشد.",
   "desktop.updater.dialog.checkFailed.title": "خطای آپدیت",
   "desktop.updater.dialog.upToDate.message": "شما به روز هستید.",
@@ -976,6 +979,8 @@ export const dict = {
   "settings.general.row.newInterfaceNotice.dismiss": "رد کردن",
   "settings.general.row.pinchZoom.title": "برای بزرگنمایی، خرج کردن",
   "settings.general.row.pinchZoom.description": "به ژست‌های پیمایشی Ctrl و حرکت‌های پد لمسی اجازه بزرگ‌نمایی بدهید",
+  "settings.general.row.closeToTray.title": "بستن به سینی سیستم",
+  "settings.general.row.closeToTray.description": "هنگام بستن پنجره، CoderRupee در سینی سیستم به کار خود ادامه می‌دهد",
   "settings.general.row.wayland.title": "از Wayland بومی استفاده کنید",
   "settings.general.row.wayland.description":
     "بازگشت مجدد X11 را در Wayland غیرفعال کنید. نیاز به راه اندازی مجدد دارد.",

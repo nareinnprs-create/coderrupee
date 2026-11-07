@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "Odoslať spätnú väzbu",
   "desktop.menu.reportBug": "Nahlásiť chybu",
   "desktop.menu.ariaLabel": "Ponuka CoderRupee",
+  "desktop.tray.show": "Zobraziť CoderRupee",
+  "desktop.tray.hide": "Skryť CoderRupee",
+  "desktop.tray.notification.message": "CoderRupee ďalej beží v oznamovacej oblasti.",
   "desktop.updater.dialog.checkFailed.message": "Kontrola aktualizácií zlyhala.",
   "desktop.updater.dialog.checkFailed.title": "Chyba aktualizácie",
   "desktop.updater.dialog.upToDate.message": "Máte najnovšiu verziu.",
@@ -981,6 +984,8 @@ export const dict = {
   "settings.general.row.newInterfaceNotice.dismiss": "Zavrieť",
   "settings.general.row.pinchZoom.title": "Priblíženie gestom",
   "settings.general.row.pinchZoom.description": "Povoliť priblíženie pomocou gest na touchpade a Ctrl-posúvanie",
+  "settings.general.row.closeToTray.title": "Zavrieť do oznamovacej oblasti",
+  "settings.general.row.closeToTray.description": "Ponechať CoderRupee bežať v oznamovacej oblasti po zatvorení okna",
   "settings.general.row.wayland.title": "Použiť natívny Wayland",
   "settings.general.row.wayland.description": "Zakázať X11 fallback na Waylande. Vyžaduje reštart.",
   "settings.general.row.wayland.tooltip":

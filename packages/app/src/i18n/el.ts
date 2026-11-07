@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "Κοινή χρήση σχολίων",
   "desktop.menu.reportBug": "Αναφορά σφάλματος",
   "desktop.menu.ariaLabel": "CoderRupee μενού",
+  "desktop.tray.show": "Εμφάνιση του CoderRupee",
+  "desktop.tray.hide": "Απόκρυψη του CoderRupee",
+  "desktop.tray.notification.message": "Το CoderRupee εξακολουθεί να εκτελείται στη περιοχή ειδοποιήσεων.",
   "desktop.updater.dialog.checkFailed.message": "Ο έλεγχος ενημέρωσης απέτυχε.",
   "desktop.updater.dialog.checkFailed.title": "Σφάλμα ενημέρωσης",
   "desktop.updater.dialog.upToDate.message": "Είστε ενημερωμένοι.",
@@ -994,6 +997,8 @@ export const dict = {
   "settings.general.row.pinchZoom.title": "Τσιμπήστε για μεγέθυνση",
   "settings.general.row.pinchZoom.description":
     "Να επιτρέπεται η μεγέθυνση των χειρονομιών τσιμπήματος και κύλισης Ctrl",
+  "settings.general.row.closeToTray.title": "Κλείσιμο στη περιοχή ειδοποιήσεων",
+  "settings.general.row.closeToTray.description": "Το CoderRupee εξακολουθεί να εκτελείται στη περιοχή ειδοποιήσεων κατά το κλείσιμο του παραθύρου",
   "settings.general.row.wayland.title": "Χρήση εγγενούς Wayland",
   "settings.general.row.wayland.description": "Απενεργοποίηση εναλλακτικού X11 στο Wayland. Απαιτείται επανεκκίνηση.",
   "settings.general.row.wayland.tooltip":

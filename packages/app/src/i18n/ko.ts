@@ -1047,6 +1047,8 @@ export const dict = {
   "settings.general.row.newInterfaceNotice.dismiss": "닫기",
   "settings.general.row.pinchZoom.title": "핀치 줌",
   "settings.general.row.pinchZoom.description": "트랙패드 핀치 및 Ctrl-스크롤 제스처로 확대/축소 허용",
+  "settings.general.row.closeToTray.title": "트레이로 닫기",
+  "settings.general.row.closeToTray.description": "창을 닫을 때 CoderRupee를 시스템 트레이에서 계속 실행합니다",
   "settings.updates.action.downloading": "다운로드 중...",
   "settings.updates.action.installing": "설치 중...",
 
@@ -1112,6 +1114,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "피드백 보내기",
   "desktop.menu.reportBug": "버그 신고",
   "desktop.menu.ariaLabel": "CoderRupee 메뉴",
+  "desktop.tray.show": "CoderRupee 표시",
+  "desktop.tray.hide": "CoderRupee 숨기기",
+  "desktop.tray.notification.message": "CoderRupee는 트레이에서 계속 실행됩니다.",
 
   "desktop.updater.dialog.checkFailed.message": "업데이트를 확인하지 못했습니다.",
   "desktop.updater.dialog.checkFailed.title": "업데이트 오류",

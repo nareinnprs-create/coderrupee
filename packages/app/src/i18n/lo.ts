@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "ແບ່ງປັນຄວາມຄິດເຫັນ",
   "desktop.menu.reportBug": "ລາຍງານຂໍ້ຜິດພາດ",
   "desktop.menu.ariaLabel": "ເມນູ CoderRupee",
+  "desktop.tray.show": "ສະແດງ CoderRupee",
+  "desktop.tray.hide": "ເຊື່ອງ CoderRupee",
+  "desktop.tray.notification.message": "CoderRupee ຈະເຮັດວຽກຕໍ່ໄປໃນຖານລະບົບ.",
   "desktop.updater.dialog.checkFailed.message": "ກວດສອບການອັບເດດບໍ່ສຳເລັດ.",
   "desktop.updater.dialog.checkFailed.title": "ອັບເດດຜິດພາດ",
   "desktop.updater.dialog.upToDate.message": "ທ່ານອັບເດດແລ້ວ.",
@@ -970,6 +973,8 @@ export const dict = {
   "settings.general.row.newInterfaceNotice.dismiss": "ປິດ",
   "settings.general.row.pinchZoom.title": "ບີບເພື່ອຊູມ",
   "settings.general.row.pinchZoom.description": "ອະ​ນຸ​ຍາດ​ໃຫ້​ການ pinch trackpad ແລະ gestures Ctrl-scroll ເພື່ອຊູມ",
+  "settings.general.row.closeToTray.title": "ປິດໄປທີ່ຖານລະບົບ",
+  "settings.general.row.closeToTray.description": "ໃຫ້ CoderRupee ເຮັດວຽກຕໍ່ໃນຖານລະບົບເມື່ອປິດວິນໂດ",
   "settings.general.row.wayland.title": "ໃຊ້ Wayland ພື້ນເມືອງ",
   "settings.general.row.wayland.description": "ປິດການໃຊ້ງານ X11 fallback ໃນ Wayland. ຕ້ອງການຣີສະຕາດ.",
   "settings.general.row.wayland.tooltip":

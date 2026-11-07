@@ -19,6 +19,7 @@ import { registerIpcHandlers, sendDeepLinks, sendMenuCommand } from "./ipc"
 import { forwardInitializationFailure } from "./initialization"
 import { exportDebugLogs, initCrashReporter, initLogging, startNetLog, write as writeLog } from "./logging"
 import { createMenu } from "./menu"
+import { createTray, destroyTray, getCloseToTrayEnabled, rebuildTrayMenu } from "./tray"
 import {
   finishFirstLaunchOnboarding,
   initializeOldLayoutEligibility,
@@ -67,6 +68,7 @@ const jsCallStackFeature = "DocumentPolicyIncludeJSCallStacksInCrashReports"
 
 let logger: ReturnType<typeof initLogging>
 let server: SidecarListener | null = null
+let quitting = false
 
 const pendingDeepLinks: string[] = []
 
@@ -223,6 +225,7 @@ const main = Effect.gen(function* () {
   })
 
   app.on("before-quit", () => {
+    quitting = true
     setAppQuitting()
     void stopSidecars()
   })
@@ -281,6 +284,42 @@ const main = Effect.gen(function* () {
     checkForUpdates: () => void showUpdaterDialog(updater, true),
     relaunch,
   }
+  // The tray is the background shell: it owns close-to-tray behavior and can
+  // trigger the same renderer commands as the native menu.
+  const quitApp = () => {
+    quitting = true
+    setAppQuitting()
+    destroyTray()
+    app.quit()
+  }
+  createTray({
+    newSession: () => {
+      const win = getLastFocusedWindow()
+      win?.show()
+      win?.focus()
+      menuDeps.trigger("session.new")
+    },
+    checkForUpdates: menuDeps.checkForUpdates,
+    quit: quitApp,
+  })
+  app.once("will-quit", () => destroyTray())
+  app.on("browser-window-created", (_event, win) => {
+    let sessionEnding = false
+    win.on("session-end", () => {
+      sessionEnding = true
+    })
+    win.on("show", () => rebuildTrayMenu())
+    win.on("hide", () => rebuildTrayMenu())
+    win.on("closed", () => rebuildTrayMenu())
+    // Close-to-tray: only intercept when the setting is on and the quit is
+    // not already user- or OS-initiated. The default (setting off) still
+    // quits exactly as before.
+    win.on("close", (event) => {
+      if (quitting || sessionEnding || !getCloseToTrayEnabled()) return
+      event.preventDefault()
+      win.hide()
+    })
+  })
   registerIpcHandlers({
     killSidecar: () => killSidecar(),
     installCli: () => installCliStaged(logger),
@@ -310,7 +349,10 @@ const main = Effect.gen(function* () {
     exportDebugLogs: () => exportDebugLogs(),
     recordFatalRendererError: (error) => writeLog("renderer", "fatal renderer error", { ...error }, "error"),
     setNativeTranslations: (bundle) => {
-      if (setNativeTranslations(bundle)) createMenu(menuDeps)
+      if (setNativeTranslations(bundle)) {
+        createMenu(menuDeps)
+        rebuildTrayMenu()
+      }
     },
   })
   registerWslIpcHandlers(wslServers)

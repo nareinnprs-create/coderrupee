@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "Comparteix comentaris",
   "desktop.menu.reportBug": "Informar d'un error",
   "desktop.menu.ariaLabel": "menú CoderRupee.",
+  "desktop.tray.show": "Mostra CoderRupee",
+  "desktop.tray.hide": "Amaga CoderRupee",
+  "desktop.tray.notification.message": "El CoderRupee continua executant-se a la safata del sistema.",
   "desktop.updater.dialog.checkFailed.message": "La comprovació d'actualització ha fallat.",
   "desktop.updater.dialog.checkFailed.title": "Error d'actualització",
   "desktop.updater.dialog.upToDate.message": "Estàs al dia.",
@@ -990,6 +993,8 @@ export const dict = {
   "settings.general.row.pinchZoom.title": "Pessigueu per fer zoom",
   "settings.general.row.pinchZoom.description":
     "Permet que els gestos de pessigar el ratolí tàctil i de desplaçament Ctrl s'ampliïn",
+  "settings.general.row.closeToTray.title": "Tanca a la safata",
+  "settings.general.row.closeToTray.description": "Mantén el CoderRupee executant-se a la safata del sistema en tancar la finestra",
   "settings.general.row.wayland.title": "Utilitza el nadiu Wayland",
   "settings.general.row.wayland.description": "Desactiveu la alternativa X11 a Wayland. Requereix reinici.",
   "settings.general.row.wayland.tooltip":

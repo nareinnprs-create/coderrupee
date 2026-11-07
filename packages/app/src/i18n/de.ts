@@ -797,6 +797,8 @@ export const dict = {
   "settings.general.row.newInterfaceNotice.dismiss": "Verwerfen",
   "settings.general.row.pinchZoom.title": "Zoom per Fingergeste",
   "settings.general.row.pinchZoom.description": "Zoomen per Zwei-Finger- und Ctrl-Scroll-Geste erlauben",
+  "settings.general.row.closeToTray.title": "In den Infobereich schließen",
+  "settings.general.row.closeToTray.description": "CoderRupee beim Schließen des Fensters im Infobereich weiterlaufen lassen",
   "settings.general.row.wayland.title": "Natives Wayland verwenden",
   "settings.general.row.wayland.description": "X11-Fallback unter Wayland deaktivieren. Ein Neustart ist erforderlich.",
   "settings.general.row.wayland.tooltip":
@@ -1118,6 +1120,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "Feedback senden",
   "desktop.menu.reportBug": "Fehler melden",
   "desktop.menu.ariaLabel": "CoderRupee-Menü",
+  "desktop.tray.show": "CoderRupee anzeigen",
+  "desktop.tray.hide": "CoderRupee ausblenden",
+  "desktop.tray.notification.message": "CoderRupee läuft im Infobereich weiter.",
   "desktop.updater.dialog.checkFailed.message": "Die Suche nach Updates ist fehlgeschlagen.",
   "desktop.updater.dialog.checkFailed.title": "Updatefehler",
   "desktop.updater.dialog.upToDate.message": "Sie sind auf dem neuesten Stand.",

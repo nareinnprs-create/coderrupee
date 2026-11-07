@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "Delite povratne informacije",
   "desktop.menu.reportBug": "Prijavi napako",
   "desktop.menu.ariaLabel": "CoderRupee meni",
+  "desktop.tray.show": "Prikaži CoderRupee",
+  "desktop.tray.hide": "Skrij CoderRupee",
+  "desktop.tray.notification.message": "CoderRupee še naprej deluje v sistemskem pladnju.",
   "desktop.updater.dialog.checkFailed.message": "Preverjanje posodobitve ni uspelo.",
   "desktop.updater.dialog.checkFailed.title": "Napaka posodobitve",
   "desktop.updater.dialog.upToDate.message": "Ste na tekočem.",
@@ -984,6 +987,8 @@ export const dict = {
   "settings.general.row.pinchZoom.title": "Stisnite za povečavo",
   "settings.general.row.pinchZoom.description":
     "Omogočite ščipanje sledilne ploščice in Ctrl poteze drsenja za povečavo",
+  "settings.general.row.closeToTray.title": "Zapri v sistemski pladenj",
+  "settings.general.row.closeToTray.description": "Ob zapiranju okna pusti CoderRupee delovati v sistemskem pladnju",
   "settings.general.row.wayland.title": "Uporabi izvorni Wayland",
   "settings.general.row.wayland.description": "Onemogoči nadomestno X11 na Wayland. Zahteva ponovni zagon.",
   "settings.general.row.wayland.tooltip":

@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "Trimite feedback",
   "desktop.menu.reportBug": "Raportează o problemă",
   "desktop.menu.ariaLabel": "Meniu CoderRupee",
+  "desktop.tray.show": "Afișează CoderRupee",
+  "desktop.tray.hide": "Ascunde CoderRupee",
+  "desktop.tray.notification.message": "CoderRupee continuă să ruleze în zona de notificare.",
   "desktop.updater.dialog.checkFailed.message": "Verificarea actualizărilor a eșuat.",
   "desktop.updater.dialog.checkFailed.title": "Eroare actualizare",
   "desktop.updater.dialog.upToDate.message": "Ai cea mai recentă versiune.",
@@ -983,6 +986,8 @@ export const dict = {
   "settings.general.row.newInterfaceNotice.dismiss": "Închide",
   "settings.general.row.pinchZoom.title": "Zoom prin ciupire",
   "settings.general.row.pinchZoom.description": "Permite zoom cu gesturi de ciupire pe trackpad și Ctrl-scroll",
+  "settings.general.row.closeToTray.title": "Închide în zona de notificare",
+  "settings.general.row.closeToTray.description": "Păstrează CoderRupee în execuție în zona de notificare la închiderea ferestrei",
   "settings.general.row.wayland.title": "Folosește Wayland nativ",
   "settings.general.row.wayland.description": "Dezactivează fallback-ul X11 pe Wayland. Necesită repornire.",
   "settings.general.row.wayland.tooltip":

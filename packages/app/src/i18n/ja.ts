@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "フィードバックを送信",
   "desktop.menu.reportBug": "バグを報告",
   "desktop.menu.ariaLabel": "CoderRupeeメニュー",
+  "desktop.tray.show": "CoderRupee を表示",
+  "desktop.tray.hide": "CoderRupee を隠す",
+  "desktop.tray.notification.message": "CoderRupee はトレイで動作し続けます。",
 
   "desktop.updater.dialog.checkFailed.message": "アップデートを確認できませんでした。",
   "desktop.updater.dialog.checkFailed.title": "アップデートエラー",
@@ -888,6 +891,8 @@ export const dict = {
   "settings.general.row.pinchZoom.title": "ピンチでズーム",
   "settings.general.row.pinchZoom.description":
     "トラックパッドのピンチ操作とCtrl+スクロール操作によるズームを許可します",
+  "settings.general.row.closeToTray.title": "トレイに閉じる",
+  "settings.general.row.closeToTray.description": "ウィンドウを閉じても CoderRupee をトレイで動作させ続けます",
   "settings.general.row.wayland.title": "ネイティブWaylandを使用",
   "settings.general.row.wayland.description": "WaylandでのX11フォールバックを無効にします。再起動が必要です。",
   "settings.general.row.wayland.tooltip":

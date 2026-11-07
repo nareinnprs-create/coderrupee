@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "Enviar comentarios",
   "desktop.menu.reportBug": "Informar de un error",
   "desktop.menu.ariaLabel": "Menú de CoderRupee",
+  "desktop.tray.show": "Mostrar CoderRupee",
+  "desktop.tray.hide": "Ocultar CoderRupee",
+  "desktop.tray.notification.message": "CoderRupee sigue ejecutándose en la bandeja del sistema.",
 
   "desktop.updater.dialog.checkFailed.message": "No se pudo buscar actualizaciones.",
   "desktop.updater.dialog.checkFailed.title": "Error de actualización",
@@ -975,6 +978,8 @@ export const dict = {
   "settings.general.row.pinchZoom.title": "Pellizcar para ampliar",
   "settings.general.row.pinchZoom.description":
     "Permitir ampliar con el gesto de pellizco del panel táctil y con Ctrl + desplazamiento",
+  "settings.general.row.closeToTray.title": "Cerrar a la bandeja",
+  "settings.general.row.closeToTray.description": "Mantener CoderRupee ejecutándose en la bandeja del sistema al cerrar la ventana",
   "settings.general.row.wayland.title": "Usar Wayland nativo",
   "settings.general.row.wayland.description": "Deshabilitar el uso alternativo de X11 en Wayland. Requiere reiniciar.",
   "settings.general.row.wayland.tooltip":

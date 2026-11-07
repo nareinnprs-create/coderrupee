@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "رائے کا اشتراک کریں",
   "desktop.menu.reportBug": "خرابی کی اطلاع دیں",
   "desktop.menu.ariaLabel": "CoderRupee مینو",
+  "desktop.tray.show": "CoderRupee دکھائیں",
+  "desktop.tray.hide": "CoderRupee چھپائیں",
+  "desktop.tray.notification.message": "CoderRupee ٹرے میں چلتا رہے گا۔",
 
   "desktop.updater.dialog.checkFailed.message": "اپ ڈیٹ کی جانچ ناکام ہو گئی۔",
   "desktop.updater.dialog.checkFailed.title": "اپ ڈیٹ کی خرابی",
@@ -988,6 +991,8 @@ export const dict = {
   "settings.general.row.newInterfaceNotice.dismiss": "نظر انداز کریں",
   "settings.general.row.pinchZoom.title": "زوم کرنے کے لیے چوٹکی لگائیں۔",
   "settings.general.row.pinchZoom.description": "ٹریک پیڈ پنچ اور Ctrl-اسکرول اشاروں کو زوم کرنے دیں۔",
+  "settings.general.row.closeToTray.title": "ٹرے میں بند کریں",
+  "settings.general.row.closeToTray.description": "ونڈو بند ہونے پر CoderRupee کو ٹرے میں چلتا رکھیں",
   "settings.general.row.wayland.title": "مقامی Wayland استعمال کریں۔",
   "settings.general.row.wayland.description": "Wayland پر X11 فال بیک کو غیر فعال کریں۔ دوبارہ شروع کرنے کی ضرورت ہے۔",
   "settings.general.row.wayland.tooltip":

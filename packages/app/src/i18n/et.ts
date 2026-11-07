@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "Jaga tagasisidet",
   "desktop.menu.reportBug": "Teatage veast",
   "desktop.menu.ariaLabel": "CoderRupee menüü",
+  "desktop.tray.show": "Kuva CoderRupee",
+  "desktop.tray.hide": "Peida CoderRupee",
+  "desktop.tray.notification.message": "CoderRupee jääb süsteemisalve töötama.",
   "desktop.updater.dialog.checkFailed.message": "Värskenduskontroll ebaõnnestus.",
   "desktop.updater.dialog.checkFailed.title": "Värskendusviga",
   "desktop.updater.dialog.upToDate.message": "Oled kursis.",
@@ -974,6 +977,8 @@ export const dict = {
   "settings.general.row.newInterfaceNotice.dismiss": "Loobu",
   "settings.general.row.pinchZoom.title": "Suumimiseks näpistage",
   "settings.general.row.pinchZoom.description": "Lubage suumimiseks puuteplaadi kokkusurumine ja Ctrl-kerimine",
+  "settings.general.row.closeToTray.title": "Sulge süsteemisalve",
+  "settings.general.row.closeToTray.description": "Hoia CoderRupee pärast akna sulgemist süsteemisalves töötamas",
   "settings.general.row.wayland.title": "Kasuta omakeelset Wayland",
   "settings.general.row.wayland.description": "Keela X11 varundus Wayland. Nõuab taaskäivitamist.",
   "settings.general.row.wayland.tooltip":

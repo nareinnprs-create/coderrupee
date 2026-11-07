@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "Deil afturmeldingar",
   "desktop.menu.reportBug": "Melda ein feil",
   "desktop.menu.ariaLabel": "CoderRupee valmynd",
+  "desktop.tray.show": "Vís CoderRupee",
+  "desktop.tray.hide": "Fjal CoderRupee",
+  "desktop.tray.notification.message": "CoderRupee haltur fram at keyra í kerfisbakkanum.",
   "desktop.updater.dialog.checkFailed.message": "Dagføringarkanningin miseydnaðist.",
   "desktop.updater.dialog.checkFailed.title": "Dagføring feilur",
   "desktop.updater.dialog.upToDate.message": "Tú ert dagførdur.",
@@ -976,6 +979,8 @@ export const dict = {
   "settings.general.row.newInterfaceNotice.dismiss": "Loysa úr starvi",
   "settings.general.row.pinchZoom.title": "Klíp fyri at zooma",
   "settings.general.row.pinchZoom.description": "Loyva trackpad-klípi og Ctrl-rullubendingum at zooma",
+  "settings.general.row.closeToTray.title": "Lat aftur í kerfisbakkan",
+  "settings.general.row.closeToTray.description": "Lat CoderRupee vera keyrandi í kerfisbakkanum, tá vindeygað verður latið aftur",
   "settings.general.row.wayland.title": "Brúka innfødd Wayland",
   "settings.general.row.wayland.description": "Slá X11 afturgongd frá á Wayland. Krevur endurbyrjan.",
   "settings.general.row.wayland.tooltip":

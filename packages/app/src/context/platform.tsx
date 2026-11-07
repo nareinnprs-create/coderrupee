@@ -104,6 +104,12 @@ type PlatformBase = {
   /** Allow native pinch/Ctrl-scroll zoom gestures (desktop only) */
   setPinchZoomEnabled?(enabled: boolean): Promise<void> | void
 
+  /** Get whether closing the window hides it to the tray (desktop only) */
+  getCloseToTrayEnabled?(): Promise<boolean> | boolean
+
+  /** Hide to the system tray when the window is closed (desktop only) */
+  setCloseToTrayEnabled?(enabled: boolean): Promise<void> | void
+
   /** Run a desktop-only menu action from the app chrome */
   runDesktopMenuAction?(action: DesktopMenuAction): Promise<void> | void
 

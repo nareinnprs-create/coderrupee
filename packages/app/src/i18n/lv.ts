@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "Sniegt atsauksmi",
   "desktop.menu.reportBug": "Ziņot par kļūdu",
   "desktop.menu.ariaLabel": "CoderRupee izvēlne",
+  "desktop.tray.show": "Rādīt CoderRupee",
+  "desktop.tray.hide": "Paslēpt CoderRupee",
+  "desktop.tray.notification.message": "CoderRupee turpina darboties sistēmas teknē.",
   "desktop.updater.dialog.checkFailed.message": "Neizdevās pārbaudīt atjauninājumus.",
   "desktop.updater.dialog.checkFailed.title": "Atjaunināšanas kļūda",
   "desktop.updater.dialog.upToDate.message": "Jums ir jaunākā versija.",
@@ -984,6 +987,8 @@ export const dict = {
   "settings.general.row.newInterfaceNotice.dismiss": "Aizvērt",
   "settings.general.row.pinchZoom.title": "Tuvināt ar šķipsnu",
   "settings.general.row.pinchZoom.description": "Atļaut tuvināšanu ar skārienpaliktņa šķipsnu un Ctrl-ritināšanu",
+  "settings.general.row.closeToTray.title": "Aizvērt sistēmas tekne",
+  "settings.general.row.closeToTray.description": "Pēc loga aizvēršanas turēt CoderRupee darbojošos sistēmas teknē",
   "settings.general.row.wayland.title": "Izmantot vietējo Wayland",
   "settings.general.row.wayland.description": "Atspējot X11 rezerves režīmu Wayland vidē. Nepieciešama pārstartēšana.",
   "settings.general.row.wayland.tooltip":

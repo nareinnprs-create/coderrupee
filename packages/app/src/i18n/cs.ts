@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "Sdílejte zpětnou vazbu",
   "desktop.menu.reportBug": "Nahlásit chybu",
   "desktop.menu.ariaLabel": "Nabídka CoderRupee",
+  "desktop.tray.show": "Zobrazit CoderRupee",
+  "desktop.tray.hide": "Skrýt CoderRupee",
+  "desktop.tray.notification.message": "CoderRupee dál běží v oznamovací oblasti.",
   "desktop.updater.dialog.checkFailed.message": "Kontrola aktualizace se nezdařila.",
   "desktop.updater.dialog.checkFailed.title": "Chyba aktualizace",
   "desktop.updater.dialog.upToDate.message": "Jste aktuální.",
@@ -984,6 +987,8 @@ export const dict = {
   "settings.general.row.newInterfaceNotice.dismiss": "Odmítnout",
   "settings.general.row.pinchZoom.title": "Stažením prstů přiblížíte",
   "settings.general.row.pinchZoom.description": "Povolit přiblížení pomocí gest trackpadu a gesta Ctrl posouvání",
+  "settings.general.row.closeToTray.title": "Zavřít do oznamovací oblasti",
+  "settings.general.row.closeToTray.description": "Ponechat CoderRupee běžet v oznamovací oblasti po zavření okna",
   "settings.general.row.wayland.title": "Použít nativní Wayland",
   "settings.general.row.wayland.description": "Zakázat zálohu X11 na Wayland. Vyžaduje restart.",
   "settings.general.row.wayland.tooltip":

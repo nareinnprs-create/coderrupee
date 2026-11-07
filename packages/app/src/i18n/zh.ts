@@ -48,6 +48,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "提供反馈",
   "desktop.menu.reportBug": "报告错误",
   "desktop.menu.ariaLabel": "CoderRupee 菜单",
+  "desktop.tray.show": "显示 CoderRupee",
+  "desktop.tray.hide": "隐藏 CoderRupee",
+  "desktop.tray.notification.message": "CoderRupee 会在系统托盘中保持运行。",
 
   "desktop.updater.dialog.checkFailed.message": "检查更新失败。",
   "desktop.updater.dialog.checkFailed.title": "更新错误",
@@ -944,6 +947,8 @@ export const dict = {
   "settings.general.row.newInterfaceNotice.dismiss": "忽略",
   "settings.general.row.pinchZoom.title": "双指缩放",
   "settings.general.row.pinchZoom.description": "允许使用触控板双指捏合和 Ctrl+滚轮手势缩放",
+  "settings.general.row.closeToTray.title": "关闭到托盘",
+  "settings.general.row.closeToTray.description": "关闭窗口时让 CoderRupee 在系统托盘中保持运行",
   "settings.general.row.wayland.title": "使用原生 Wayland",
   "settings.general.row.wayland.description": "在 Wayland 上禁用 X11 回退。需要重启。",
   "settings.general.row.wayland.tooltip": "在混合刷新率显示器的 Linux 系统上，原生 Wayland 可能更稳定。",

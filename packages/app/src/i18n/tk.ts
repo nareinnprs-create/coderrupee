@@ -44,6 +44,9 @@ export const dict = {
   "desktop.menu.shareFeedback": "Pikir alyşma",
   "desktop.menu.reportBug": "Bug barada habar beriň",
   "desktop.menu.ariaLabel": "CoderRupee menýusy",
+  "desktop.tray.show": "CoderRupee görkeziň",
+  "desktop.tray.hide": "CoderRupee gizleň",
+  "desktop.tray.notification.message": "CoderRupee ulgam sebidiinde işleýär.",
   "desktop.updater.dialog.checkFailed.message": "Täzelenme şowsuz boldy.",
   "desktop.updater.dialog.checkFailed.title": "Täzelenme säwligi",
   "desktop.updater.dialog.upToDate.message": "Döwrebap",
@@ -981,6 +984,8 @@ export const dict = {
   "settings.general.row.newInterfaceNotice.dismiss": "Işden aýyrmak",
   "settings.general.row.pinchZoom.title": "Ulaltmak üçin çümmük",
   "settings.general.row.pinchZoom.description": "Trackpad çümmüklerine we Ctrl-aýlaw hereketlerine ýakynlaşdyryň",
+  "settings.general.row.closeToTray.title": "Sebidiine ýapyň",
+  "settings.general.row.closeToTray.description": "Ok ýapylanda CoderRupee ulgam sebidiinde işleýan bolsun",
   "settings.general.row.wayland.title": "Nativeerli Wayland ulanyň",
   "settings.general.row.wayland.description": "Wayland-de X11 yza gaýdyp gelmegi öçüriň. Gaýtadan açmagy talap edýär.",
   "settings.general.row.wayland.tooltip":

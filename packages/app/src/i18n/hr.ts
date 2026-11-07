@@ -91,6 +91,9 @@ const desktop = [
   "Nije uspjelo dohvaćanje priključka",
   "Datoteka nije odabrana u izborniku",
   "Odabrani prilozi premašuju ograničenje od {{limit}} MB",
+  "Prikaži CoderRupee",
+  "Sakrij CoderRupee",
+  "CoderRupee nastavlja raditi u sistemskoj traci.",
 ]
 
 export const dict = {
@@ -990,6 +993,8 @@ export const dict = {
   "settings.general.row.pinchZoom.title": "Stisnite prste za zumiranje",
   "settings.general.row.pinchZoom.description":
     "Za zumiranje dopustite prstohvat dodirne površine i Ctrl pokrete pomicanja",
+  "settings.general.row.closeToTray.title": "Zatvori u sistemsku traku",
+  "settings.general.row.closeToTray.description": "Drži CoderRupee pokrenut u sistemskoj traci nakon zatvaranja prozora",
   "settings.general.row.wayland.title": "Koristite izvorni Wayland",
   "settings.general.row.wayland.description": "Onemogući rezervni X11 na Wayland. Zahtijeva ponovno pokretanje.",
   "settings.general.row.wayland.tooltip":
