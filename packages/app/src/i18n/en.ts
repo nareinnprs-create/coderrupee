@@ -97,6 +97,8 @@ export const dict = {
   "command.session.unshare.description": "Stop sharing this session",
   "command.session.export": "Export session",
   "command.session.export.description": "Export the full session transcript in JSON, Markdown, or HTML",
+  "command.session.agents": "Agent dashboard",
+  "command.session.agents.description": "Show the subagent sessions running in this session",
 
   "dialog.export.title": "Export session",
   "dialog.export.description": "Choose a format for the session transcript",
@@ -109,6 +111,18 @@ export const dict = {
   "dialog.export.format.html.description": "Standalone page viewable in a browser",
   "dialog.export.action": "Export",
   "dialog.export.action.pending": "Exporting...",
+
+  "dialog.agents.title": "Agent dashboard",
+  "dialog.agents.description": "Subagent sessions and their live status",
+  "dialog.agents.empty": "No subagent activity in this session",
+  "dialog.agents.stats.agents": "Agents",
+  "dialog.agents.stats.running": "Running",
+  "dialog.agents.stats.spend": "Spend",
+  "dialog.agents.status.queued": "Queued",
+  "dialog.agents.status.running": "Running",
+  "dialog.agents.status.completed": "Completed",
+  "dialog.agents.status.failed": "Failed",
+  "dialog.agents.action.open": "Open",
 
   "palette.search.placeholder": "Search files, commands, and sessions",
   "palette.search.placeholder.home": "Search commands and sessions",

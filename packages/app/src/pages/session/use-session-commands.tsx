@@ -243,6 +243,15 @@ export const useSessionCommands = (actions: SessionCommandContext) => {
     )
   }
 
+  const openAgentDashboard = () => {
+    const sessionID = params.id
+    if (!sessionID) return
+    void openDialog(
+      () => import("@/components/dialog-agent-dashboard"),
+      (x) => dialog.show(() => <x.DialogAgentDashboard sessionID={sessionID} />),
+    )
+  }
+
   const openFile = () => {
     void openDialog(
       () => import("@/components/dialog-select-file"),
@@ -481,6 +490,13 @@ export const useSessionCommands = (actions: SessionCommandContext) => {
       slash: "export",
       disabled: !params.id,
       onSelect: exportSession,
+    }),
+    sessionCommand({
+      id: "session.agents",
+      title: language.t("command.session.agents"),
+      description: language.t("command.session.agents.description"),
+      disabled: !params.id,
+      onSelect: openAgentDashboard,
     }),
     sessionCommand({
       id: "session.archive",

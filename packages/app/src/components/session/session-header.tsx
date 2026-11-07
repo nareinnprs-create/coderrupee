@@ -165,6 +165,8 @@ export function SessionHeader() {
   const search = settings.visibility.search
   const status = settings.visibility.status
   const isDesktop = createMediaQuery("(min-width: 768px)")
+  const openAgents = () => command.trigger("session.agents")
+  const agentsLabel = () => language.t("command.session.agents")
 
   const [exists, setExists] = createStore<Partial<Record<OpenApp, boolean>>>({
     finder: true,
@@ -237,6 +239,9 @@ export function SessionHeader() {
   const v2ActionsState = createMemo<SessionHeaderV2ActionsState>(() => ({
     statusVisible: status(),
     statusLabel: language.t("status.popover.trigger"),
+    agentsLabel: agentsLabel(),
+    agentsVisible: isDesktop(),
+    onAgentsOpen: openAgents,
     reviewLabel: language.t("command.review.toggle"),
     reviewKeybind: reviewTooltipKeybind(command),
     reviewVisible: isDesktop(),
@@ -462,6 +467,18 @@ export function SessionHeader() {
                     </TooltipKeybind>
 
                     <div class="hidden md:flex items-center gap-1 shrink-0">
+                      <TooltipKeybind title={agentsLabel()} keybind={command.keybind("session.agents")}>
+                        <Button
+                          variant="ghost"
+                          class="group/agents-toggle titlebar-icon w-8 h-6 p-0 box-border"
+                          onClick={openAgents}
+                          aria-label={agentsLabel()}
+                          aria-haspopup="dialog"
+                        >
+                          <Icon size="small" name="subagent" />
+                        </Button>
+                      </TooltipKeybind>
+
                       <TooltipKeybind
                         title={language.t("command.review.toggle")}
                         keybind={command.keybind("review.toggle")}
@@ -519,6 +536,9 @@ export function SessionHeader() {
 type SessionHeaderV2ActionsState = {
   statusVisible: boolean
   statusLabel: string
+  agentsLabel: string
+  agentsVisible: boolean
+  onAgentsOpen: () => void
   reviewLabel: string
   reviewKeybind: string[]
   reviewVisible: boolean
@@ -535,6 +555,20 @@ function SessionHeaderV2Actions(props: { state: SessionHeaderV2ActionsState }) {
         <Tooltip placement="bottom" value={props.state.statusLabel}>
           <StatusPopoverV2 />
         </Tooltip>
+      </Show>
+      <Show when={props.state.agentsVisible}>
+        <TooltipV2 class="shrink-0" placement="bottom" value={props.state.agentsLabel}>
+          <IconButtonV2
+            type="button"
+            variant="ghost-muted"
+            size="large"
+            class="!w-9 shrink-0"
+            onClick={props.state.onAgentsOpen}
+            aria-label={props.state.agentsLabel}
+            aria-haspopup="dialog"
+            icon={<Icon name="subagent" size="small" />}
+          />
+        </TooltipV2>
       </Show>
       <Show when={props.state.reviewVisible}>
         <TooltipV2
