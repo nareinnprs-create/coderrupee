@@ -3,6 +3,7 @@ import { FileIcon } from "@coderrupee/ui/file-icon"
 import { getFilenameTruncated } from "@coderrupee/core/util/path"
 import { TooltipV2 } from "@coderrupee/ui/v2/tooltip-v2"
 import { AttachmentCardV2 } from "./attachment-card-v2"
+import { observeReviewElement } from "./review-observer"
 
 export function CommentCardV2(props: {
   comment: string
@@ -22,11 +23,9 @@ export function CommentCardV2(props: {
     if (!element) return
     const sync = () => setTruncated(element.scrollWidth > element.clientWidth)
     const measure = () => requestAnimationFrame(sync)
-    const observer = new ResizeObserver(sync)
-    observer.observe(element)
-    measure()
+    const stopObserving = observeReviewElement(element, () => measure())
     void document.fonts?.ready.then(measure)
-    onCleanup(() => observer.disconnect())
+    onCleanup(stopObserving)
   })
 
   return (
