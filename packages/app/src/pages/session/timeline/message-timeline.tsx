@@ -62,6 +62,7 @@ import { DialogExportSession } from "@/components/dialog-export-session"
 import { getDirectory, getFilename } from "@coderrupee/core/util/path"
 import { Popover as KobaltePopover } from "@kobalte/core/popover"
 import { normalize } from "@coderrupee/session-ui/session-diff"
+import { shouldVirtualizeReviewDiff } from "@coderrupee/session-ui/v2/session-review-file-preview-v2-virtualize"
 import { useFileComponent } from "@coderrupee/ui/context/file"
 import { shouldMarkBoundaryGesture, normalizeWheelDelta } from "@/pages/session/message-gesture"
 import { SessionContextUsage } from "@/components/session-context-usage"
@@ -323,7 +324,15 @@ function TimelineDiffView(props: { diff: SummaryDiff }) {
 
   return (
     <div data-slot="session-turn-diff-view" data-scrollable>
-      <Dynamic component={fileComponent} mode="diff" virtualize={false} fileDiff={view.fileDiff} />
+      <Dynamic
+        component={fileComponent}
+        mode="diff"
+        virtualize={shouldVirtualizeReviewDiff({
+          additionLines: view.fileDiff.additionLines.length,
+          deletionLines: view.fileDiff.deletionLines.length,
+        })}
+        fileDiff={view.fileDiff}
+      />
     </div>
   )
 }
