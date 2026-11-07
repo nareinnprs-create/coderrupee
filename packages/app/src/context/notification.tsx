@@ -11,6 +11,7 @@ import { base64Encode } from "@coderrupee/core/util/encode"
 import { decode64 } from "@/utils/base64"
 import { EventSessionError } from "@coderrupee/sdk/v2"
 import { Persist, persisted } from "@/utils/persist"
+import { createSessionNotificationGate } from "@/notification-decision"
 import { playSoundById } from "@/utils/sound"
 import { useGlobal } from "./global"
 import { ServerConnection, useServer } from "./server"
@@ -241,6 +242,7 @@ function createServerNotificationState(input: {
   const [index, setIndex] = createStore<NotificationIndex>(buildNotificationIndex(store.list))
 
   const meta = { pruned: false, disposed: false }
+  const notificationGate = createSessionNotificationGate()
 
   const updateUnseen = (scope: "session" | "project", key: string, unseen: Notification[]) => {
     setIndex(scope, "unseen", key, unseen)
@@ -346,19 +348,32 @@ function createServerNotificationState(input: {
         void playSoundById(settings.sounds.agent())
       }
 
+      const viewed = viewedInCurrentSession(directory, sessionID)
+
       append({
         directory,
         time,
-        viewed: viewedInCurrentSession(directory, sessionID),
+        viewed,
         type: "turn-complete",
         session: sessionID,
       })
 
       const href = `/${base64Encode(directory)}/session/${sessionID}`
-      if (settings.notifications.agent()) {
-        void platform.notify(language.t("notification.session.responseReady.title"), session.title ?? sessionID, () =>
-          input.navigate(href),
-        )
+      const decision = notificationGate({
+        sessionEvent: "completed",
+        windowFocused: document.hasFocus(),
+        sessionVisible: viewed,
+        setting: settings.notifications.agent(),
+        sessionID,
+        title: language.t("notification.session.responseReady.title"),
+        body: session.title ?? sessionID,
+      })
+      if (decision.notify) {
+        void platform.notify(decision.title, decision.body, () => input.navigate(href), {
+          urgency: decision.urgency,
+          directory,
+          sessionID,
+        })
       }
     })
   }
@@ -390,8 +405,22 @@ function createServerNotificationState(input: {
         session?.title ??
         (typeof error === "string" ? error : language.t("notification.session.error.fallbackDescription"))
       const href = sessionID ? `/${base64Encode(directory)}/session/${sessionID}` : `/${base64Encode(directory)}`
-      if (settings.notifications.errors()) {
-        void platform.notify(language.t("notification.session.error.title"), description, () => input.navigate(href))
+      const decision = notificationGate({
+        sessionEvent: "failed",
+        windowFocused: document.hasFocus(),
+        sessionVisible: viewedInCurrentSession(directory, sessionID),
+        setting: settings.notifications.errors(),
+        sessionID,
+        title: language.t("notification.session.error.title"),
+        body: description,
+      })
+      if (decision.notify) {
+        void platform.notify(
+          decision.title,
+          decision.body,
+          () => input.navigate(href),
+          { urgency: decision.urgency, directory, sessionID },
+        )
       }
     })
   }

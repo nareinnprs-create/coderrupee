@@ -65,9 +65,9 @@ const notify: Platform["notify"] = async (title, description, onClick) => {
 
   if (permission !== "granted") return
 
-  const inView = document.visibilityState === "visible" && document.hasFocus()
-  if (inView) return
-
+  // Attention routing (suppression for the visible session and the focused
+  // window) happens in the notification decision engine at the call sites;
+  // this transport only handles the Web Notification permission flow.
   const notification = new Notification(title, {
     body: description ?? "",
     icon: "https://coderrupee.ai/favicon-96x96-v3.png",

@@ -5,6 +5,7 @@ import type { DesktopMenuAction } from "../desktop-menu"
 import { ServerConnection } from "./server"
 import type { WslServersPlatform } from "../wsl/types"
 import type { UpdaterPlatform } from "../updater"
+import type { NotificationRouteOptions } from "@/notification-decision"
 import type { DraftStore } from "@/utils/draft-store"
 
 type PickerPaths = string | string[] | null
@@ -48,7 +49,12 @@ type PlatformBase = {
   restart(): Promise<void>
 
   /** Send a system notification */
-  notify(title: string, description?: string, onClick?: () => void): Promise<void>
+  notify(
+    title: string,
+    description?: string,
+    onClick?: () => void,
+    options?: NotificationRouteOptions,
+  ): Promise<void>
 
   /** Open a native attachment picker and read selected files sequentially (desktop only) */
   openAttachmentPickerDialog?(

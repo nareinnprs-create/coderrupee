@@ -70,9 +70,11 @@ import {
 import {
   collectNewSessionDeepLinks,
   collectOpenProjectDeepLinks,
+  collectSessionDeepLinks,
   deepLinkEvent,
   drainPendingDeepLinks,
 } from "./layout/deep-links"
+import { createSessionNotificationGate } from "@/notification-decision"
 import { createInlineEditorController } from "./layout/inline-editor"
 import {
   LocalWorkspace,
@@ -377,6 +379,7 @@ export default function LegacyLayout(props: ParentProps) {
       const toastBySession = new Map<string, number>()
       const alertedAtBySession = new Map<string, number>()
       const cooldownMs = 5000
+      const notificationGate = createSessionNotificationGate()
 
       const dismissSessionAlert = (sessionKey: string) => {
         const toastId = toastBySession.get(sessionKey)
@@ -436,6 +439,11 @@ export default function LegacyLayout(props: ParentProps) {
             : language.t("notification.question.description", { sessionTitle, projectName })
         const href = `/${base64Encode(directory)}/session/${props.sessionID}`
 
+        const currentSession = params.id
+        const sessionVisible =
+          pathKey(directory) === pathKey(currentDir()) &&
+          (props.sessionID === currentSession || session?.parentID === currentSession)
+
         const now = Date.now()
         const lastAlerted = alertedAtBySession.get(sessionKey) ?? 0
         if (now - lastAlerted < cooldownMs) return
@@ -445,20 +453,29 @@ export default function LegacyLayout(props: ParentProps) {
           if (settings.sounds.permissionsEnabled()) {
             void playSoundById(settings.sounds.permissions())
           }
-          if (settings.notifications.permissions()) {
-            void platform.notify(title, description, () => navigate(href))
-          }
         }
 
-        if (e.details.type === "question.asked") {
-          if (settings.notifications.agent()) {
-            void platform.notify(title, description, () => navigate(href))
-          }
+        const decision = notificationGate({
+          sessionEvent: "needs-attention",
+          windowFocused: document.hasFocus(),
+          sessionVisible,
+          setting:
+            e.details.type === "permission.asked"
+              ? settings.notifications.permissions()
+              : settings.notifications.agent(),
+          sessionID: props.sessionID,
+          title,
+          body: description,
+        })
+        if (decision.notify) {
+          void platform.notify(decision.title, decision.body, () => navigate(href), {
+            urgency: decision.urgency,
+            directory,
+            sessionID: props.sessionID,
+          })
         }
 
-        const currentSession = params.id
-        if (pathKey(directory) === pathKey(currentDir()) && props.sessionID === currentSession) return
-        if (pathKey(directory) === pathKey(currentDir()) && session?.parentID === currentSession) return
+        if (sessionVisible) return
 
         dismissSessionAlert(sessionKey)
 
@@ -1266,6 +1283,11 @@ export default function LegacyLayout(props: ParentProps) {
       }
       const href = link.prompt ? `/${slug}/session?prompt=${encodeURIComponent(link.prompt)}` : `/${slug}/session`
       navigateWithSidebarReset(href)
+    }
+
+    for (const link of collectSessionDeepLinks(urls)) {
+      const slug = base64Encode(link.directory)
+      navigateWithSidebarReset(link.sessionID ? `/${slug}/session/${link.sessionID}` : `/${slug}/session`)
     }
   }
 

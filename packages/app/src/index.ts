@@ -13,6 +13,20 @@ export { useWslServers } from "./wsl/context"
 export { type DisplayBackend, type FatalRendererErrorLog, type Platform, PlatformProvider } from "./context/platform"
 export { type UpdaterPlatform, type UpdaterState } from "./updater"
 export {
+  buildSessionDeepLink,
+  createNotificationRateLimiter,
+  createSessionNotificationGate,
+  decideSessionNotification,
+  type DesktopNotificationRequest,
+  type DesktopNotificationResult,
+  type NotificationRouteOptions,
+  type NotificationUrgency,
+  type SessionEventKind,
+  type SessionNotificationDecision,
+  type SessionNotificationInput,
+  type SessionNotificationRules,
+} from "./notification-decision"
+export {
   type WslDistroProbe,
   type WslInstalledDistro,
   type WslJob,

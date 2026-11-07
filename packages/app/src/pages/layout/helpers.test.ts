@@ -2,10 +2,13 @@ import { describe, expect, test } from "bun:test"
 import {
   collectNewSessionDeepLinks,
   collectOpenProjectDeepLinks,
+  collectSessionDeepLinks,
   drainPendingDeepLinks,
   parseDeepLink,
   parseNewSessionDeepLink,
+  parseSessionDeepLink,
 } from "./deep-links"
+import { buildSessionDeepLink } from "@/notification-decision"
 import { type Session } from "@coderrupee/sdk/v2/client"
 import {
   childSessionOnPath,
@@ -98,6 +101,34 @@ describe("layout deep links", () => {
       "coderrupee://new-session?directory=/c&prompt=ship%20it",
     ])
     expect(result).toEqual([{ directory: "/a" }, { directory: "/c", prompt: "ship it" }])
+  })
+
+  test("parses session deep links with optional session id", () => {
+    expect(parseSessionDeepLink("coderrupee://session?directory=%2Ftmp%2Fdemo")).toEqual({ directory: "/tmp/demo" })
+    expect(parseSessionDeepLink("coderrupee://session?directory=/tmp/demo&id=ses_1")).toEqual({
+      directory: "/tmp/demo",
+      sessionID: "ses_1",
+    })
+    expect(parseSessionDeepLink("coderrupee://session")).toBeUndefined()
+    expect(parseSessionDeepLink("coderrupee://session?directory=")).toBeUndefined()
+    expect(parseSessionDeepLink("coderrupee://new-session?directory=/tmp/demo")).toBeUndefined()
+  })
+
+  test("round-trips session deep links built by the desktop transport", () => {
+    expect(parseSessionDeepLink(buildSessionDeepLink("/repo"))).toEqual({ directory: "/repo" })
+    expect(parseSessionDeepLink(buildSessionDeepLink("/repo", "ses_1"))).toEqual({ directory: "/repo", sessionID: "ses_1" })
+  })
+
+  test("collects only valid session deep links", () => {
+    const result = collectSessionDeepLinks([
+      "coderrupee://session?directory=/a&id=s1",
+      "coderrupee://open-project?directory=/b",
+      "coderrupee://session?directory=/c",
+    ])
+    expect(result).toEqual([
+      { directory: "/a", sessionID: "s1" },
+      { directory: "/c", sessionID: undefined },
+    ])
   })
 
   test("drains global deep links once", () => {

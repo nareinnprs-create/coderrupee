@@ -36,6 +36,20 @@ export const collectOpenProjectDeepLinks = (urls: string[]) =>
 export const collectNewSessionDeepLinks = (urls: string[]) =>
   urls.map(parseNewSessionDeepLink).filter((link): link is { directory: string; prompt?: string } => !!link)
 
+// Click-through target for native notifications; the desktop main process
+// builds these via buildSessionDeepLink and routes them here on click.
+export const parseSessionDeepLink = (input: string): { directory: string; sessionID?: string } | undefined => {
+  const url = parseUrl(input)
+  if (!url) return
+  if (url.hostname !== "session") return
+  const directory = url.searchParams.get("directory")
+  if (!directory) return
+  return { directory, sessionID: url.searchParams.get("id") || undefined }
+}
+
+export const collectSessionDeepLinks = (urls: string[]) =>
+  urls.map(parseSessionDeepLink).filter((link): link is { directory: string; sessionID?: string } => !!link)
+
 type CoderRupeeWindow = Window & {
   __CODERRUPEE__?: {
     deepLinks?: string[]
