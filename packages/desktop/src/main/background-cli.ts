@@ -58,6 +58,16 @@ export async function startBackgroundCli(logger: Logger, shellStateHome?: string
     url,
     username: "coderrupee",
     password,
+    isRunning: async () => {
+      try {
+        return (
+          serviceUrl(await run(binary, ["service", "status"], logger, { stateHome: daemonStateHome })) !== undefined
+        )
+      } catch {
+        return false
+      }
+    },
+    stop: () => run(binary, ["service", "stop"], logger, { stateHome: daemonStateHome }).then(() => undefined),
   }
 }
 

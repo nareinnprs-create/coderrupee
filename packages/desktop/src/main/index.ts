@@ -51,6 +51,7 @@ import { migrate } from "./migrate"
 import { cleanupStoreFiles } from "./store-cleanup"
 import { installCliStaged, startBackgroundCli } from "./background-cli"
 import { setNativeTranslations } from "./native-translations"
+import { createSidecarSupervisor } from "./sidecar-supervisor"
 
 const APP_NAMES: Record<string, string> = {
   dev: "CoderRupee Dev",
@@ -68,6 +69,10 @@ const jsCallStackFeature = "DocumentPolicyIncludeJSCallStacksInCrashReports"
 
 let logger: ReturnType<typeof initLogging>
 let server: SidecarListener | null = null
+let sidecarSupervisor: ReturnType<typeof createSidecarSupervisor> | undefined
+let backgroundCli: { isRunning: () => Promise<boolean>; stop: () => Promise<void> } | undefined
+let backgroundCliData: Awaited<ReturnType<typeof startBackgroundCli>> | undefined
+let backgroundCliPoll: NodeJS.Timeout | undefined
 let quitting = false
 
 const pendingDeepLinks: string[] = []
@@ -89,6 +94,15 @@ function emitDeepLinks(urls: string[]) {
 }
 
 async function killSidecar() {
+  sidecarSupervisor?.stop()
+  if (backgroundCliPoll) {
+    clearInterval(backgroundCliPoll)
+    backgroundCliPoll = undefined
+  }
+  const currentBackgroundCli = backgroundCli
+  backgroundCli = undefined
+  backgroundCliData = undefined
+  await currentBackgroundCli?.stop().catch(() => undefined)
   if (!server) return
   const current = server
   server = null
@@ -376,7 +390,35 @@ const main = Effect.gen(function* () {
 
     if (SIDECAR_VERSION === "v2") {
       logger.log("spawning v2 sidecar")
-      const sidecar = yield* Effect.promise(() => startBackgroundCli(logger, shellEnv?.XDG_STATE_HOME))
+      sidecarSupervisor = createSidecarSupervisor({
+        start: async () => {
+          backgroundCliData = await startBackgroundCli(logger, shellEnv?.XDG_STATE_HOME)
+          backgroundCli = backgroundCliData
+          if (!backgroundCliPoll) {
+            backgroundCliPoll = setInterval(() => {
+              const current = backgroundCli
+              if (!current) return
+              void current.isRunning().then((running) => {
+                if (!running && !quitting && backgroundCli === current) {
+                  backgroundCli = undefined
+                  sidecarSupervisor?.notifyExit({ expected: false })
+                }
+              })
+            }, 2_000)
+            backgroundCliPoll.unref()
+          }
+        },
+        timers: {
+          set: (delay, onFire) => setTimeout(onFire, delay),
+          clear: (timer) => clearTimeout(timer as NodeJS.Timeout),
+        },
+        log: {
+          log: (message, meta) => logger.log(message, meta),
+          error: (message, meta) => logger.error(message, meta),
+        },
+      })
+      yield* Effect.promise(() => sidecarSupervisor!.start())
+      const sidecar = backgroundCliData!
       yield* Deferred.succeed(serverReady, {
         url: sidecar.url,
         username: sidecar.username,
@@ -419,15 +461,30 @@ const main = Effect.gen(function* () {
     const password = randomUUID()
 
     logger.log("spawning sidecar", { url })
-    const { listener, health } = yield* Effect.promise(() =>
-      spawnLocalServer(hostname, port, password, {
-        userDataPath: app.getPath("userData"),
-        onStdout: (message) => writeLog("server", "stdout", { message }),
-        onStderr: (message) => writeLog("server", "stderr", { message }, "warn"),
-        onExit: (code) => writeLog("utility", "sidecar exited", { code }, "warn"),
-      }),
-    )
-    server = listener
+    let health: { wait: Promise<void> } | undefined
+    sidecarSupervisor = createSidecarSupervisor({
+      start: async () => {
+        let ready = false
+        const spawned = await spawnLocalServer(hostname, port, password, {
+          userDataPath: app.getPath("userData"),
+          onStdout: (message) => writeLog("server", "stdout", { message }),
+          onStderr: (message) => writeLog("server", "stderr", { message }, "warn"),
+          onExit: (code) => {
+            writeLog("utility", "sidecar exited", { code }, "warn")
+            if (ready) sidecarSupervisor?.notifyExit({ expected: false })
+          },
+        })
+        ready = true
+        server = spawned.listener
+        health = spawned.health
+      },
+      timers: {
+        set: (delay, onFire) => setTimeout(onFire, delay),
+        clear: (timer) => clearTimeout(timer as NodeJS.Timeout),
+      },
+      log: { log: (message, meta) => logger.log(message, meta), error: (message, meta) => logger.error(message, meta) },
+    })
+    yield* Effect.promise(() => sidecarSupervisor!.start())
     yield* Deferred.succeed(serverReady, {
       url,
       username: "coderrupee",
@@ -438,7 +495,7 @@ const main = Effect.gen(function* () {
       void wslServers.initialize().catch((error) => logger.error("wsl server initialization failed", error))
     }
 
-    yield* Effect.promise(() => health.wait).pipe(
+    yield* Effect.promise(() => health!.wait).pipe(
       Effect.timeout("30 seconds"),
       Effect.catch((e) =>
         Effect.sync(() => {
