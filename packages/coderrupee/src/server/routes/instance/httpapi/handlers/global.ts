@@ -141,12 +141,27 @@ export const globalHandlers = HttpApiBuilder.group(RootHttpApi, "global", (handl
     const rollback = Effect.fn("GlobalHttpApi.rollback")(function* () {
       const entry = UpdateHistory.last(UpdateHistory.read())
       if (!entry) return { success: false as const, error: "No update is available to roll back" }
+      if (entry.fromVersion === InstallationVersion)
+        return { success: false as const, error: `Version ${InstallationVersion} is already installed` }
       const method = yield* installation.method()
       if (method === "unknown") return { success: false as const, error: "Unknown installation method" }
       const result = yield* installation.upgrade(method, entry.fromVersion).pipe(
         Effect.as({ success: true as const, version: entry.fromVersion }),
         Effect.catch((err) => Effect.succeed({ success: false as const, error: err instanceof Error ? err.message : String(err) })),
       )
+      if (!result.success) return result
+      UpdateHistory.record({
+        fromVersion: InstallationVersion,
+        toVersion: result.version,
+        channel: UpdateHistory.currentChannel(),
+      })
+      GlobalBus.emit("event", {
+        directory: "global",
+        payload: {
+          type: Installation.Event.Updated.type,
+          properties: { version: result.version },
+        },
+      })
       return result
     })
 
