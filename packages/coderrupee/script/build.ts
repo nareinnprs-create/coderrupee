@@ -168,10 +168,7 @@ for (const item of targets) {
     format: "esm",
     minify: true,
     sourcemap: sourcemapsFlag ? "linked" : "none",
-    splitting: true,
-    naming: {
-      chunk: "./chunk-[name]-[hash].[ext]",
-    },
+    splitting: false,
     compile: {
       autoloadBunfig: false,
       autoloadDotenv: false,
