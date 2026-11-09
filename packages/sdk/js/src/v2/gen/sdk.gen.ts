@@ -80,12 +80,16 @@ import type {
   GlobalConfigGetResponses,
   GlobalConfigUpdateErrors,
   GlobalConfigUpdateResponses,
+  GlobalDiagnosticsErrors,
+  GlobalDiagnosticsResponses,
   GlobalDisposeErrors,
   GlobalDisposeResponses,
   GlobalEventErrors,
   GlobalEventResponses,
   GlobalHealthErrors,
   GlobalHealthResponses,
+  GlobalRollbackErrors,
+  GlobalRollbackResponses,
   GlobalUpgradeErrors,
   GlobalUpgradeResponses,
   InstanceDisposeErrors,
@@ -441,7 +445,7 @@ class HeyApiRegistry<T> {
   get(key?: string): T {
     const instance = this.instances.get(key ?? this.defaultKey)
     if (!instance) {
-      throw new Error(`No SDK client found. Create one with "new OpencodeClient()" to fix this error.`)
+      throw new Error(`No SDK client found. Create one with "new CoderrupeeClient()" to fix this error.`)
     }
     return instance
   }
@@ -1373,6 +1377,30 @@ export class Global extends HeyApiClient {
         ...options?.headers,
         ...params.headers,
       },
+    })
+  }
+
+  /**
+   * Get local diagnostics
+   *
+   * Run local doctor checks and report keyring and update history status.
+   */
+  public diagnostics<ThrowOnError extends boolean = false>(options?: Options<never, ThrowOnError>) {
+    return (options?.client ?? this.client).get<GlobalDiagnosticsResponses, GlobalDiagnosticsErrors, ThrowOnError>({
+      url: "/global/diagnostics",
+      ...options,
+    })
+  }
+
+  /**
+   * Rollback the last update
+   *
+   * Reinstall the version recorded before the last successful update.
+   */
+  public rollback<ThrowOnError extends boolean = false>(options?: Options<never, ThrowOnError>) {
+    return (options?.client ?? this.client).post<GlobalRollbackResponses, GlobalRollbackErrors, ThrowOnError>({
+      url: "/global/rollback",
+      ...options,
     })
   }
 
@@ -7074,12 +7102,12 @@ export class V2 extends HeyApiClient {
   }
 }
 
-export class OpencodeClient extends HeyApiClient {
-  public static readonly __registry = new HeyApiRegistry<OpencodeClient>()
+export class CoderrupeeClient extends HeyApiClient {
+  public static readonly __registry = new HeyApiRegistry<CoderrupeeClient>()
 
   constructor(args?: { client?: Client; key?: string }) {
     super(args)
-    OpencodeClient.__registry.set(this, args?.key)
+    CoderrupeeClient.__registry.set(this, args?.key)
   }
 
   private _auth?: Auth

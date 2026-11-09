@@ -197,4 +197,8 @@ export const dict: Record<string, string> = {
   "ui.question.multiHint": "Barcha tegishli javoblarni tanlang",
   "ui.question.singleHint": "Bitta javobni tanlang",
   "ui.question.custom.placeholder": "Javobingizni yozing...",
+  "ui.sessionReviewV2.empty.changes.refresh": "Refresh",
+  "ui.sessionReviewV2.empty.changes.refreshing": "Refreshing...",
+  "ui.sessionReviewV2.empty.changes.openSession": "Open session",
+  "ui.sessionReviewV2.loading": "Loading changes...",
 }

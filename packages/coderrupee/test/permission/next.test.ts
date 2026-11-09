@@ -1,7 +1,7 @@
 import { PermissionV1 } from "@coderrupee/core/v1/permission"
 import { test, expect } from "bun:test"
 import os from "os"
-import { Cause, Deferred, Effect, Exit, Fiber, Layer } from "effect"
+import { Cause, ConfigProvider, Deferred, Effect, Exit, Fiber, Layer } from "effect"
 import { EventV2Bridge } from "../../src/event-v2-bridge"
 import { CrossSpawnSpawner } from "@coderrupee/core/cross-spawn-spawner"
 import { Permission } from "../../src/permission"
@@ -19,6 +19,12 @@ const env = AppNodeBuilder.build(
   [[InstanceStore.bootstrapNode, noopBootstrap]],
 )
 const it = testEffect(env)
+const tierEnv = env.pipe(
+  Layer.provide(
+    ConfigProvider.layer(ConfigProvider.fromUnknown({ CODERRUPEE_EXPERIMENTAL_AUTONOMY_TIERS: "true" })),
+  ),
+)
+const tierIt = testEffect(tierEnv)
 
 const rejectAll = (message?: string) =>
   Effect.gen(function* () {
@@ -568,8 +574,29 @@ it.instance(
         ruleset: [{ permission: "bash", pattern: "*", action: "allow" }],
       })
       expect(result).toBeUndefined()
+  }),
+  { git: true },
+)
+
+tierIt.instance(
+  "ask - tier flag requires approval for a T2 allow rule",
+  () =>
+    Effect.gen(function* () {
+      const fiber = yield* ask({
+        sessionID: SessionID.make("session_test"),
+        permission: "bash",
+        patterns: ["ls"],
+        metadata: {},
+        always: [],
+        ruleset: [{ permission: "bash", pattern: "*", action: "allow" }],
+      }).pipe(Effect.forkScoped)
+
+      expect(yield* waitForPending(1)).toHaveLength(1)
+      yield* rejectAll()
+      yield* Fiber.await(fiber)
     }),
   { git: true },
+  20_000,
 )
 
 it.instance(

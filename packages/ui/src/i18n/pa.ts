@@ -195,4 +195,8 @@ export const dict: Record<string, string> = {
   "ui.question.multiHint": "لاگو ہون آلے سارے جواباں نوں چنو",
   "ui.question.singleHint": "اک جواب چنو",
   "ui.question.custom.placeholder": "اپنا جواب ٹائپ کرو...",
+  "ui.sessionReviewV2.empty.changes.refresh": "Refresh",
+  "ui.sessionReviewV2.empty.changes.refreshing": "Refreshing...",
+  "ui.sessionReviewV2.empty.changes.openSession": "Open session",
+  "ui.sessionReviewV2.loading": "Loading changes...",
 }

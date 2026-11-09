@@ -194,4 +194,8 @@ export const dict = {
   "ui.question.multiHint": "Ҳамаи ҷавобҳои мувофиқро интихоб кунед",
   "ui.question.singleHint": "Як ҷавобро интихоб кунед",
   "ui.question.custom.placeholder": "Ҷавоби худро нависед...",
+  "ui.sessionReviewV2.empty.changes.refresh": "Refresh",
+  "ui.sessionReviewV2.empty.changes.refreshing": "Refreshing...",
+  "ui.sessionReviewV2.empty.changes.openSession": "Open session",
+  "ui.sessionReviewV2.loading": "Loading changes...",
 }

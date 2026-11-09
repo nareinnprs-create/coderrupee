@@ -1,2 +1,31 @@
+* text=auto eol=lf
+
+*.7z binary
+*.avi binary
+*.bin binary
+*.bmp binary
+*.class binary
+*.dll binary
+*.eot binary
+*.gif binary
+*.gz binary
+*.ico binary
+*.jar binary
+*.jpeg binary
+*.jpg binary
+*.mp3 binary
+*.mp4 binary
+*.otf binary
+*.pdf binary
+*.png binary
+*.so binary
+*.tar binary
+*.ttf binary
+*.webp binary
+*.woff binary
+*.woff2 binary
+*.xz binary
+*.zip binary
+
 packages/core/migration/**/snapshot.json linguist-generated
 packages/core/src/database/migration.gen.ts linguist-generated

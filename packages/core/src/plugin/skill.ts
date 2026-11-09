@@ -8,7 +8,7 @@ import { AbsolutePath } from "../schema"
 import { SkillV2 } from "../skill"
 import customizeOpencodeContent from "./skill/customize-opencode.md" with { type: "text" }
 
-export const CustomizeOpencodeContent = customizeOpencodeContent
+export const CustomizeCoderrupeeContent = customizeOpencodeContent
 
 export const Plugin = define({
   id: "skill",
@@ -22,7 +22,7 @@ export const Plugin = define({
             description:
               "Use ONLY when the user is editing or creating coderrupee's own configuration: coderrupee.json, coderrupee.jsonc, files under .coderrupee/, or files under ~/.config/coderrupee/. Also use when creating or fixing coderrupee agents, subagents, commands, skills, plugins, MCP servers, or permission rules. Do not use for the user's own application code, or for any project that is not configuring coderrupee itself.",
             location: AbsolutePath.make("/builtin/customize-coderrupee.md"),
-            content: CustomizeOpencodeContent,
+            content: CustomizeCoderrupeeContent,
           }),
         }),
       )

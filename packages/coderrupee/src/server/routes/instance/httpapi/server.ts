@@ -55,6 +55,7 @@ import { AppNodeBuilderV1 } from "@/effect/app-node-builder-v1"
 import { LayerNode } from "@coderrupee/core/effect/layer-node"
 import { httpClient } from "@coderrupee/core/effect/app-node-platform"
 import { EventV2 } from "@coderrupee/core/event"
+import { Location } from "@coderrupee/core/location"
 import { ModelsDev } from "@coderrupee/core/models-dev"
 import { Npm } from "@coderrupee/core/npm"
 import { PermissionSaved } from "@coderrupee/core/permission/saved"
@@ -101,6 +102,7 @@ import { syncHandlers } from "./handlers/sync"
 import { tuiHandlers } from "./handlers/tui"
 import { handlers } from "@coderrupee/server/handlers"
 import { buildLocationServiceMap, LocationServiceMap } from "@coderrupee/core/location-services"
+import { AbsolutePath } from "@coderrupee/core/schema"
 import { layer as locationLayer } from "@coderrupee/server/location"
 import { sessionLocationLayer } from "@coderrupee/server/middleware/session-location"
 import { PtyEnvironment } from "@coderrupee/server/pty-environment"
@@ -303,7 +305,12 @@ export function createRoutes(
     ),
     Layer.provide(locationServiceMapV2),
 
-    Layer.provide(AppNodeBuilderV1.build(app)),
+    Layer.provide(
+      AppNodeBuilderV1.build(app, [
+        [LocationServiceMap.node, locationServiceMapV2],
+        [Location.node, Location.boundNode(Location.Ref.make({ directory: AbsolutePath.make(process.cwd()) }))],
+      ]),
+    ),
     // Must stay last: layers provided later in this pipe build beneath earlier ones,
     // so Observability must come after every service graph. Otherwise eagerly forked
     // fibers (e.g. the ModelsDev background refresh) capture Effect's default stdout

@@ -1905,6 +1905,9 @@ export type AttachmentConfig = {
 
 export type Config = {
   $schema?: string
+  auth?: {
+    storage?: "auto" | "keyring" | "plaintext"
+  }
   shell?: string
   logLevel?: LogLevel
   server?: ServerConfig
@@ -2031,6 +2034,12 @@ export type Config = {
   tool_output?: {
     max_lines?: number
     max_bytes?: number
+  }
+  budget?: {
+    sessionMaxUsd?: number
+    totalMaxUsd?: number
+    warnAt?: number
+    action?: "stop" | "warn-only"
   }
   compaction?: {
     auto?: boolean
@@ -7406,6 +7415,87 @@ export type GlobalUpgradeResponses = {
 }
 
 export type GlobalUpgradeResponse = GlobalUpgradeResponses[keyof GlobalUpgradeResponses]
+
+export type GlobalDiagnosticsData = {
+  body?: never
+  path?: never
+  query?: never
+  url: "/global/diagnostics"
+}
+
+export type GlobalDiagnosticsErrors = {
+  /**
+   * Bad request
+   */
+  400: BadRequestError
+}
+
+export type GlobalDiagnosticsError = GlobalDiagnosticsErrors[keyof GlobalDiagnosticsErrors]
+
+export type GlobalDiagnosticsResponses = {
+  /**
+   * Get local diagnostics
+   */
+  200: {
+    version: string
+    channel: string
+    keyring: {
+      backend: string
+      credentials: number
+    }
+    doctor: {
+      checks: Array<{
+        id: string
+        label: string
+        status: "pass" | "warn" | "fail" | "info"
+        detail?: string
+        hint?: string
+      }>
+      ok: boolean
+    }
+    history: Array<{
+      fromVersion: string
+      toVersion: string
+      channel: string
+      date: string
+    }>
+  }
+}
+
+export type GlobalDiagnosticsResponse = GlobalDiagnosticsResponses[keyof GlobalDiagnosticsResponses]
+
+export type GlobalRollbackData = {
+  body?: never
+  path?: never
+  query?: never
+  url: "/global/rollback"
+}
+
+export type GlobalRollbackErrors = {
+  /**
+   * Bad request
+   */
+  400: BadRequestError
+}
+
+export type GlobalRollbackError = GlobalRollbackErrors[keyof GlobalRollbackErrors]
+
+export type GlobalRollbackResponses = {
+  /**
+   * Rollback the last update
+   */
+  200:
+    | {
+        success: true
+        version: string
+      }
+    | {
+        success: false
+        error: string
+      }
+}
+
+export type GlobalRollbackResponse = GlobalRollbackResponses[keyof GlobalRollbackResponses]
 
 export type EventSubscribeData = {
   body?: never

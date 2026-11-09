@@ -194,4 +194,8 @@ export const dict: Record<string, string> = {
   "ui.question.multiHint": "Vel øll svar, sum eru galdandi",
   "ui.question.singleHint": "Vel eitt svar",
   "ui.question.custom.placeholder": "Skriva títt svar...",
+  "ui.sessionReviewV2.empty.changes.refresh": "Refresh",
+  "ui.sessionReviewV2.empty.changes.refreshing": "Refreshing...",
+  "ui.sessionReviewV2.empty.changes.openSession": "Open session",
+  "ui.sessionReviewV2.loading": "Loading changes...",
 }

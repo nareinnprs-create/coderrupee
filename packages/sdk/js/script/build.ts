@@ -58,7 +58,7 @@ await createClient({
     },
     {
       name: "@hey-api/sdk",
-      instance: "OpencodeClient",
+      instance: "CoderrupeeClient",
       exportFromIndex: false,
       auth: false,
       paramsStructure: "flat",

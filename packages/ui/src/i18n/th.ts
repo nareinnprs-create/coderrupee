@@ -214,4 +214,8 @@ export const dict = {
   "ui.toolErrorCard.copyError": "คัดลอกข้อผิดพลาด",
   "ui.message.duration.seconds": "{{count}} วินาที",
   "ui.message.duration.minutesSeconds": "{{minutes}} นาที {{seconds}} วินาที",
+  "ui.sessionReviewV2.empty.changes.refresh": "Refresh",
+  "ui.sessionReviewV2.empty.changes.refreshing": "Refreshing...",
+  "ui.sessionReviewV2.empty.changes.openSession": "Open session",
+  "ui.sessionReviewV2.loading": "Loading changes...",
 }

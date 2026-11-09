@@ -194,4 +194,8 @@ export const dict = {
   "ui.question.multiHint": "Изберете ги сите одговори што важат",
   "ui.question.singleHint": "Изберете еден одговор",
   "ui.question.custom.placeholder": "Напишете го вашиот одговор...",
+  "ui.sessionReviewV2.empty.changes.refresh": "Refresh",
+  "ui.sessionReviewV2.empty.changes.refreshing": "Refreshing...",
+  "ui.sessionReviewV2.empty.changes.openSession": "Open session",
+  "ui.sessionReviewV2.loading": "Loading changes...",
 }

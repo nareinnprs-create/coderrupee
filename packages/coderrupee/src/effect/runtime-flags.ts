@@ -49,6 +49,7 @@ export class Service extends ConfigService.Service<Service>()("@coderrupee/Runti
   experimentalEventSystem: enabledByExperimental("CODERRUPEE_EXPERIMENTAL_EVENT_SYSTEM"),
   experimentalWorkspaces: enabledByExperimental("CODERRUPEE_EXPERIMENTAL_WORKSPACES"),
   experimentalIconDiscovery: enabledByExperimental("CODERRUPEE_EXPERIMENTAL_ICON_DISCOVERY"),
+  experimentalAutonomyTiers: bool("CODERRUPEE_EXPERIMENTAL_AUTONOMY_TIERS"),
   outputTokenMax: positiveInteger("CODERRUPEE_EXPERIMENTAL_OUTPUT_TOKEN_MAX"),
   bashDefaultTimeoutMs: positiveInteger("CODERRUPEE_EXPERIMENTAL_BASH_DEFAULT_TIMEOUT_MS"),
   experimentalNativeLlm: bool("CODERRUPEE_EXPERIMENTAL_NATIVE_LLM"),

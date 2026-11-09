@@ -10,7 +10,7 @@ import { LayerNode } from "@coderrupee/core/effect/layer-node"
 import { FSUtil } from "@coderrupee/core/fs-util"
 import { CrossSpawnSpawner } from "@coderrupee/core/cross-spawn-spawner"
 import { Flag } from "@coderrupee/core/flag/flag"
-import { createOpencodeClient } from "@coderrupee/sdk/v2"
+import { createCoderrupeeClient } from "@coderrupee/sdk/v2"
 import { validateSession } from "../../src/cli/tui/validate-session"
 import { InstanceBootstrap } from "../../src/project/bootstrap"
 import { InstanceStore } from "../../src/project/instance-store"
@@ -44,7 +44,7 @@ const original = {
 }
 
 type ServerPath = "default" | "raw"
-type Sdk = ReturnType<typeof createOpencodeClient>
+type Sdk = ReturnType<typeof createCoderrupeeClient>
 type SdkResult = { response: Response; data?: unknown; error?: unknown }
 type Captured = { status: number; data?: unknown; error?: unknown }
 type ProjectFixture = { sdk: Sdk; directory: string }
@@ -70,7 +70,7 @@ function client(
 ) {
   return serverFetch(serverPath, input).pipe(
     Effect.map((fetch) =>
-      createOpencodeClient({
+      createCoderrupeeClient({
         baseUrl: "http://localhost",
         directory,
         experimental_workspaceID: input?.workspaceID,

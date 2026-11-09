@@ -196,4 +196,8 @@ export const dict: Record<string, string> = {
   "ui.question.multiHint": "लागू हुने सबै उत्तरहरू चयन गर्नुहोस्",
   "ui.question.singleHint": "एउटा जवाफ चयन गर्नुहोस्",
   "ui.question.custom.placeholder": "आफ्नो उत्तर टाइप गर्नुहोस्...",
+  "ui.sessionReviewV2.empty.changes.refresh": "Refresh",
+  "ui.sessionReviewV2.empty.changes.refreshing": "Refreshing...",
+  "ui.sessionReviewV2.empty.changes.openSession": "Open session",
+  "ui.sessionReviewV2.loading": "Loading changes...",
 }

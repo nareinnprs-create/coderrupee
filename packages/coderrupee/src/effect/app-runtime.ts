@@ -55,6 +55,8 @@ import { EventV2Bridge } from "@/event-v2-bridge"
 import { LayerNode } from "@coderrupee/core/effect/layer-node"
 import { AppNodeBuilderV1 } from "./app-node-builder-v1"
 import { SessionProjector } from "@coderrupee/core/session/projector"
+import { Location } from "@coderrupee/core/location"
+import { AbsolutePath } from "@coderrupee/core/schema"
 
 export const AppLayer = AppNodeBuilderV1.build(
   LayerNode.group([
@@ -108,6 +110,7 @@ export const AppLayer = AppNodeBuilderV1.build(
     ShareNext.node,
     SessionShare.node,
   ]),
+  [[Location.node, Location.boundNode(Location.Ref.make({ directory: AbsolutePath.make(process.cwd()) }))]],
 ).pipe(Layer.provideMerge(AppNodeBuilderV1.build(Ripgrep.node)), Layer.provideMerge(Observability.layer))
 
 const rt = ManagedRuntime.make(AppLayer, { memoMap })

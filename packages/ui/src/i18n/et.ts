@@ -194,4 +194,8 @@ export const dict: Record<string, string> = {
   "ui.question.multiHint": "Valige kõik sobivad vastused",
   "ui.question.singleHint": "Valige üks vastus",
   "ui.question.custom.placeholder": "Sisesta oma vastus...",
+  "ui.sessionReviewV2.empty.changes.refresh": "Refresh",
+  "ui.sessionReviewV2.empty.changes.refreshing": "Refreshing...",
+  "ui.sessionReviewV2.empty.changes.openSession": "Open session",
+  "ui.sessionReviewV2.loading": "Loading changes...",
 }

@@ -202,4 +202,8 @@ export const dict: Record<string, string> = {
   "ui.question.multiHint": "Vyberte všechny platné odpovědi",
   "ui.question.singleHint": "Vyberte jednu odpověď",
   "ui.question.custom.placeholder": "Napište svou odpověď...",
+  "ui.sessionReviewV2.empty.changes.refresh": "Refresh",
+  "ui.sessionReviewV2.empty.changes.refreshing": "Refreshing...",
+  "ui.sessionReviewV2.empty.changes.openSession": "Open session",
+  "ui.sessionReviewV2.loading": "Loading changes...",
 }

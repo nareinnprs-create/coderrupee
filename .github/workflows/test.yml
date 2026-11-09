@@ -79,6 +79,31 @@ jobs:
         working-directory: packages/coderrupee
         run: bun run test:httpapi
 
+  desktop:
+    name: desktop
+    runs-on: blacksmith-4vcpu-ubuntu-2404
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+
+      - name: Setup Bun
+        uses: ./.github/actions/setup-bun
+
+      - name: Run desktop tests
+        working-directory: packages/desktop
+        run: bun test
+
+      - name: Build desktop package
+        working-directory: packages/desktop
+        run: bun run build
+        env:
+          # Dev builds download an unpublished local sidecar. CI validates the
+          # production-style bundle instead, which has no external sidecar dependency.
+          CODERRUPEE_CHANNEL: beta
+
   e2e:
     name: e2e (${{ matrix.settings.name }})
     strategy:

@@ -198,4 +198,8 @@ export const dict: Record<string, string> = {
   "ui.question.multiHint": "Selectează toate răspunsurile corecte",
   "ui.question.singleHint": "Selectează un răspuns",
   "ui.question.custom.placeholder": "Scrie răspunsul...",
+  "ui.sessionReviewV2.empty.changes.refresh": "Refresh",
+  "ui.sessionReviewV2.empty.changes.refreshing": "Refreshing...",
+  "ui.sessionReviewV2.empty.changes.openSession": "Open session",
+  "ui.sessionReviewV2.loading": "Loading changes...",
 }

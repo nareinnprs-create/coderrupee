@@ -3,7 +3,7 @@ import { retry } from "@coderrupee/core/util/retry"
 import type { CoderRupeeEvent, SessionApi, SessionMessageInfo } from "@coderrupee/client/promise"
 import type {
   Message,
-  OpencodeClient,
+  CoderrupeeClient,
   Part,
   PermissionRequest,
   QuestionRequest,
@@ -186,7 +186,7 @@ function reconcileFetched<T extends { id: string }>(
 type ServerSessionOptions = { retry?: typeof retry; protocol?: Promise<"v1" | "v2"> }
 
 export function createServerSession(
-  client: OpencodeClient,
+  client: CoderrupeeClient,
   sessionApiOrOptions?: SessionApi | ServerSessionOptions,
   messageApi?: MessageApi,
   currentOptions?: ServerSessionOptions,

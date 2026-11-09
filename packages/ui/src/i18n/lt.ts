@@ -202,4 +202,8 @@ export const dict: Record<string, string> = {
   "ui.question.multiHint": "Pasirinkite visus tinkamus atsakymus",
   "ui.question.singleHint": "Pasirinkite vieną atsakymą",
   "ui.question.custom.placeholder": "Įveskite savo atsakymą...",
+  "ui.sessionReviewV2.empty.changes.refresh": "Refresh",
+  "ui.sessionReviewV2.empty.changes.refreshing": "Refreshing...",
+  "ui.sessionReviewV2.empty.changes.openSession": "Open session",
+  "ui.sessionReviewV2.loading": "Loading changes...",
 }

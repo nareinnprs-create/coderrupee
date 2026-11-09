@@ -195,4 +195,8 @@ export const dict = {
   "ui.question.multiHint": "ជ្រើសរើសចម្លើយទាំងអស់ដែលអនុវត្ត",
   "ui.question.singleHint": "ជ្រើសរើសចម្លើយមួយ។",
   "ui.question.custom.placeholder": "វាយបញ្ចូលចម្លើយរបស់អ្នក...",
+  "ui.sessionReviewV2.empty.changes.refresh": "Refresh",
+  "ui.sessionReviewV2.empty.changes.refreshing": "Refreshing...",
+  "ui.sessionReviewV2.empty.changes.openSession": "Open session",
+  "ui.sessionReviewV2.loading": "Loading changes...",
 }

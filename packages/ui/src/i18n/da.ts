@@ -213,4 +213,8 @@ export const dict = {
   "ui.promptInput.stop": "Stop",
 
   "ui.tabs.close": "Luk fane",
+  "ui.sessionReviewV2.empty.changes.refresh": "Refresh",
+  "ui.sessionReviewV2.empty.changes.refreshing": "Refreshing...",
+  "ui.sessionReviewV2.empty.changes.openSession": "Open session",
+  "ui.sessionReviewV2.loading": "Loading changes...",
 }

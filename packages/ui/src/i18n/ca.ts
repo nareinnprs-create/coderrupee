@@ -198,4 +198,8 @@ export const dict: Record<string, string> = {
   "ui.question.multiHint": "Seleccioneu totes les respostes aplicables",
   "ui.question.singleHint": "Seleccioneu una resposta",
   "ui.question.custom.placeholder": "Escriu la teva resposta...",
+  "ui.sessionReviewV2.empty.changes.refresh": "Refresh",
+  "ui.sessionReviewV2.empty.changes.refreshing": "Refreshing...",
+  "ui.sessionReviewV2.empty.changes.openSession": "Open session",
+  "ui.sessionReviewV2.loading": "Loading changes...",
 }

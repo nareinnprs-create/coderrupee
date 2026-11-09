@@ -198,4 +198,8 @@ export const dict: Record<string, string> = {
   "ui.question.multiHint": "Izvēlies visas atbilstošās atbildes",
   "ui.question.singleHint": "Izvēlies vienu atbildi",
   "ui.question.custom.placeholder": "Ieraksti savu atbildi...",
+  "ui.sessionReviewV2.empty.changes.refresh": "Refresh",
+  "ui.sessionReviewV2.empty.changes.refreshing": "Refreshing...",
+  "ui.sessionReviewV2.empty.changes.openSession": "Open session",
+  "ui.sessionReviewV2.loading": "Loading changes...",
 }

@@ -203,4 +203,8 @@ export const dict: Record<string, string> = {
   "ui.question.multiHint": "Izberite vse ustrezne odgovore",
   "ui.question.singleHint": "Izberite en odgovor",
   "ui.question.custom.placeholder": "Vnesite odgovor ...",
+  "ui.sessionReviewV2.empty.changes.refresh": "Refresh",
+  "ui.sessionReviewV2.empty.changes.refreshing": "Refreshing...",
+  "ui.sessionReviewV2.empty.changes.openSession": "Open session",
+  "ui.sessionReviewV2.loading": "Loading changes...",
 }

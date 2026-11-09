@@ -126,7 +126,7 @@ beforeAll(async () => {
   }))
 
   mock.module("@coderrupee/sdk/v2/client", () => ({
-    createOpencodeClient: (input: { directory: string }) => {
+    createCoderrupeeClient: (input: { directory: string }) => {
       createdClients.push(input.directory)
       return clientFor(input.directory)
     },

@@ -194,4 +194,8 @@ export const dict = {
   "ui.question.multiHint": "ເລືອກຄຳຕອບທັງໝົດທີ່ນຳໃຊ້",
   "ui.question.singleHint": "ເລືອກຫນຶ່ງຄໍາຕອບ",
   "ui.question.custom.placeholder": "ພິມຄຳຕອບຂອງເຈົ້າ...",
+  "ui.sessionReviewV2.empty.changes.refresh": "Refresh",
+  "ui.sessionReviewV2.empty.changes.refreshing": "Refreshing...",
+  "ui.sessionReviewV2.empty.changes.openSession": "Open session",
+  "ui.sessionReviewV2.loading": "Loading changes...",
 }

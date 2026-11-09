@@ -193,4 +193,8 @@ export const dict: Record<string, string> = {
   "ui.question.multiHint": "የሚመለከተውን ሁሉንም መልሶች ይምረጡ",
   "ui.question.singleHint": "አንድ መልስ ምረጥ",
   "ui.question.custom.placeholder": "መልስዎን ይተይቡ...",
+  "ui.sessionReviewV2.empty.changes.refresh": "Refresh",
+  "ui.sessionReviewV2.empty.changes.refreshing": "Refreshing...",
+  "ui.sessionReviewV2.empty.changes.openSession": "Open session",
+  "ui.sessionReviewV2.loading": "Loading changes...",
 }

@@ -194,4 +194,8 @@ export const dict: Record<string, string> = {
   "ui.question.multiHint": "აირჩიეთ ყველა შესაბამისი პასუხი",
   "ui.question.singleHint": "აირჩიეთ ერთი პასუხი",
   "ui.question.custom.placeholder": "აკრიფეთ თქვენი პასუხი...",
+  "ui.sessionReviewV2.empty.changes.refresh": "Refresh",
+  "ui.sessionReviewV2.empty.changes.refreshing": "Refreshing...",
+  "ui.sessionReviewV2.empty.changes.openSession": "Open session",
+  "ui.sessionReviewV2.loading": "Loading changes...",
 }

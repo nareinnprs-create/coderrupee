@@ -6,6 +6,8 @@ import { Deferred, Effect, Layer, Context } from "effect"
 import os from "os"
 import { PermissionV1 } from "@coderrupee/core/v1/permission"
 import { EventV2Bridge } from "@/event-v2-bridge"
+import { RuntimeFlags } from "@/effect/runtime-flags"
+import { PermissionTier } from "./tier"
 
 export const Event = PermissionV1.Event
 
@@ -43,6 +45,7 @@ const layer = Layer.effect(
   Service,
   Effect.gen(function* () {
     const events = yield* EventV2Bridge.Service
+    const flags = yield* RuntimeFlags.Service
     const state = yield* InstanceState.make<State>(
       Effect.fn("Permission.state")(function* (ctx) {
         void ctx
@@ -70,7 +73,10 @@ const layer = Layer.effect(
       let needsAsk = false
 
       for (const pattern of request.patterns) {
-        const rule = evaluate(request.permission, pattern, ruleset, approved)
+        const matched = evaluate(request.permission, pattern, ruleset, approved)
+        const rule = flags.experimentalAutonomyTiers
+          ? { ...matched, action: PermissionTier.applyTierFloor(matched.action, request.permission) }
+          : matched
         yield* Effect.logInfo("evaluated", { permission: request.permission, pattern, action: rule })
         if (rule.action === "deny") {
           return yield* new PermissionV1.DeniedError({
@@ -218,6 +224,6 @@ export function visibleTools<T>(tools: Record<string, T>, ruleset: PermissionV1.
   return Object.fromEntries(Object.entries(tools).filter(([name]) => !hidden.has(name)))
 }
 
-export const node = LayerNode.make({ service: Service, layer: layer, deps: [EventV2Bridge.node] })
+export const node = LayerNode.make({ service: Service, layer: layer, deps: [EventV2Bridge.node, RuntimeFlags.node] })
 
 export * as Permission from "."

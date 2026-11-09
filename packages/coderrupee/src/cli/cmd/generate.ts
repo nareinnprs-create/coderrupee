@@ -18,9 +18,9 @@ export const GenerateCommand = {
           {
             lang: "js",
             source: [
-              `import { createOpencodeClient } from "@coderrupee/sdk`,
+              `import { createCoderrupeeClient } from "@coderrupee/sdk`,
               ``,
-              `const client = createOpencodeClient()`,
+              `const client = createCoderrupeeClient()`,
               `await client.${operation.operationId}({`,
               `  ...`,
               `})`,

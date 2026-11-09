@@ -194,4 +194,8 @@ export const dict: Record<string, string> = {
   "ui.question.multiHint": "Chọn tất cả các câu trả lời phù hợp",
   "ui.question.singleHint": "Chọn một câu trả lời",
   "ui.question.custom.placeholder": "Nhập câu trả lời của bạn...",
+  "ui.sessionReviewV2.empty.changes.refresh": "Refresh",
+  "ui.sessionReviewV2.empty.changes.refreshing": "Refreshing...",
+  "ui.sessionReviewV2.empty.changes.openSession": "Open session",
+  "ui.sessionReviewV2.loading": "Loading changes...",
 }

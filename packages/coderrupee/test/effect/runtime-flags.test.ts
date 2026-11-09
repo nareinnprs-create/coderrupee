@@ -59,6 +59,7 @@ describe("RuntimeFlags", () => {
       expect(flags.experimentalEventSystem).toBe(true)
       expect(flags.experimentalWorkspaces).toBe(true)
       expect(flags.experimentalIconDiscovery).toBe(true)
+      expect(flags.experimentalAutonomyTiers).toBe(false)
       expect(flags.experimentalNativeLlm).toBe(false)
       expect(flags.experimentalWebSockets).toBe(false)
       expect(flags.client).toBe("desktop")
@@ -128,6 +129,18 @@ describe("RuntimeFlags", () => {
       const flags = yield* readFlags.pipe(Effect.provide(fromConfig({})))
 
       expect(flags.experimentalIconDiscovery).toBe(false)
+    }),
+  )
+
+  it.effect("experimentalAutonomyTiers reads its dedicated flag only", () =>
+    Effect.gen(function* () {
+      const explicit = yield* readFlags.pipe(
+        Effect.provide(fromConfig({ CODERRUPEE_EXPERIMENTAL_AUTONOMY_TIERS: "true" })),
+      )
+      const umbrella = yield* readFlags.pipe(Effect.provide(fromConfig({ CODERRUPEE_EXPERIMENTAL: "true" })))
+
+      expect(explicit.experimentalAutonomyTiers).toBe(true)
+      expect(umbrella.experimentalAutonomyTiers).toBe(false)
     }),
   )
 

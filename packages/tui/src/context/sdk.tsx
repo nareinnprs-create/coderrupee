@@ -1,4 +1,4 @@
-import { createOpencodeClient } from "@coderrupee/sdk/v2"
+import { createCoderrupeeClient } from "@coderrupee/sdk/v2"
 import type { GlobalEvent } from "@coderrupee/sdk/v2"
 import { Flag } from "@coderrupee/core/flag/flag"
 import { createSimpleContext } from "./helper"
@@ -21,7 +21,7 @@ export const { use: useSDK, provider: SDKProvider } = createSimpleContext({
     let sse: AbortController | undefined
 
     function createSDK() {
-      return createOpencodeClient({
+      return createCoderrupeeClient({
         baseUrl: props.url,
         signal: abort.signal,
         directory: props.directory,

@@ -31,7 +31,7 @@ import {
 } from "@agentclientprotocol/sdk"
 import { InstallationVersion } from "@coderrupee/core/installation/version"
 import { AppNodeBuilder } from "@coderrupee/core/effect/app-node-builder"
-import type { AssistantMessage, Message, OpencodeClient, Session, SessionMessageResponse } from "@coderrupee/sdk/v2"
+import type { AssistantMessage, Message, CoderrupeeClient, Session, SessionMessageResponse } from "@coderrupee/sdk/v2"
 import { Context, Effect, Layer, ManagedRuntime } from "effect"
 import * as ACPError from "./error"
 import { buildConfigOptions, DEFAULT_VARIANT_VALUE, parseModelSelection } from "./config-option"
@@ -73,7 +73,7 @@ export type Interface = {
 export class Service extends Context.Service<Service, Interface>()("@coderrupee/ACP/Service") {}
 
 export function make(input: {
-  sdk: OpencodeClient
+  sdk: CoderrupeeClient
   connection?: ServiceConnection
   directory?: Directory.Interface
   session?: ACPSession.Interface
@@ -598,7 +598,7 @@ function makeSessionService() {
   )
 }
 
-function makeDirectoryService(sdk: OpencodeClient) {
+function makeDirectoryService(sdk: CoderrupeeClient) {
   return ManagedRuntime.make(
     AppNodeBuilder.build(Directory.node, [
       [
@@ -614,7 +614,7 @@ function makeDirectoryService(sdk: OpencodeClient) {
   ).runSync(Directory.Service.use((service) => Effect.succeed(service)))
 }
 
-function makeUsageService(sdk: OpencodeClient) {
+function makeUsageService(sdk: CoderrupeeClient) {
   const limits = new Map<string, Promise<number | undefined>>()
   const contextLimit: UsageService.Interface["contextLimit"] = Effect.fn("ACP.promptUsage.contextLimit")(
     function* (params) {
@@ -740,7 +740,7 @@ function profiledRequest<T>(name: string, fn: () => Promise<T | SdkResponse<T>>,
   return request(() => ACPProfile.measure(name, fn), service)
 }
 
-async function loadDirectorySnapshot(sdk: OpencodeClient, directory: string) {
+async function loadDirectorySnapshot(sdk: CoderrupeeClient, directory: string) {
   return ACPProfile.measure("acp.directory.load", async () => {
     const [providersResponse, agentsResponse, commandsResponse, skillsResponse, configResponse] = await Promise.all([
       ACPProfile.measure("acp.directory.provider.list", () =>
@@ -894,7 +894,7 @@ function promptErrorMessage(error: AssistantError) {
 
 function sendUsageUpdate(
   usage: UsageService.Interface | undefined,
-  sdk: OpencodeClient,
+  sdk: CoderrupeeClient,
   connection: ServiceConnection | undefined,
   sessionID: string,
   directory: string,
@@ -1008,7 +1008,7 @@ function sendAvailableCommands(
 }
 
 function registerMcpServers(
-  sdk: OpencodeClient,
+  sdk: CoderrupeeClient,
   registered: Map<string, Set<string>>,
   directory: string,
   sessionId: string,

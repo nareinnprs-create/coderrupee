@@ -195,4 +195,8 @@ export const dict: Record<string, string> = {
   "ui.question.multiHint": "އެކަމާ ގުޅޭ ހުރިހާ ޖަވާބެއް ހޮވާށެވެ",
   "ui.question.singleHint": "އެއް ޖަވާބެއް ހޮވާށެވެ",
   "ui.question.custom.placeholder": "ޖަވާބު ޓައިޕް ކުރާށެވެ...",
+  "ui.sessionReviewV2.empty.changes.refresh": "Refresh",
+  "ui.sessionReviewV2.empty.changes.refreshing": "Refreshing...",
+  "ui.sessionReviewV2.empty.changes.openSession": "Open session",
+  "ui.sessionReviewV2.loading": "Loading changes...",
 }

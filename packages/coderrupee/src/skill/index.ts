@@ -32,7 +32,7 @@ const SKILL_PATTERN = "**/SKILL.md"
 const CUSTOMIZE_CODERRUPEE_SKILL_NAME = "customize-coderrupee"
 const CUSTOMIZE_CODERRUPEE_SKILL_DESCRIPTION =
   "Use ONLY when the user is editing or creating coderrupee's own configuration: coderrupee.json, coderrupee.jsonc, files under .coderrupee/, or files under ~/.config/coderrupee/. Also use when creating or fixing coderrupee agents, subagents, skills, plugins, MCP servers, or permission rules. Do not use for the user's own application code, or for any project that is not configuring coderrupee itself."
-const CUSTOMIZE_CODERRUPEE_SKILL_BODY = SkillPlugin.CustomizeOpencodeContent
+const CUSTOMIZE_CODERRUPEE_SKILL_BODY = SkillPlugin.CustomizeCoderrupeeContent
 
 export const Info = Schema.Struct({
   name: Schema.String,
