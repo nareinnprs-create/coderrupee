@@ -47,7 +47,7 @@ await $`bun ./packages/plugin/script/publish.ts`
 console.log("\n=== ui ===\n")
 await $`bun ./packages/ui/script/publish.ts`
 
-if (Script.release) {
+if (Script.release && !Script.preview) {
   await $`bun ./packages/desktop/scripts/finalize-latest-json.ts`
   await $`bun ./packages/desktop/scripts/finalize-latest-yml.ts`
 }
@@ -67,5 +67,6 @@ if (Script.release && !Script.preview) {
 
 if (Script.release) {
   // CoderRupee clients resolve updates through GitHub's Latest release, so keep it on 1.x explicitly.
-  await $`gh release edit ${tag} --draft=false --latest --repo ${process.env.GH_REPO}`
+  if (Script.preview) await $`gh release edit ${tag} --draft=false --prerelease --repo ${process.env.GH_REPO}`
+  else await $`gh release edit ${tag} --draft=false --latest --repo ${process.env.GH_REPO}`
 }

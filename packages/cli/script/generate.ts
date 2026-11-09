@@ -1,4 +1,4 @@
-const modelsUrl = process.env.CODERRUPEE_MODELS_URL || "https://models.coderrupee.ai"
+const modelsUrl = process.env.CODERRUPEE_MODELS_URL || "https://models.dev"
 
 export const modelsData = process.env.MODELS_DEV_API_JSON
   ? await Bun.file(process.env.MODELS_DEV_API_JSON).text()

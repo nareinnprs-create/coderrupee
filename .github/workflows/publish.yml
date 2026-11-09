@@ -423,6 +423,7 @@ jobs:
           path: packages/coderrupee/dist
 
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        if: github.ref_name != 'beta'
         with:
           name: coderrupee-cli-signed-windows
           path: packages/coderrupee/dist
@@ -433,13 +434,13 @@ jobs:
           path: packages/cli/dist
 
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
-        if: needs.version.outputs.release
+        if: needs.version.outputs.release && github.ref_name != 'beta'
         with:
           pattern: latest-yml-*
           path: /tmp/latest-yml
 
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
-        if: needs.version.outputs.release
+        if: needs.version.outputs.release && github.ref_name != 'beta'
         with:
           pattern: coderrupee-desktop-*
           path: /tmp/desktop
@@ -456,6 +457,7 @@ jobs:
             ${{ runner.os }}-apt-aur-
 
       - name: Setup SSH for AUR
+        if: github.ref_name != 'beta'
         run: |
           sudo apt-get update
           sudo apt-get install -y pacman-package-manager
@@ -467,7 +469,7 @@ jobs:
           ssh-keyscan -H aur.archlinux.org >> ~/.ssh/known_hosts || true
 
       - name: Upload desktop release assets
-        if: needs.version.outputs.release
+        if: needs.version.outputs.release && github.ref_name != 'beta'
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
         run: |
@@ -485,6 +487,7 @@ jobs:
           CODERRUPEE_RELEASE: ${{ needs.version.outputs.release }}
           AUR_KEY: ${{ secrets.AUR_KEY }}
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           GH_REPO: ${{ needs.version.outputs.repo }}
           CODERRUPEE_CHANNEL: ${{ (github.ref_name == 'beta' && 'beta') || 'latest' }}
           NPM_CONFIG_PROVENANCE: false
