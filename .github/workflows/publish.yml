@@ -112,7 +112,7 @@ jobs:
       - build-cli
       - version
     runs-on: windows-2025
-    if: github.repository == 'nareinnprs-create/coderrupee' && needs.version.outputs.release
+    if: github.repository == 'nareinnprs-create/coderrupee' && github.ref_name != 'beta'
     env:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
       AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
@@ -205,7 +205,7 @@ jobs:
   build-electron:
     needs:
       - version
-    if: github.repository == 'nareinnprs-create/coderrupee' && needs.version.outputs.release
+    if: github.repository == 'nareinnprs-create/coderrupee' && github.ref_name != 'beta'
     continue-on-error: false
     env:
       AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
