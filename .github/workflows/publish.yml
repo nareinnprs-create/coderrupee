@@ -56,7 +56,7 @@ jobs:
           CODERRUPEE_BUMP: ${{ inputs.bump }}
           CODERRUPEE_VERSION: ${{ inputs.version }}
           CODERRUPEE_API_KEY: ${{ secrets.CODERRUPEE_API_KEY }}
-          GH_REPO: ${{ (github.ref_name == 'beta' && 'nareinnprs-create/coderrupee-beta') || github.repository }}
+          GH_REPO: ${{ github.repository }}
     outputs:
       version: ${{ steps.version.outputs.version }}
       release: ${{ steps.version.outputs.release }}
