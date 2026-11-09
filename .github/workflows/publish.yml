@@ -487,7 +487,6 @@ jobs:
           CODERRUPEE_RELEASE: ${{ needs.version.outputs.release }}
           AUR_KEY: ${{ secrets.AUR_KEY }}
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           GH_REPO: ${{ needs.version.outputs.repo }}
           CODERRUPEE_CHANNEL: ${{ (github.ref_name == 'beta' && 'beta') || 'latest' }}
           NPM_CONFIG_PROVENANCE: false
