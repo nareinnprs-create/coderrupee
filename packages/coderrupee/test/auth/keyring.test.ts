@@ -10,6 +10,14 @@ import { testEffect } from "../lib/effect"
 
 const authFile = path.join(Global.Path.data, "auth.json")
 const migratedAuthFile = path.join(Global.Path.data, "auth.json.migrated")
+// The auth service reads the first EXISTING global config candidate, so a
+// coderrupee.jsonc or config.json seeded by an earlier test file in the same
+// bun process would shadow the coderrupee.json this test writes. Clear all
+// candidates so the storage mode is deterministic (CI linux runs files in
+// readdir order, not alphabetically).
+const globalConfigCandidates = ["coderrupee.jsonc", "coderrupee.json", "config.json"].map((file) =>
+  path.join(Global.Path.config, file),
+)
 const globalConfigFile = path.join(Global.Path.config, "coderrupee.json")
 
 const apiJson = { type: "api", key: "sk-test" } as const
@@ -89,18 +97,14 @@ describe("Auth keyring storage", () => {
     state.setCalls = []
     state.failSetAccount = undefined
     state.failList = undefined
-    await Promise.all([
-      fs.rm(authFile, { force: true }),
-      fs.rm(migratedAuthFile, { force: true }),
-      fs.rm(globalConfigFile, { force: true }),
-    ])
+    await Promise.all(globalConfigCandidates.map((file) => fs.rm(file, { force: true })))
   })
 
   afterEach(async () => {
     await Promise.all([
       fs.rm(authFile, { force: true }),
       fs.rm(migratedAuthFile, { force: true }),
-      fs.rm(globalConfigFile, { force: true }),
+      ...globalConfigCandidates.map((file) => fs.rm(file, { force: true })),
     ])
   })
 

@@ -8,7 +8,9 @@ import { FSUtil } from "@coderrupee/core/fs-util"
 import { isRecord } from "@/util/record"
 import { Keyring } from "./keyring"
 
-export const OAUTH_DUMMY_KEY = "coderrupee-oauth-dummy-key"
+import { OAUTH_DUMMY_KEY } from "./dummy-key"
+
+export { OAUTH_DUMMY_KEY }
 
 const file = path.join(Global.Path.data, "auth.json")
 // Recovery copy kept after a successful keyring migration (never deleted, so

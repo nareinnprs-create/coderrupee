@@ -193,6 +193,8 @@ describe("ProjectV2.resolve", () => {
 
       expect(result.directory).toBe(yield* real(tmp.path))
     }),
+    // Nested-dir resolution walks up with real git calls; cold Windows CI exceeds the 5s default.
+    60_000,
   )
 
   it.live("linked worktree returns opened worktree directory and previous from common dir", () =>

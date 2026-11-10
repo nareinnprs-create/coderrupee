@@ -1,6 +1,6 @@
 import { Context } from "effect"
 
-const coderrupeeOrigin = /^https:\/\/([a-z0-9-]+\.)*coderrupee\.ai$/
+const coderrupeeOrigin = /^https:\/\/([a-z0-9-]+\.)*coderrupee\.opraiz\.com$/
 
 export type CorsOptions = { readonly cors?: ReadonlyArray<string> }
 

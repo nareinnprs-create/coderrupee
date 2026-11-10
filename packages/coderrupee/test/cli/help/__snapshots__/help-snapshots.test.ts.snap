@@ -16,7 +16,7 @@ Options:
       --mdns         enable mDNS service discovery (defaults hostname to 0.0.0.0)
                                                                           [boolean] [default: false]
       --mdns-domain  custom domain name for mDNS service (default: coderrupee.local)
-                                                                [string] [default: "coderrupee.local"]
+                                                              [string] [default: "coderrupee.local"]
       --cors         additional domains to allow for CORS                      [array] [default: []]
       --cwd          working directory [string] [default: "<HOME>"]"
 `;
@@ -28,7 +28,7 @@ manage MCP (Model Context Protocol) servers
 
 Commands:
   coderrupee mcp add [name]     add an MCP server
-  coderrupee mcp list           list MCP servers and their status                        [aliases: ls]
+  coderrupee mcp list           list MCP servers and their status                      [aliases: ls]
   coderrupee mcp auth [name]    authenticate with an OAuth-enabled MCP server
   coderrupee mcp logout [name]  remove OAuth credentials for an MCP server
   coderrupee mcp debug <name>   debug OAuth connection for an MCP server
@@ -59,7 +59,7 @@ Options:
   -c, --continue      continue the last session                                            [boolean]
   -s, --session       session id to continue                                                [string]
       --fork          fork the session when continuing (use with --continue or --session)  [boolean]
-  -p, --password      basic auth password (defaults to CODERRUPEE_SERVER_PASSWORD)            [string]
+  -p, --password      basic auth password (defaults to CODERRUPEE_SERVER_PASSWORD)          [string]
   -u, --username      basic auth username (defaults to CODERRUPEE_SERVER_USERNAME or 'coderrupee')
                                                                                             [string]
       --mini          start the minimal interactive interface             [boolean] [default: false]
@@ -92,8 +92,8 @@ Options:
                                           [string] [choices: "default", "json"] [default: "default"]
   -f, --file         file(s) to attach to message                                            [array]
       --title        title for the session (uses truncated prompt if no value provided)     [string]
-      --attach       attach to a running coderrupee server (e.g., http://localhost:4096)      [string]
-  -p, --password     basic auth password (defaults to CODERRUPEE_SERVER_PASSWORD)             [string]
+      --attach       attach to a running coderrupee server (e.g., http://localhost:4096)    [string]
+  -p, --password     basic auth password (defaults to CODERRUPEE_SERVER_PASSWORD)           [string]
   -u, --username     basic auth username (defaults to CODERRUPEE_SERVER_USERNAME or 'coderrupee')
                                                                                             [string]
       --dir          directory to run in, path on remote server if attaching                [string]
@@ -141,7 +141,7 @@ exports[`coderrupee CLI help-text snapshots every documented command emits stabl
 manage AI providers and credentials
 
 Commands:
-  coderrupee providers list               list providers and credentials                 [aliases: ls]
+  coderrupee providers list               list providers and credentials               [aliases: ls]
   coderrupee providers login [url]        log in to a provider
   coderrupee providers logout [provider]  log out from a configured provider
 
@@ -185,7 +185,16 @@ Options:
       --log-level   log level                   [string] [choices: "DEBUG", "INFO", "WARN", "ERROR"]
       --pure        run without external plugins                                           [boolean]
   -m, --method      installation method to use
-                          [string] [choices: "curl", "npm", "pnpm", "bun", "brew", "choco", "scoop"]"
+                          [string] [choices: "curl", "npm", "pnpm", "bun", "brew", "choco", "scoop"]
+      --rollback    reinstall the version that was installed before the last update        [boolean]
+
+Update channels:
+  stable  track the latest release (default)
+  beta    track pre-release builds published to the npm beta dist-tag
+Switch channels with the "channel" config key or /update → Switch channel.
+Rollback reinstalls the version installed before the last update:
+  coderrupee upgrade --rollback
+Channel: stable"
 `;
 
 exports[`coderrupee CLI help-text snapshots every documented command emits stable help text: coderrupee uninstall --help 1`] = `
@@ -221,7 +230,7 @@ Options:
       --mdns         enable mDNS service discovery (defaults hostname to 0.0.0.0)
                                                                           [boolean] [default: false]
       --mdns-domain  custom domain name for mDNS service (default: coderrupee.local)
-                                                                [string] [default: "coderrupee.local"]
+                                                              [string] [default: "coderrupee.local"]
       --cors         additional domains to allow for CORS                      [array] [default: []]"
 `;
 
@@ -241,7 +250,7 @@ Options:
       --mdns         enable mDNS service discovery (defaults hostname to 0.0.0.0)
                                                                           [boolean] [default: false]
       --mdns-domain  custom domain name for mDNS service (default: coderrupee.local)
-                                                                [string] [default: "coderrupee.local"]
+                                                              [string] [default: "coderrupee.local"]
       --cors         additional domains to allow for CORS                      [array] [default: []]"
 `;
 
@@ -388,7 +397,7 @@ exports[`coderrupee CLI help-text snapshots every documented command emits stabl
 database tools
 
 Commands:
-  coderrupee db [query]     open an interactive sqlite3 shell or run a query                 [default]
+  coderrupee db [query]     open an interactive sqlite3 shell or run a query               [default]
   coderrupee db path        print the database path
 
 Positionals:
@@ -441,7 +450,7 @@ exports[`coderrupee CLI help-text snapshots every documented command emits stabl
 authenticate with an OAuth-enabled MCP server
 
 Commands:
-  coderrupee mcp auth list  list OAuth-capable MCP servers and their auth status         [aliases: ls]
+  coderrupee mcp auth list  list OAuth-capable MCP servers and their auth status       [aliases: ls]
 
 Positionals:
   name  name of the MCP server                                                              [string]
@@ -489,7 +498,7 @@ exports[`coderrupee CLI help-text snapshots every documented command emits stabl
 log in to a provider
 
 Positionals:
-  url  coderrupee auth provider                                                               [string]
+  url  coderrupee auth provider                                                             [string]
 
 Options:
   -h, --help        show help                                                              [boolean]

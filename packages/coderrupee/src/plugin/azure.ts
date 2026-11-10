@@ -6,7 +6,7 @@ import { which } from "@coderrupee/core/util/which"
 import type { Hooks } from "@coderrupee/plugin"
 import type { Provider } from "@coderrupee/sdk/v2"
 import { Schema } from "effect"
-import { OAUTH_DUMMY_KEY } from "../auth"
+import { OAUTH_DUMMY_KEY } from "../auth/dummy-key"
 import { Process } from "../util/process"
 
 const AZURE_COGNITIVE_SERVICES_SCOPE = "https://cognitiveservices.azure.com/.default"

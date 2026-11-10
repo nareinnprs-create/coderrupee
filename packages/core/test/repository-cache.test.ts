@@ -86,6 +86,8 @@ describe("RepositoryCache", () => {
         expect(yield* read(path.join(cached.localPath, "README.md"))).toBe("two\n")
       }).pipe(Effect.provide(cacheLayer(fixture.root))),
     ),
+    // Three real git clones/checkouts; cold Windows CI exceeds the 5s default.
+    60_000,
   )
 
   it.live("does not mistake an enclosing repository for the cache checkout", () =>

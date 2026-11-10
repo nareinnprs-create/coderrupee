@@ -1,5 +1,5 @@
 import type { Hooks, PluginInput } from "@coderrupee/plugin"
-import { OAUTH_DUMMY_KEY } from "../auth"
+import { OAUTH_DUMMY_KEY } from "../auth/dummy-key"
 import { InstallationVersion } from "@coderrupee/core/installation/version"
 import { OauthCallbackPage } from "@coderrupee/core/oauth/page"
 import { createServer } from "http"

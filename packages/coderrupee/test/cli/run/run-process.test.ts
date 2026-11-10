@@ -73,12 +73,15 @@ describe("coderrupee run (non-interactive subprocess)", () => {
       Effect.gen(function* () {
         const result = yield* coderrupee.run("say hi", {
           model: "test/nonexistent-model",
-          timeoutMs: 15_000,
+          // CLI cold start (bun transpile of the full graph) is ~10s alone on CI;
+          // 15s left no headroom under concurrent subprocess tests. A real #27371
+          // hang never exits, so a 45s kill still fails both assertions.
+          timeoutMs: 45_000,
         })
         expect(result.exitCode).not.toBe(0)
-        expect(result.durationMs).toBeLessThan(15_000)
+        expect(result.durationMs).toBeLessThan(45_000)
       }),
-    30_000,
+    90_000,
   )
 
   // The test provider's SSE error item is interpreted by the SDK as an unknown

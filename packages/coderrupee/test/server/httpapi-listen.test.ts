@@ -293,7 +293,9 @@ describe("HttpApi Server.listen", () => {
       return true
     }) as typeof process.stderr.write
     try {
-      const response = await Server.Default().app.request("/status")
+      // /status no longer exists; an unknown path falls through the UI catch-all
+      // and proxies to the hosted web app, so exercise a real in-process route.
+      const response = await Server.Default().app.request("/global/config")
       expect(response.status).toBe(200)
     } finally {
       process.stderr.write = original
