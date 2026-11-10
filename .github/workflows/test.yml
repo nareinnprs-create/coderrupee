@@ -64,8 +64,8 @@ jobs:
             turbo-${{ runner.os }}-
 
       - name: Run unit tests
-        timeout-minutes: 20
-        run: GITHUB_ACTIONS=false bun turbo test
+        timeout-minutes: 30
+        run: GITHUB_ACTIONS=false bun turbo test --concurrency=1
         env:
           CODERRUPEE_EXPERIMENTAL_DISABLE_FILEWATCHER: ${{ runner.os == 'Windows' && 'true' || 'false' }}
           # Isolate each job's global config/data so concurrent package test processes

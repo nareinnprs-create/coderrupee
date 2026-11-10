@@ -154,7 +154,7 @@ const nativeLayer = (config: Config) =>
     Effect.gen(function* () {
       // Lazy: older Bun releases ship no `node:sqlite` builtin, so the import must
       // only happen when the node client is actually constructed.
-      const { DatabaseSync } = yield* Effect.promise(() => import("node:sqlite"))
+      const { DatabaseSync } = yield* Effect.promise(() => import(/* the specifier is computed so old Bun transpilers cannot fail the module graph */ "node" + ":sqlite"))
       const native = new DatabaseSync(config.filename, {
         readOnly: config.readonly,
         timeout: config.timeout,

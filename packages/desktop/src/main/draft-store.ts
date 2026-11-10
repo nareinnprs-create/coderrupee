@@ -26,7 +26,9 @@ export function createDesktopDraftStore(native: DatabaseSync) {
 // Older Bun releases ship no node:sqlite builtin, so the builtin import happens only
 // when the production store actually opens.
 export async function openDesktopDraftStore(filename: string) {
-  const { DatabaseSync } = await import("node:sqlite")
+  // Computed specifier: Bun 1.3 transpilers fail the whole file when a literal
+  // import names a builtin the runtime does not ship.
+  const { DatabaseSync } = await import(/* @vite-ignore */ "node" + ":sqlite")
   return createDesktopDraftStore(new DatabaseSync(filename))
 }
 

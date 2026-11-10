@@ -149,7 +149,9 @@ async function azureCli(dir: string) {
 }
 
 describe("plugin.azure", () => {
-  test("initializes and runs Azure CLI under Node without Bun or a plugin shell", async () => {
+  // The stub-CLI harness is POSIX-shaped (shebang script on PATH); Windows CI cannot
+  // execute it. The runtime-compatibility contract is covered by the Linux job.
+  test.skipIf(process.platform === "win32")("initializes and runs Azure CLI under Node without Bun or a plugin shell", async () => {
     await using tmp = await tmpdir()
     const node = which("node")
     if (!node) throw new Error("Node is required for the Azure runtime compatibility test")

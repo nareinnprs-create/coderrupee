@@ -29,10 +29,11 @@ describe("executeStream", () => {
 
   test("streams rows from the node sqlite client", async () => {
     // Older Bun releases ship no node:sqlite builtin; skip instead of failing there.
-    // The import may throw synchronously during module resolution, so try/catch it.
+    // The specifier is computed so Bun's transpiler cannot resolve the builtin at
+    // module-graph collection time (it would fail the file before this guard runs).
     let available = false
     try {
-      await import("node:sqlite")
+      await import("node" + ":sqlite")
       available = true
     } catch {
       available = false
