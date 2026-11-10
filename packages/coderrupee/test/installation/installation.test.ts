@@ -170,12 +170,13 @@ describe("installation", () => {
         errorCalls.push(request.url)
         return new Response("unavailable", { status: 503 })
       }),
-    ).live("fails when the npm registry fails, without consulting GitHub", () =>
+    ).live("falls back to GitHub releases when the npm registry fails", () =>
       Effect.gen(function* () {
         errorCalls.length = 0
         expect(Exit.isFailure(yield* Installation.use.latest("curl").pipe(Effect.exit))).toBe(true)
         expect(errorCalls.length).toBeGreaterThan(0)
-        expect(errorCalls.every((url) => url === npm)).toBe(true)
+        expect(errorCalls.some((url) => url === npm)).toBe(true)
+        expect(errorCalls.some((url) => url.includes("api.github.com"))).toBe(true)
       }),
     )
 
@@ -326,7 +327,7 @@ describe("installation", () => {
       Effect.gen(function* () {
         coreCalls.length = 0
         const error = yield* Effect.flip(Installation.use.upgrade("brew", "1.19.2"))
-        expect(error.stderr).toContain("Homebrew Core")
+        expect(error.stderr).toContain("Homebrew tap not published yet")
         expect(coreCalls.some((call) => call.startsWith("brew upgrade"))).toBe(false)
       }),
     )

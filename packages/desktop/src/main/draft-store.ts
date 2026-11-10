@@ -1,8 +1,8 @@
 import { createHash } from "node:crypto"
-import { DatabaseSync } from "node:sqlite"
 import { eq } from "drizzle-orm"
 import { drizzle } from "drizzle-orm/node-sqlite"
 import { blob, sqliteTable, text } from "drizzle-orm/sqlite-core"
+import type { DatabaseSync } from "node:sqlite"
 
 const documents = sqliteTable("document", {
   key: text().primaryKey(),
@@ -13,8 +13,24 @@ const blobs = sqliteTable("blob", {
   data: blob({ mode: "buffer" }).notNull(),
 })
 
-export function createDesktopDraftStore(filename: string) {
-  const native = new DatabaseSync(filename)
+export function createDesktopDraftStore(native: DatabaseSync) {
+  const open = () => {
+    native.exec(
+      "PRAGMA journal_mode=WAL; CREATE TABLE IF NOT EXISTS document (key TEXT PRIMARY KEY, value TEXT NOT NULL); CREATE TABLE IF NOT EXISTS blob (id TEXT PRIMARY KEY, data BLOB NOT NULL);",
+    )
+    return native
+  }
+  return buildDesktopDraftStore(open())
+}
+
+// Older Bun releases ship no node:sqlite builtin, so the builtin import happens only
+// when the production store actually opens.
+export async function openDesktopDraftStore(filename: string) {
+  const { DatabaseSync } = await import("node:sqlite")
+  return createDesktopDraftStore(new DatabaseSync(filename))
+}
+
+function buildDesktopDraftStore(native: DatabaseSync) {
   native.exec(
     "PRAGMA journal_mode=WAL; CREATE TABLE IF NOT EXISTS document (key TEXT PRIMARY KEY, value TEXT NOT NULL); CREATE TABLE IF NOT EXISTS blob (id TEXT PRIMARY KEY, data BLOB NOT NULL);",
   )

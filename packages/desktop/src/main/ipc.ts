@@ -28,7 +28,7 @@ import {
 import { getCloseToTrayEnabled, setCloseToTrayEnabled } from "./tray"
 import type { UpdaterController } from "./updater-controller"
 import { createUpdaterSubscriptions } from "./updater-subscriptions"
-import { createDesktopDraftStore } from "./draft-store"
+import { createDesktopDraftStore, openDesktopDraftStore } from "./draft-store"
 import { nativeT } from "./native-translations"
 
 const pickerFilters = (ext?: string[]) => {
@@ -118,8 +118,8 @@ async function showDesktopNotification(
   return { shown: true }
 }
 
-export function registerIpcHandlers(deps: Deps) {
-  const drafts = createDesktopDraftStore(join(app.getPath("userData"), "drafts.sqlite"))
+export async function registerIpcHandlers(deps: Deps) {
+  const drafts = await openDesktopDraftStore(join(app.getPath("userData"), "drafts.sqlite"))
   const updaterSubscriptions = createUpdaterSubscriptions()
   app.once("will-quit", updaterSubscriptions.clear)
   app.on("before-quit", () => drafts.flush())

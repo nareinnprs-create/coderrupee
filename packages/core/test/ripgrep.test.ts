@@ -29,6 +29,8 @@ describe("Ripgrep", () => {
         }),
       (tmp) => Effect.promise(() => tmp[Symbol.asyncDispose]()),
     ),
+    // Cold Windows CI has no system rg, so the first call downloads and extracts it.
+    120_000,
   )
 
   it.live("never includes git metadata", () =>
@@ -61,6 +63,7 @@ describe("Ripgrep", () => {
         }),
       (tmp) => Effect.promise(() => tmp[Symbol.asyncDispose]()),
     ),
+    120_000,
   )
   it.live("does not split surrogate pairs in oversized line previews", () =>
     Effect.acquireUseRelease(
@@ -81,5 +84,6 @@ describe("Ripgrep", () => {
         }),
       (tmp) => Effect.promise(() => tmp[Symbol.asyncDispose]()),
     ),
+    120_000,
   )
 })

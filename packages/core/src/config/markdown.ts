@@ -3,10 +3,25 @@ export * as ConfigMarkdown from "./markdown"
 import matter from "gray-matter"
 export function parse(content: string) {
   try {
-    return matter(content)
+    const direct = matter(content)
+    // Some YAML engines silently swallow unquoted `key: value: more` lines into
+    // incomplete mappings instead of throwing; when parsed data misses any raw
+    // top-level frontmatter key, prefer the permissive sanitized re-parse.
+    if (coversFrontmatterKeys(direct.data, content)) return direct
   } catch {
-    return matter(sanitize(content))
+    /* fall through to the permissive parse */
   }
+  return matter(sanitize(content))
+}
+
+function coversFrontmatterKeys(data: Record<string, unknown>, content: string): boolean {
+  const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---/)
+  if (!match) return true
+  const keys = match[1]
+    .split(/\r?\n/)
+    .filter((line) => /^[a-zA-Z_][a-zA-Z0-9_]*\s*:/.test(line))
+    .map((line) => line.match(/^([a-zA-Z_][a-zA-Z0-9_]*)\s*:/)![1])
+  return keys.every((key) => data[key] !== undefined)
 }
 
 export function parseOption(content: string) {

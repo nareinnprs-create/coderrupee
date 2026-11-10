@@ -355,7 +355,8 @@ const main = Effect.gen(function* () {
       win.hide()
     })
   })
-  registerIpcHandlers({
+  yield* Effect.promise(() =>
+    registerIpcHandlers({
     killSidecar: () => killSidecar(),
     relaunch,
     awaitInitialization: Effect.fnUntraced(
@@ -392,7 +393,7 @@ const main = Effect.gen(function* () {
         rebuildTrayMenu()
       }
     },
-  })
+  }))
   registerWslIpcHandlers(wslServers)
   void updater.start()
   const updateTimer = setInterval(() => void updater.check(), 10 * 60 * 1000)
