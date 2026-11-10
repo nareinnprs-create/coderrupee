@@ -233,7 +233,7 @@ export const dict = {
   "provider.connect.coderrupeeZen.line2":
     "Met één API-sleutel krijg je toegang tot modellen zoals Claude, GPT, Gemini, GLM en meer.",
   "provider.connect.coderrupeeZen.visit.prefix": "Ga naar ",
-  "provider.connect.coderrupeeZen.visit.link": "coderrupee.ai/zen",
+  "provider.connect.coderrupeeZen.visit.link": "coderrupee.opraiz.com/zen",
   "provider.connect.coderrupeeZen.visit.suffix": " om je API-sleutel op te halen.",
   "provider.connect.oauth.code.visit.prefix": "Ga naar ",
   "provider.connect.oauth.code.visit.link": "deze link",

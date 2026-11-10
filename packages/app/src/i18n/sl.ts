@@ -232,7 +232,7 @@ export const dict = {
   "provider.connect.coderrupeeZen.line2":
     "Z enim samim ključem API boste dobili dostop do modelov, kot so Claude, GPT, Gemini, GLM in več.",
   "provider.connect.coderrupeeZen.visit.prefix": "Obisk ",
-  "provider.connect.coderrupeeZen.visit.link": "coderrupee.ai/zen",
+  "provider.connect.coderrupeeZen.visit.link": "coderrupee.opraiz.com/zen",
   "provider.connect.coderrupeeZen.visit.suffix": " za prevzem ključa API.",
   "provider.connect.oauth.code.visit.prefix": "Obisk ",
   "provider.connect.oauth.code.visit.link": "ta povezava",

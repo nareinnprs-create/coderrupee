@@ -239,7 +239,7 @@ export const dict = {
   "provider.connect.coderrupeeZen.line2":
     "Með einum API lykli færðu aðgang að gerðum eins og Claude, GPT, Gemini, GLM og fleira.",
   "provider.connect.coderrupeeZen.visit.prefix": "Heimsókn",
-  "provider.connect.coderrupeeZen.visit.link": "coderrupee.ai/zen",
+  "provider.connect.coderrupeeZen.visit.link": "coderrupee.opraiz.com/zen",
   "provider.connect.coderrupeeZen.visit.suffix": "til að safna API lykilnum þínum.",
   "provider.connect.oauth.code.visit.prefix": "Heimsókn",
   "provider.connect.oauth.code.visit.link": "þennan hlekk",

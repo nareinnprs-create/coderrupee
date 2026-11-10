@@ -13,7 +13,7 @@ import { ConfigProviderV1 } from "../../v1/config/provider"
 import { ConfigProviderOptionsV1 } from "../../v1/config/provider-options"
 import { ConfigV1 } from "../../v1/config/config"
 
-const defaultServer = "https://coderrupee.ai/console"
+const defaultServer = process.env.CODERRUPEE_CONSOLE_URL ?? "https://opencode.ai/console"
 const clientID = "coderrupee-cli"
 const methodID = Integration.MethodID.make("device")
 const RemoteResponse = Schema.Struct({ config: ConfigV1.Info })
@@ -171,7 +171,7 @@ export const OpencodePlugin = define<HttpClient.HttpClient | EventV2.Service | S
         }
       }
 
-      const item = catalog.provider.get(ProviderV2.ID.coderrupee)
+      const item = catalog.provider.get(ProviderV2.ID.coderrupee) ?? catalog.provider.get(ProviderV2.ID.opencode)
       if (!item) return
       const hasKey = Boolean(process.env.CODERRUPEE_API_KEY || connected || item.provider.request.body.apiKey)
       catalog.provider.update(item.provider.id, (provider) => {

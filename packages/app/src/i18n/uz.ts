@@ -234,7 +234,7 @@ export const dict = {
   "provider.connect.coderrupeeZen.line2":
     "Bitta API kaliti bilan siz Claude, GPT, Gemini, GLM va boshqalar kabi modellarga kirishingiz mumkin.",
   "provider.connect.coderrupeeZen.visit.prefix": "Tashrif buyuring ",
-  "provider.connect.coderrupeeZen.visit.link": "coderrupee.ai/zen",
+  "provider.connect.coderrupeeZen.visit.link": "coderrupee.opraiz.com/zen",
   "provider.connect.coderrupeeZen.visit.suffix": " API kalitingizni olish uchun.",
   "provider.connect.oauth.code.visit.prefix": "Tashrif buyuring ",
   "provider.connect.oauth.code.visit.link": "bu havola",

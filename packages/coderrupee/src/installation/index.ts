@@ -160,7 +160,7 @@ const layer: Layer.Layer<Service, never, HttpClient.HttpClient | AppProcess.Serv
 
     const upgradeCurl = Effect.fnUntraced(
       function* (target: string) {
-        const response = yield* httpOk.execute(HttpClientRequest.get("https://coderrupee.ai/install"))
+        const response = yield* httpOk.execute(HttpClientRequest.get("https://coderrupee.opraiz.com/install"))
         const body = yield* response.text
         const bodyBytes = new TextEncoder().encode(body)
         const shell = yield* upgradeScriptShell()
@@ -188,6 +188,20 @@ const layer: Layer.Layer<Service, never, HttpClient.HttpClient | AppProcess.Serv
       )
       const data = yield* HttpClientResponse.schemaBodyJson(NpmPackage)(response)
       return data.version
+    })
+
+    // Secondary update source for when the npm registry lookup fails (registry outage, mirrorless
+    // offline CI, or the package not being published yet).
+    const GithubRelease = Schema.Struct({ tag_name: Schema.String })
+
+    const githubLatest = Effect.fnUntraced(function* () {
+      const response = yield* httpOk.execute(
+        HttpClientRequest.get("https://api.github.com/repos/nareinnprs-create/coderrupee/releases/latest").pipe(
+          HttpClientRequest.acceptJson,
+        ),
+      )
+      const data = yield* HttpClientResponse.schemaBodyJson(GithubRelease)(response)
+      return data.tag_name.replace(/^v/, "")
     })
 
     // Chocolatey can only install versions its moderated community feed has published.
@@ -258,7 +272,9 @@ const layer: Layer.Layer<Service, never, HttpClient.HttpClient | AppProcess.Serv
         // A Homebrew Core install has no 1.x formula source, so `brew upgrade` can't deliver an update.
         if (method === "brew" && !(yield* getBrewFormula()).includes("/")) return InstallationVersion
         return yield* Effect.gen(function* () {
-          const found = yield* npmLatest(channel ? distTag(channel) : NPM_TAG)
+          const found = yield* npmLatest(channel ? distTag(channel) : NPM_TAG).pipe(
+            Effect.catch(() => githubLatest()),
+          )
           if (!isUpdate(InstallationVersion, found)) return InstallationVersion
           if (method === "choco" && !(yield* chocoHas(found))) return InstallationVersion
           return found
@@ -287,7 +303,8 @@ const layer: Layer.Layer<Service, never, HttpClient.HttpClient | AppProcess.Serv
             const env = { HOMEBREW_NO_AUTO_UPDATE: "1" }
             if (!formula.includes("/"))
               return yield* new UpgradeFailedError({
-                stderr: `Homebrew Core has no CoderRupee 1.x formula, so Homebrew can't install CoderRupee ${target}. Reinstall from nareinnprs-create/tap/coderrupee.`,
+                stderr:
+                  "Homebrew tap not published yet: nareinnprs-create/tap does not exist, so brew can't install or upgrade CoderRupee. Use the install script (https://coderrupee.opraiz.com/install) or npm instead.",
               })
             const tap = yield* run(["brew", "tap", "nareinnprs-create/tap"], { env })
             if (tap.code !== 0) {
@@ -312,12 +329,24 @@ const layer: Layer.Layer<Service, never, HttpClient.HttpClient | AppProcess.Serv
             upgradeResult = yield* run(["brew", "upgrade", formula], { env })
             break
           }
-          case "choco":
+          case "choco": {
+            // The community feed has no coderrupee package yet; fail with a clear message instead
+            // of choco's misleading elevation error.
+            const available = yield* chocoHas(target).pipe(Effect.catch(() => Effect.succeed(false)))
+            if (!available)
+              return yield* new UpgradeFailedError({
+                stderr:
+                  "Chocolatey package not published yet: coderrupee is not in the Chocolatey community feed, so choco can't install or upgrade it. Use the install script (https://coderrupee.opraiz.com/install) or npm instead.",
+              })
             upgradeResult = yield* run(["choco", "upgrade", "coderrupee", `--version=${target}`, "-y"])
             break
+          }
           case "scoop":
-            upgradeResult = yield* run(["scoop", "install", `coderrupee@${target}`])
-            break
+            // No coderrupee manifest exists in any Scoop bucket, so this path can never succeed yet.
+            return yield* new UpgradeFailedError({
+              stderr:
+                "Scoop manifest not published yet: no coderrupee manifest exists in any known Scoop bucket, so scoop can't install or upgrade it. Use the install script (https://coderrupee.opraiz.com/install) or npm instead.",
+            })
           default:
             return yield* new UpgradeFailedError({ stderr: `Unknown installation method: ${m}` })
         }

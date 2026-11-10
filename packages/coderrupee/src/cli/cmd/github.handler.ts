@@ -1,5 +1,4 @@
 import path from "path"
-import { exec } from "child_process"
 import { Filesystem } from "@/util/filesystem"
 import * as prompts from "@clack/prompts"
 import { map, pipe, sortBy, values } from "remeda"
@@ -202,7 +201,7 @@ export const githubInstall = Effect.fn("Cli.github.install")(function* () {
             "",
             "    3. Go to a GitHub issue and comment `/oc summarize` to see the agent in action",
             "",
-            "   Learn more about the GitHub agent - https://coderrupee.ai/docs/github/#usage-examples",
+            "   Learn more about the GitHub agent - https://coderrupee.opraiz.com/docs/github/#usage-examples",
           ].join("\n"),
         )
       }
@@ -278,48 +277,18 @@ export const githubInstall = Effect.fn("Cli.github.install")(function* () {
       }
 
       async function installGitHubApp() {
+        // The GitHub App backend (get_github_app_installation) is not deployed, so there is no
+        // browser-install flow to wait for. Only report an already-active installation; otherwise
+        // point users at the use_github_token path, which needs no backend.
         const s = prompts.spinner()
-        s.start("Installing GitHub app")
-
-        // Get installation
-        const installation = await getInstallation()
+        s.start("Checking GitHub app installation")
+        const installation = await getInstallation().catch(() => undefined)
         if (installation) return s.stop("GitHub app already installed")
 
-        // Open browser
-        const url = "https://github.com/apps/coderrupee-agent"
-        const command =
-          process.platform === "darwin"
-            ? `open "${url}"`
-            : process.platform === "win32"
-              ? `start "" "${url}"`
-              : `xdg-open "${url}"`
-
-        exec(command, (error) => {
-          if (error) {
-            prompts.log.warn(`Could not open browser. Please visit: ${url}`)
-          }
-        })
-
-        // Wait for installation
-        s.message("Waiting for GitHub app to be installed")
-        const MAX_RETRIES = 120
-        let retries = 0
-        do {
-          const installation = await getInstallation()
-          if (installation) break
-
-          if (retries > MAX_RETRIES) {
-            s.stop(
-              `Failed to detect GitHub app installation. Make sure to install the app for the \`${app.owner}/${app.repo}\` repository.`,
-            )
-            throw new UI.CancelledError()
-          }
-
-          retries++
-          await sleep(1000)
-        } while (true) // oxlint-disable-line no-constant-condition
-
-        s.stop("Installed GitHub app")
+        s.stop("GitHub app not detected")
+        prompts.log.warn(
+          "The GitHub App backend is not deployed, so app-based auth is unavailable. Use the `use_github_token: true` workflow input with a GITHUB_TOKEN secret instead.",
+        )
 
         async function getInstallation() {
           return await fetch(`https://api.coderrupee.ai/get_github_app_installation?owner=${app.owner}&repo=${app.repo}`)
@@ -364,7 +333,7 @@ jobs:
           persist-credentials: false
 
       - name: Run coderrupee
-        uses: coderrupee/coderrupee/github@latest${envStr}
+        uses: nareinnprs-create/coderrupee/github@latest${envStr}
         with:
           model: ${provider}/${model}`,
         )
@@ -428,7 +397,7 @@ export const githubRun = Effect.fn("Cli.github.run")(function* (args: { event?: 
         ? (payload as IssueCommentEvent | IssuesEvent).issue.number
         : (payload as PullRequestEvent | PullRequestReviewCommentEvent).pull_request.number
     const runUrl = `/${owner}/${repo}/actions/runs/${runId}`
-    const shareBaseUrl = isMock ? "https://dev.coderrupee.ai" : "https://coderrupee.ai"
+    const shareBaseUrl = "https://coderrupee.opraiz.com"
 
     let appToken: string
     let octoRest: Octokit
@@ -547,7 +516,7 @@ export const githubRun = Effect.fn("Cli.github.run")(function* (args: { event?: 
             repoData.data.default_branch,
             branch,
             summary,
-            `${response}\n\nTriggered by ${triggerType}${footer({ image: true })}`,
+            `${response}\n\nTriggered by ${triggerType}${footer()}`,
           )
           if (pr) {
             console.log(`Created PR #${pr}`)
@@ -576,8 +545,7 @@ export const githubRun = Effect.fn("Cli.github.run")(function* (args: { event?: 
             const summary = await summarize(response)
             await pushToLocalBranch(summary, uncommittedChanges)
           }
-          const hasShared = prData.comments.nodes.some((c) => c.body.includes(`${shareBaseUrl}/s/${shareId}`))
-          await createComment(`${response}${footer({ image: !hasShared })}`)
+          await createComment(`${response}${footer()}`)
           await removeReaction(commentType)
         }
         // Fork PR
@@ -594,8 +562,7 @@ export const githubRun = Effect.fn("Cli.github.run")(function* (args: { event?: 
             const summary = await summarize(response)
             await pushToForkBranch(summary, prData, uncommittedChanges)
           }
-          const hasShared = prData.comments.nodes.some((c) => c.body.includes(`${shareBaseUrl}/s/${shareId}`))
-          await createComment(`${response}${footer({ image: !hasShared })}`)
+          await createComment(`${response}${footer()}`)
           await removeReaction(commentType)
         }
       }
@@ -610,7 +577,7 @@ export const githubRun = Effect.fn("Cli.github.run")(function* (args: { event?: 
         if (switched) {
           // Agent switched branches (likely created its own branch/PR).
           // Don't push the stale infrastructure branch — just comment.
-          await createComment(`${response}${footer({ image: true })}`)
+          await createComment(`${response}${footer()}`)
           await removeReaction(commentType)
         } else if (dirty) {
           const summary = await summarize(response)
@@ -619,16 +586,16 @@ export const githubRun = Effect.fn("Cli.github.run")(function* (args: { event?: 
             repoData.data.default_branch,
             branch,
             summary,
-            `${response}\n\nCloses #${issueId}${footer({ image: true })}`,
+            `${response}\n\nCloses #${issueId}${footer()}`,
           )
           if (pr) {
-            await createComment(`Created PR #${pr}${footer({ image: true })}`)
+            await createComment(`Created PR #${pr}${footer()}`)
           } else {
-            await createComment(`${response}${footer({ image: true })}`)
+            await createComment(`${response}${footer()}`)
           }
           await removeReaction(commentType)
         } else {
-          await createComment(`${response}${footer({ image: true })}`)
+          await createComment(`${response}${footer()}`)
           await removeReaction(commentType)
         }
       }
@@ -1351,18 +1318,11 @@ export const githubRun = Effect.fn("Cli.github.run")(function* (args: { event?: 
       }
     }
 
-    function footer(opts?: { image?: boolean }) {
-      const image = (() => {
-        if (!shareId) return ""
-        if (!opts?.image) return ""
-
-        const titleAlt = encodeURIComponent(session.title.substring(0, 50))
-        const title64 = Buffer.from(session.title.substring(0, 700), "utf8").toString("base64")
-
-        return `<a href="${shareBaseUrl}/s/${shareId}"><img width="200" alt="${titleAlt}" src="https://social-cards.sst.dev/coderrupee-share/${title64}.png?model=${providerID}/${modelID}&version=${session.version}&id=${shareId}" /></a>\n`
-      })()
+    // The upstream social-cards service only renders its own slug, so the share image is
+    // intentionally not generated — a text share link avoids a permanent 404 image.
+    function footer() {
       const shareUrl = shareId ? `[coderrupee session](${shareBaseUrl}/s/${shareId})&nbsp;&nbsp;|&nbsp;&nbsp;` : ""
-      return `\n\n${image}${shareUrl}[github run](${runUrl})`
+      return `\n\n${shareUrl}[github run](${runUrl})`
     }
 
     async function fetchRepo() {

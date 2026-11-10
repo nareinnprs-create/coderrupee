@@ -233,7 +233,7 @@ export const dict = {
   "provider.connect.coderrupeeZen.line2":
     "Με ένα μόνο κλειδί API θα έχετε πρόσβαση σε μοντέλα όπως Claude, GPT, Gemini, GLM και άλλα.",
   "provider.connect.coderrupeeZen.visit.prefix": "Επίσκεψη ",
-  "provider.connect.coderrupeeZen.visit.link": "coderrupee.ai/zen",
+  "provider.connect.coderrupeeZen.visit.link": "coderrupee.opraiz.com/zen",
   "provider.connect.coderrupeeZen.visit.suffix": " για τη συλλογή του κλειδιού σας API.",
   "provider.connect.oauth.code.visit.prefix": "Επίσκεψη ",
   "provider.connect.oauth.code.visit.link": "αυτός ο σύνδεσμος",

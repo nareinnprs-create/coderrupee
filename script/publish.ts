@@ -50,7 +50,8 @@ if (!Script.preview) {
 }
 
 if (Script.release && !Script.preview) {
-  await $`bun ./packages/desktop/scripts/finalize-latest-json.ts`
+  if (process.env.TAURI_SIGNING_PRIVATE_KEY) await $`bun ./packages/desktop/scripts/finalize-latest-json.ts`
+  else console.log("TAURI_SIGNING_PRIVATE_KEY not set, skipping latest.json finalize")
   await $`bun ./packages/desktop/scripts/finalize-latest-yml.ts`
 }
 

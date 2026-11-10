@@ -1,0 +1,15 @@
+:root {
+  --cr-carbon-forest: #141713;
+  --cr-signal-lime: #D7FF64;
+  --cr-studio-ivory: #F5F5EE;
+  --cr-execution-mint: #7DD6C1;
+  --cr-dark-surface: #1C201A;
+  --cr-raised-surface: #252A22;
+  --cr-primary-text: #F5F5EE;
+  --cr-secondary-text: #ADB3A5;
+  --cr-light-text: #20231D;
+  --cr-border: #3A4035;
+  --cr-success: #22C55E;
+  --cr-warning: #F2BD61;
+  --cr-error: #FF766F;
+}

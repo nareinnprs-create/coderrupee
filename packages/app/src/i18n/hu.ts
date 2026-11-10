@@ -239,7 +239,7 @@ export const dict = {
   "provider.connect.coderrupeeZen.line2":
     "Egyetlen API kulccsal hozzáférhet olyan modellekhez, mint a Claude, GPT, Gemini, GLM és még sok más.",
   "provider.connect.coderrupeeZen.visit.prefix": "Látogatás",
-  "provider.connect.coderrupeeZen.visit.link": "coderrupee.ai/zen",
+  "provider.connect.coderrupeeZen.visit.link": "coderrupee.opraiz.com/zen",
   "provider.connect.coderrupeeZen.visit.suffix": "hogy átvegye a API kulcsát.",
   "provider.connect.oauth.code.visit.prefix": "Látogatás",
   "provider.connect.oauth.code.visit.link": "ezt a linket",

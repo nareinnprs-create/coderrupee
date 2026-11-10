@@ -232,7 +232,7 @@ export const dict = {
   "provider.connect.coderrupeeZen.line2":
     "ជាមួយនឹងសោ API តែមួយ អ្នកនឹងទទួលបានការចូលប្រើម៉ូដែលដូចជា Claude, GPT, Gemini, GLM និងច្រើនទៀត។",
   "provider.connect.coderrupeeZen.visit.prefix": "ទស្សនា",
-  "provider.connect.coderrupeeZen.visit.link": "coderrupee.ai/zen",
+  "provider.connect.coderrupeeZen.visit.link": "coderrupee.opraiz.com/zen",
   "provider.connect.coderrupeeZen.visit.suffix": "ដើម្បីប្រមូលសោ API របស់អ្នក។",
   "provider.connect.oauth.code.visit.prefix": "ទស្សនា",
   "provider.connect.oauth.code.visit.link": "តំណនេះ។",

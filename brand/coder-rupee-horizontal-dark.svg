@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1800 520" role="img" aria-label="Coder Rupee horizontal logo for dark backgrounds">
+  <defs><linearGradient id="cr-gradient" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#D7FF64"/><stop offset="0.54" stop-color="#B6F56F"/><stop offset="1" stop-color="#7DD6C1"/></linearGradient></defs>
+  <g transform="translate(30,10) scale(.48)"><path fill="url(#cr-gradient)" fill-rule="evenodd" d="M230 110 H655 L790 245 H535 L470 180 H290 L170 300 V700 L290 820 H470 L535 755 H790 L655 890 H230 L60 720 V280 Z M285 290 H440 L360 370 H265 V630 H360 L440 710 H285 L185 610 V390 Z"/><path fill="url(#cr-gradient)" d="M390 290 H690 L850 450 L740 560 L900 820 H730 L590 600 H475 L405 530 H650 L715 465 L640 390 H470 L390 470 H270 V410 Z"/><path fill="#141713" d="M435 365 H620 L675 420 L620 475 H435 L490 420 Z"/></g>
+  <text x="490" y="250" font-family="Inter, Arial, sans-serif" font-size="150" font-weight="800" letter-spacing="-4" fill="#F5F5EE">CODER RUPEE</text>
+  <text x="500" y="345" font-family="Inter, Arial, sans-serif" font-size="43" font-weight="700" letter-spacing="12" fill="#D7FF64">BUILD WITHOUT BOUNDARIES.</text>
+</svg>

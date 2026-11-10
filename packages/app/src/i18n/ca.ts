@@ -234,7 +234,7 @@ export const dict = {
   "provider.connect.coderrupeeZen.line2":
     "Amb una sola tecla API tindreu accés a models com ara Claude, GPT, Gemini, GLM i més.",
   "provider.connect.coderrupeeZen.visit.prefix": "Visita ",
-  "provider.connect.coderrupeeZen.visit.link": "coderrupee.ai/zen",
+  "provider.connect.coderrupeeZen.visit.link": "coderrupee.opraiz.com/zen",
   "provider.connect.coderrupeeZen.visit.suffix": " per recollir la teva clau API.",
   "provider.connect.oauth.code.visit.prefix": "Visita ",
   "provider.connect.oauth.code.visit.link": "aquest enllaç",

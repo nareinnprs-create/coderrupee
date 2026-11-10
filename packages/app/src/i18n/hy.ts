@@ -234,7 +234,7 @@ export const dict = {
   "provider.connect.coderrupeeZen.line2":
     "Մեկ API բանալիով դուք մուտք կունենաք այնպիսի մոդելների, ինչպիսիք են՝ Claude, GPT, Gemini, GLM և ավելին:",
   "provider.connect.coderrupeeZen.visit.prefix": "Այցելություն ",
-  "provider.connect.coderrupeeZen.visit.link": "coderrupee.ai/zen",
+  "provider.connect.coderrupeeZen.visit.link": "coderrupee.opraiz.com/zen",
   "provider.connect.coderrupeeZen.visit.suffix": " ձեր API բանալին հավաքելու համար",
   "provider.connect.oauth.code.visit.prefix": "Այցելություն ",
   "provider.connect.oauth.code.visit.link": "այս հղումը",

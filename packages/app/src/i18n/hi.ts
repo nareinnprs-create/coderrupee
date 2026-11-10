@@ -239,7 +239,7 @@ export const dict = {
     "CoderRupee Zen आपको कोडिंग एजेंटों के लिए चुने गए विश्वसनीय, अनुकूलित मॉडलों तक पहुँच देता है।",
   "provider.connect.coderrupeeZen.line2": "एक API कुंजी से आपको Claude, GPT, Gemini, GLM जैसे कई मॉडलों तक पहुँच मिलेगी।",
   "provider.connect.coderrupeeZen.visit.prefix": "यहाँ जाएँ: ",
-  "provider.connect.coderrupeeZen.visit.link": "coderrupee.ai/zen",
+  "provider.connect.coderrupeeZen.visit.link": "coderrupee.opraiz.com/zen",
   "provider.connect.coderrupeeZen.visit.suffix": " अपनी API कुंजी प्राप्त करने के लिए।",
   "provider.connect.oauth.code.visit.prefix": "यहाँ जाएँ: ",
   "provider.connect.oauth.code.visit.link": "इस लिंक",

@@ -233,7 +233,7 @@ export const dict: Record<string, string> = {
   "provider.connect.coderrupeeZen.line2":
     "একটি API কী দিয়ে আপনি Claude, GPT, Gemini, GLM এবং আরও অনেক কিছুর মতো মডেলগুলিতে অ্যাক্সেস পাবেন৷",
   "provider.connect.coderrupeeZen.visit.prefix": "ভিজিট করুন",
-  "provider.connect.coderrupeeZen.visit.link": "coderrupee.ai/zen",
+  "provider.connect.coderrupeeZen.visit.link": "coderrupee.opraiz.com/zen",
   "provider.connect.coderrupeeZen.visit.suffix": "আপনার API কী সংগ্রহ করতে।",
   "provider.connect.oauth.code.visit.prefix": "ভিজিট করুন",
   "provider.connect.oauth.code.visit.link": "এই লিঙ্ক",

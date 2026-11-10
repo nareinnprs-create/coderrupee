@@ -35,6 +35,9 @@ export default defineConfig({
   main: {
     define: {
       "import.meta.env.CODERRUPEE_CHANNEL": JSON.stringify(channel),
+      // Baked at build time: the packaged app cannot see build-time env vars at
+      // runtime, so process.env.CODERRUPEE_UNSIGNED was always undefined there.
+      "import.meta.env.CODERRUPEE_UNSIGNED": JSON.stringify(process.env.CODERRUPEE_UNSIGNED === "1" ? "1" : "0"),
     },
     build: {
       rollupOptions: {

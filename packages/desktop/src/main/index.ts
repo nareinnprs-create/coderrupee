@@ -52,6 +52,7 @@ import { cleanupStoreFiles } from "./store-cleanup"
 import { installCliStaged, startBackgroundCli } from "./background-cli"
 import { setNativeTranslations } from "./native-translations"
 import { createSidecarSupervisor } from "./sidecar-supervisor"
+import { getStore } from "./store"
 
 const APP_NAMES: Record<string, string> = {
   dev: "CoderRupee Dev",
@@ -66,6 +67,25 @@ const APP_IDS: Record<string, string> = {
 const TEST_ONBOARDING = process.env.CODERRUPEE_TEST_ONBOARDING === "1"
 const SIDECAR_VERSION = process.env.CODERRUPEE_SIDECAR_V2 === "1" ? "v2" : "v1"
 const jsCallStackFeature = "DocumentPolicyIncludeJSCallStacksInCrashReports"
+const DISPLAY_BACKEND_KEY = "displayBackend"
+type DisplayBackend = "wayland" | "auto"
+
+function isDisplayBackend(value: unknown): value is DisplayBackend {
+  return value === "wayland" || value === "auto"
+}
+
+function getDisplayBackend(): DisplayBackend | null {
+  const value = getStore().get<string>(DISPLAY_BACKEND_KEY)
+  return isDisplayBackend(value) ? value : null
+}
+
+// Chromium switches must be set before app ready, so a backend change takes
+// effect on the relaunch triggered by setDisplayBackend (registered in main).
+function applyDisplayBackendSwitch() {
+  if (process.platform === "linux" && getDisplayBackend() === "wayland") {
+    app.commandLine.appendSwitch("ozone-platform-hint", "auto")
+  }
+}
 
 let logger: ReturnType<typeof initLogging>
 let server: SidecarListener | null = null
@@ -208,6 +228,7 @@ const main = Effect.gen(function* () {
   ensureLoopbackNoProxy()
   useEnvProxy()
   app.commandLine.appendSwitch("proxy-bypass-list", "<-loopback>")
+  applyDisplayBackendSwitch()
   const features = app.commandLine.getSwitchValue("enable-features")
   app.commandLine.appendSwitch("enable-features", features ? `${jsCallStackFeature},${features}` : jsCallStackFeature)
   if (!app.isPackaged) app.commandLine.appendSwitch("remote-debugging-port", "9222")
@@ -353,8 +374,12 @@ const main = Effect.gen(function* () {
     isFirstLaunchOnboardingPending,
     finishFirstLaunchOnboarding,
     isOldLayoutEligible,
-    getDisplayBackend: async () => null,
-    setDisplayBackend: async () => undefined,
+    getDisplayBackend: async () => getDisplayBackend(),
+    setDisplayBackend: async (backend) => {
+      if (isDisplayBackend(backend)) getStore().set(DISPLAY_BACKEND_KEY, backend)
+      else getStore().delete(DISPLAY_BACKEND_KEY)
+      relaunch()
+    },
     checkAppExists: (appName) => checkAppExists(appName),
     resolveAppPath: async (appName) => resolveAppPath(appName),
     updater,

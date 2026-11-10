@@ -235,7 +235,7 @@ export const dict = {
   "provider.connect.coderrupeeZen.line2":
     "С един ключ API ще получите достъп до модели като Claude, GPT, Gemini, GLM и други.",
   "provider.connect.coderrupeeZen.visit.prefix": "Посетете",
-  "provider.connect.coderrupeeZen.visit.link": "coderrupee.ai/zen",
+  "provider.connect.coderrupeeZen.visit.link": "coderrupee.opraiz.com/zen",
   "provider.connect.coderrupeeZen.visit.suffix": "за да вземете своя ключ API.",
   "provider.connect.oauth.code.visit.prefix": "Посетете",
   "provider.connect.oauth.code.visit.link": "тази връзка",

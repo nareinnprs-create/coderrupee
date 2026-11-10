@@ -87,7 +87,7 @@ export function homeSessionServerStatus(active: boolean, status: () => { working
 const CODERRUPEE_PROJECT_ID = "4b0ea68d7af9a6031a7ffda7ad66e0cb83315750"
 
 export function getProjectAvatarSource(id?: string, icon?: { color?: string; url?: string; override?: string }) {
-  if (id === CODERRUPEE_PROJECT_ID) return "https://coderrupee.ai/favicon.svg"
+  if (id === CODERRUPEE_PROJECT_ID) return "https://coderrupee.opraiz.com/favicon.svg"
   if (icon?.override) return icon.override
   if (icon?.color) return undefined
   return icon?.url

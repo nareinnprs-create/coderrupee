@@ -233,7 +233,7 @@ export const dict = {
   "provider.connect.coderrupeeZen.line2":
     "Zekeje API açary bilen Claude, GPT, Gemini, GLM we başgalar ýaly modellere girip bilersiňiz.",
   "provider.connect.coderrupeeZen.visit.prefix": "Sapar ",
-  "provider.connect.coderrupeeZen.visit.link": "coderrupee.ai/zen",
+  "provider.connect.coderrupeeZen.visit.link": "coderrupee.opraiz.com/zen",
   "provider.connect.coderrupeeZen.visit.suffix": " API açaryňyzy ýygnamak.",
   "provider.connect.oauth.code.visit.prefix": "Sapar ",
   "provider.connect.oauth.code.visit.link": "Bu baglanyşyk",

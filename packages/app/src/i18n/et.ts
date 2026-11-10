@@ -232,7 +232,7 @@ export const dict = {
   "provider.connect.coderrupeeZen.line2":
     "Ühe klahviga API pääsete juurde sellistele mudelitele nagu Claude, GPT, Gemini, GLM ja palju muud.",
   "provider.connect.coderrupeeZen.visit.prefix": "Külastage ",
-  "provider.connect.coderrupeeZen.visit.link": "coderrupee.ai/zen",
+  "provider.connect.coderrupeeZen.visit.link": "coderrupee.opraiz.com/zen",
   "provider.connect.coderrupeeZen.visit.suffix": " API võtme kättesaamiseks.",
   "provider.connect.oauth.code.visit.prefix": "Külastage ",
   "provider.connect.oauth.code.visit.link": "see link",

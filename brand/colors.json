@@ -1,0 +1,23 @@
+{
+  "brand": {
+    "carbonForest": "#141713",
+    "signalLime": "#D7FF64",
+    "studioIvory": "#F5F5EE",
+    "executionMint": "#7DD6C1"
+  },
+  "ui": {
+    "darkSurface": "#1C201A",
+    "raisedSurface": "#252A22",
+    "primaryText": "#F5F5EE",
+    "secondaryText": "#ADB3A5",
+    "lightText": "#20231D",
+    "border": "#3A4035",
+    "success": "#22C55E",
+    "warning": "#F2BD61",
+    "error": "#FF766F"
+  },
+  "typography": {
+    "ui": "Inter, system-ui, sans-serif",
+    "code": "JetBrains Mono, ui-monospace, monospace"
+  }
+}

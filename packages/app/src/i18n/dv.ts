@@ -236,7 +236,7 @@ export const dict = {
   "provider.connect.coderrupeeZen.line2":
     "އެއް API ކީ އާއެކު Claude، GPT، Gemini، GLM އަދި އެހެނިހެން މޮޑެލްތަކަށް އެކްސެސް ލިބިގެންދާނެއެވެ.",
   "provider.connect.coderrupeeZen.visit.prefix": "ޒިޔާރަތްކުރުން ",
-  "provider.connect.coderrupeeZen.visit.link": "coderrupee.ai/zen އެވެ",
+  "provider.connect.coderrupeeZen.visit.link": "coderrupee.opraiz.com/zen އެވެ",
   "provider.connect.coderrupeeZen.visit.suffix": " ތިބާގެ API ކީ އެއްކުރުމަށްޓަކައެވެ.",
   "provider.connect.oauth.code.visit.prefix": "ޒިޔާރަތްކުރުން ",
   "provider.connect.oauth.code.visit.link": "މި ލިންކެވެ",

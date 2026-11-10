@@ -233,7 +233,7 @@ export const dict = {
   "provider.connect.coderrupeeZen.line2":
     "با یک کلید API به مدل هایی مانند Claude، GPT، Gemini، GLM و موارد دیگر دسترسی خواهید داشت.",
   "provider.connect.coderrupeeZen.visit.prefix": "بازدید کنید ",
-  "provider.connect.coderrupeeZen.visit.link": "coderrupee.ai/zen",
+  "provider.connect.coderrupeeZen.visit.link": "coderrupee.opraiz.com/zen",
   "provider.connect.coderrupeeZen.visit.suffix": " برای جمع آوری کلید API.",
   "provider.connect.oauth.code.visit.prefix": "بازدید کنید ",
   "provider.connect.oauth.code.visit.link": "این لینک",

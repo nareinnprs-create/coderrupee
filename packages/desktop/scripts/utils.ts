@@ -3,7 +3,9 @@ import { chmod, copyFile, mkdtemp, rm } from "node:fs/promises"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 
-const CLI_VERSION = "0.0.0-next-16350"
+// Pinned dev-channel CLI from npm @coderrupee/cli-*; dev machines can override
+// with CODERRUPEE_CLI_VERSION when the pin has not been published yet.
+const CLI_VERSION = Bun.env.CODERRUPEE_CLI_VERSION ?? "0.0.0-next-16350"
 
 export type Channel = "dev" | "beta" | "prod"
 
@@ -71,14 +73,24 @@ export function getCurrentCli(target = RUST_TARGET ?? nativeTarget()) {
 
 export async function downloadCliToResources() {
   const cli = getCurrentCli()
+  const version = CLI_VERSION
   const directory = await mkdtemp(join(tmpdir(), "coderrupee-cli-"))
   const dest = windowsify("resources/coderrupee-cli")
   try {
-    await $`bun install --no-save --cwd ${directory} ${`${cli.package}@${CLI_VERSION}`} ${`--os=${cli.os}`} ${`--cpu=${cli.cpu}`}`
+    await $`bun install --no-save --cwd ${directory} ${`${cli.package}@${version}`} ${`--os=${cli.os}`} ${`--cpu=${cli.cpu}`}`
     await copyFile(
       join(directory, "node_modules", cli.package, "bin", cli.os === "win32" ? "coderrupee2.exe" : "coderrupee2"),
       dest,
     )
+  } catch (error) {
+    // Dev convenience only (beta/prod bundles never ship the CLI): a missing or
+    // unpublished pin must not block local dev or packaging.
+    console.warn(
+      `Skipping dev CLI download (${cli.package}@${version}); install it manually or set CODERRUPEE_CLI_VERSION to override. Reason: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    )
+    return
   } finally {
     await rm(directory, { recursive: true, force: true })
   }
@@ -88,7 +100,7 @@ export async function downloadCliToResources() {
   }
   if (process.platform === "darwin") await $`codesign --force --sign - ${dest}`
 
-  console.log(`Copied ${cli.package} to ${dest}`)
+  console.log(`Copied ${cli.package}@${version} to ${dest}`)
 }
 
 export function windowsify(path: string) {

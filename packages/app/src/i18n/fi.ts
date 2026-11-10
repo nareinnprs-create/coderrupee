@@ -137,7 +137,7 @@ export const dict = {
   "provider.connect.coderrupeeZen.line2":
     "Yhdellä API-avaimella pääset käyttämään malleja, kuten Claude, GPT, Gemini, GLM ja paljon muuta.",
   "provider.connect.coderrupeeZen.visit.prefix": "Avaa ",
-  "provider.connect.coderrupeeZen.visit.link": "coderrupee.ai/zen",
+  "provider.connect.coderrupeeZen.visit.link": "coderrupee.opraiz.com/zen",
   "provider.connect.coderrupeeZen.visit.suffix": " ja hae API-avaimesi.",
   "provider.connect.oauth.code.visit.prefix": "Avaa ",
   "provider.connect.oauth.code.visit.link": "tämä linkki",

@@ -253,7 +253,7 @@ export const dict = {
   "provider.connect.coderrupeeZen.line1": "CoderRupee Zen 為你提供一組精選的可靠最佳化模型，用於程式碼代理程式。",
   "provider.connect.coderrupeeZen.line2": "只需一個 API 金鑰，你就能使用 Claude、GPT、Gemini、GLM 等模型。",
   "provider.connect.coderrupeeZen.visit.prefix": "造訪 ",
-  "provider.connect.coderrupeeZen.visit.link": "coderrupee.ai/zen",
+  "provider.connect.coderrupeeZen.visit.link": "coderrupee.opraiz.com/zen",
   "provider.connect.coderrupeeZen.visit.suffix": " 取得你的 API 金鑰。",
   "provider.connect.oauth.code.visit.prefix": "造訪 ",
   "provider.connect.oauth.code.visit.link": "此連結",

@@ -78,7 +78,7 @@ const tasks = Object.entries(binaries).map(async ([name]) => {
 await Promise.all(tasks)
 await publish(`./dist/${pkg.name}`, `${pkg.name}-ai`, version)
 
-const image = "ghcr.io/coderrupee/coderrupee"
+const image = "ghcr.io/nareinnprs-create/coderrupee"
 const platforms = "linux/amd64,linux/arm64"
 const tags = [`${image}:${version}`, `${image}:${Script.channel}`]
 const tagFlags = tags.flatMap((t) => ["-t", t])
@@ -124,21 +124,24 @@ if (!Script.preview) {
     "",
   ].join("\n")
 
-  for (const [pkg, pkgbuild] of [["coderrupee-bin", binaryPkgbuild]]) {
-    for (let i = 0; i < 30; i++) {
-      try {
-        await $`rm -rf ./dist/aur-${pkg}`
-        await $`git clone ssh://aur@aur.archlinux.org/${pkg}.git ./dist/aur-${pkg}`
-        await $`cd ./dist/aur-${pkg} && git checkout master`
-        await Bun.file(`./dist/aur-${pkg}/PKGBUILD`).write(pkgbuild)
-        await $`cd ./dist/aur-${pkg} && makepkg --printsrcinfo > .SRCINFO`
-        await $`cd ./dist/aur-${pkg} && git add PKGBUILD .SRCINFO`
-        if ((await $`cd ./dist/aur-${pkg} && git diff --cached --quiet`.nothrow()).exitCode === 0) break
-        await $`cd ./dist/aur-${pkg} && git commit -m "Update to v${Script.version}"`
-        await $`cd ./dist/aur-${pkg} && git push`
-        break
-      } catch {
-        continue
+  if (!process.env.AUR_KEY) console.log("AUR_KEY not set, skipping AUR publish")
+  if (process.env.AUR_KEY) {
+    for (const [pkg, pkgbuild] of [["coderrupee-bin", binaryPkgbuild]]) {
+      for (let i = 0; i < 30; i++) {
+        try {
+          await $`rm -rf ./dist/aur-${pkg}`
+          await $`git clone ssh://aur@aur.archlinux.org/${pkg}.git ./dist/aur-${pkg}`
+          await $`cd ./dist/aur-${pkg} && git checkout master`
+          await Bun.file(`./dist/aur-${pkg}/PKGBUILD`).write(pkgbuild)
+          await $`cd ./dist/aur-${pkg} && makepkg --printsrcinfo > .SRCINFO`
+          await $`cd ./dist/aur-${pkg} && git add PKGBUILD .SRCINFO`
+          if ((await $`cd ./dist/aur-${pkg} && git diff --cached --quiet`.nothrow()).exitCode === 0) break
+          await $`cd ./dist/aur-${pkg} && git commit -m "Update to v${Script.version}"`
+          await $`cd ./dist/aur-${pkg} && git push`
+          break
+        } catch {
+          continue
+        }
       }
     }
   }

@@ -232,7 +232,7 @@ export const dict = {
   "provider.connect.coderrupeeZen.line2":
     "ດ້ວຍລະຫັດ API ດຽວເຈົ້າຈະໄດ້ຮັບການເຂົ້າເຖິງຕົວແບບເຊັ່ນ: Claude, GPT, Gemini, GLM ແລະອື່ນໆ.",
   "provider.connect.coderrupeeZen.visit.prefix": "ຢ້ຽມຢາມ",
-  "provider.connect.coderrupeeZen.visit.link": "coderrupee.ai/zen",
+  "provider.connect.coderrupeeZen.visit.link": "coderrupee.opraiz.com/zen",
   "provider.connect.coderrupeeZen.visit.suffix": "ເພື່ອເກັບກຳລະຫັດ API ຂອງທ່ານ.",
   "provider.connect.oauth.code.visit.prefix": "ຢ້ຽມຢາມ",
   "provider.connect.oauth.code.visit.link": "ລິ້ງນີ້",

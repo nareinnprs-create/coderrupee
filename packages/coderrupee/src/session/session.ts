@@ -395,9 +395,9 @@ export const getUsage = (input: { model: Provider.Model; usage: Usage; metadata?
               .add(new Decimal(tokens.output).mul(finite(costInfo?.output ?? 0)).div(1_000_000))
               .add(new Decimal(tokens.cache.read).mul(finite(costInfo?.cache?.read ?? 0)).div(1_000_000))
               .add(new Decimal(tokens.cache.write).mul(finite(costInfo?.cache?.write ?? 0)).div(1_000_000))
-              // TODO: update models.dev to have better pricing model, for now:
-              // charge reasoning tokens at the same rate as output tokens
-              .add(new Decimal(tokens.reasoning).mul(finite(costInfo?.output ?? 0)).div(1_000_000))
+              // Reasoning tokens are a subset of output tokens in provider usage reports
+              // (OpenAI output_token_details, Anthropic thinking), so they are already
+              // covered by the output rate. Billing them again double-charges.
               .toNumber(),
           ),
     tokens,

@@ -818,7 +818,7 @@ function App(props: { onSnapshot?: () => Promise<string[]>; pluginHost: TuiPlugi
         name: "docs.open",
         title: "Open docs",
         run: () => {
-          openUrl("https://coderrupee.ai/docs").catch(() => {})
+          openUrl("https://coderrupee.opraiz.com/docs").catch(() => {})
           dialog.clear()
         },
         category: "System",

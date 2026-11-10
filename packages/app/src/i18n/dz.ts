@@ -236,7 +236,7 @@ export const dict: Record<string, string> = {
   "provider.connect.coderrupeeZen.line2":
     "API ལྡེ་མིག་རྐྱང་པ་གཅིག་གིས་ ཁྱོད་ཀྱིས་ Claude དང་ GPT དེ་ལས་ Gemini དང་ GLM དེ་ལས་མངམ་བཟུམ་གྱི་དཔེ་ཚད་ཚུ་ལུ་འཛུལ་སྤྱོད་འབད་ཚུགས།",
   "provider.connect.coderrupeeZen.visit.prefix": "འགྱོ་ནི",
-  "provider.connect.coderrupeeZen.visit.link": "coderrupee.ai/zen",
+  "provider.connect.coderrupeeZen.visit.link": "coderrupee.opraiz.com/zen",
   "provider.connect.coderrupeeZen.visit.suffix": "ཁྱོད་རའི་ API ལྡེ་མིག་བསྡུ་ལེན་འབད་ནིའི་དོན་ལུ།",
   "provider.connect.oauth.code.visit.prefix": "འགྱོ་ནི",
   "provider.connect.oauth.code.visit.link": "འབྲེལ་མཐུད་འདི།",

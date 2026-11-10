@@ -42,12 +42,6 @@ jobs:
 
       - uses: ./.github/actions/setup-bun
 
-
-
-      - name: Install CoderRupee
-        if: inputs.bump || inputs.version
-        run: bun i -g coderrupee-ai
-
       - id: version
         run: |
           ./script/version.ts
@@ -131,6 +125,7 @@ jobs:
 
 
       - name: Azure login
+        if: env.AZURE_CLIENT_ID != ''
         uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2.3.0
         with:
           client-id: ${{ env.AZURE_CLIENT_ID }}
@@ -138,6 +133,7 @@ jobs:
           subscription-id: ${{ env.AZURE_SUBSCRIPTION_ID }}
 
       - uses: azure/artifact-signing-action@b443cf8ea4124818d2ea9f043cba29fc3ec47b16 # v1.2.0
+        if: env.AZURE_CLIENT_ID != ''
         with:
           endpoint: ${{ env.AZURE_TRUSTED_SIGNING_ENDPOINT }}
           signing-account-name: ${{ env.AZURE_TRUSTED_SIGNING_ACCOUNT_NAME }}
@@ -158,6 +154,7 @@ jobs:
           exclude-interactive-browser-credential: true
 
       - name: Verify Windows CLI signatures
+        if: env.AZURE_CLIENT_ID != ''
         shell: pwsh
         run: |
           $files = @(
@@ -174,6 +171,7 @@ jobs:
           }
 
       - name: Repack Windows CLI archives
+        if: env.AZURE_CLIENT_ID != ''
         working-directory: packages/coderrupee/dist
         shell: pwsh
         run: |
@@ -182,7 +180,7 @@ jobs:
           Compress-Archive -Path "coderrupee-windows-x64-baseline\bin\*" -DestinationPath "coderrupee-windows-x64-baseline.zip" -Force
 
       - name: Upload signed Windows CLI release assets
-        if: needs.version.outputs.release != ''
+        if: needs.version.outputs.release != '' && env.AZURE_CLIENT_ID != ''
         shell: pwsh
         env:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
@@ -195,6 +193,7 @@ jobs:
             --repo "${{ needs.version.outputs.repo }}"
 
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: env.AZURE_CLIENT_ID != ''
         with:
           name: coderrupee-cli-signed-windows
           path: |
@@ -244,14 +243,14 @@ jobs:
       - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
 
       - uses: apple-actions/import-codesign-certs@8f3fb608891dd2244cdab3d69cd68c0d37a7fe93 # v2.0.0
-        if: runner.os == 'macOS'
+        if: runner.os == 'macOS' && secrets.APPLE_CERTIFICATE != ''
         with:
           keychain: build
           p12-file-base64: ${{ secrets.APPLE_CERTIFICATE }}
           p12-password: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
 
       - name: Setup Apple API Key
-        if: runner.os == 'macOS'
+        if: runner.os == 'macOS' && secrets.APPLE_CERTIFICATE != ''
         run: echo "${{ secrets.APPLE_API_KEY_PATH }}" > $RUNNER_TEMP/apple-api-key.p8
 
       - uses: ./.github/actions/setup-bun
@@ -259,7 +258,7 @@ jobs:
           install-flags: ${{ matrix.settings.bun_install_flags }}
 
       - name: Azure login
-        if: runner.os == 'Windows'
+        if: runner.os == 'Windows' && secrets.AZURE_CLIENT_ID != ''
         uses: azure/login@a457da9ea143d694b1b9c7c869ebb04ebe844ef5 # v2.3.0
         with:
           client-id: ${{ env.AZURE_CLIENT_ID }}
@@ -304,6 +303,7 @@ jobs:
           NODE_OPTIONS: --max-old-space-size=4096
           CODERRUPEE_VERSION: ${{ needs.version.outputs.version }}
           CODERRUPEE_CHANNEL: ${{ (github.ref_name == 'beta' && 'beta') || 'prod' }}
+          CODERRUPEE_UNSIGNED: ${{ ((runner.os == 'macOS' && secrets.APPLE_CERTIFICATE == '') || (runner.os == 'Windows' && secrets.AZURE_CLIENT_ID == '')) && '1' || '' }}
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           SENTRY_ORG: ${{ vars.SENTRY_ORG }}
           SENTRY_PROJECT: ${{ vars.WEB_SENTRY_PROJECT }}
@@ -319,6 +319,7 @@ jobs:
         timeout-minutes: 60
         env:
           CODERRUPEE_CHANNEL: ${{ (github.ref_name == 'beta' && 'beta') || 'prod' }}
+          CODERRUPEE_UNSIGNED: ${{ ((runner.os == 'macOS' && secrets.APPLE_CERTIFICATE == '') || (runner.os == 'Windows' && secrets.AZURE_CLIENT_ID == '')) && '1' || '' }}
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
           CSC_KEYCHAIN: build.keychain
           APPLE_API_KEY: ${{ runner.temp }}/apple-api-key.p8
@@ -332,6 +333,7 @@ jobs:
         timeout-minutes: 60
         env:
           CODERRUPEE_CHANNEL: ${{ (github.ref_name == 'beta' && 'beta') || 'prod' }}
+          CODERRUPEE_UNSIGNED: ${{ ((runner.os == 'macOS' && secrets.APPLE_CERTIFICATE == '') || (runner.os == 'Windows' && secrets.AZURE_CLIENT_ID == '')) && '1' || '' }}
 
       - name: Create macOS .app.tar.gz
         if: runner.os == 'macOS' && needs.version.outputs.release
@@ -355,7 +357,7 @@ jobs:
           tar -czf "$OUT_NAME" -C "$(dirname "$APP_PATH")" "$(basename "$APP_PATH")"
 
       - name: Verify signed Windows Electron artifacts
-        if: runner.os == 'Windows'
+        if: runner.os == 'Windows' && secrets.AZURE_CLIENT_ID != ''
         shell: pwsh
         run: |
           $files = @()
@@ -423,7 +425,7 @@ jobs:
           path: packages/coderrupee/dist
 
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
-        if: github.ref_name != 'beta'
+        if: github.ref_name != 'beta' && secrets.AZURE_CLIENT_ID != ''
         with:
           name: coderrupee-cli-signed-windows
           path: packages/coderrupee/dist
@@ -485,6 +487,7 @@ jobs:
         env:
           CODERRUPEE_VERSION: ${{ needs.version.outputs.version }}
           CODERRUPEE_RELEASE: ${{ needs.version.outputs.release }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           AUR_KEY: ${{ secrets.AUR_KEY }}
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
           GH_REPO: ${{ needs.version.outputs.repo }}

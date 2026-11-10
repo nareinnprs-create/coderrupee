@@ -363,7 +363,12 @@ function useIssueId() {
 }
 
 function useShareUrl() {
-  return isMock() ? "https://dev.coderrupee.ai" : "https://coderrupee.ai"
+  // coderrupee.ai no longer resolves; dev and prod both serve from the same Cloudflare Pages host.
+  return "https://coderrupee.opraiz.com"
+}
+
+function useOidcBaseUrl() {
+  return (process.env["OIDC_BASE_URL"] || "https://api.coderrupee.ai").replace(/\/+$/, "")
 }
 
 async function getAccessToken() {
@@ -374,7 +379,7 @@ async function getAccessToken() {
 
   let response
   if (isMock()) {
-    response = await fetch("https://api.coderrupee.ai/exchange_github_app_token_with_pat", {
+    response = await fetch(`${useOidcBaseUrl()}/exchange_github_app_token_with_pat`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${useEnvMock().mockToken}`,
@@ -383,7 +388,7 @@ async function getAccessToken() {
     })
   } else {
     const oidcToken = await core.getIDToken("coderrupee-github-action")
-    response = await fetch("https://api.coderrupee.ai/exchange_github_app_token", {
+    response = await fetch(`${useOidcBaseUrl()}/exchange_github_app_token`, {
       method: "POST",
       headers: {
         Authorization: `Bearer ${oidcToken}`,
@@ -824,15 +829,7 @@ async function createPR(base: string, branch: string, title: string, body: strin
 function footer(opts?: { image?: boolean }) {
   const { providerID, modelID } = useEnvModel()
 
-  const image = (() => {
-    if (!shareId) return ""
-    if (!opts?.image) return ""
-
-    const titleAlt = encodeURIComponent(session.title.substring(0, 50))
-    const title64 = Buffer.from(session.title.substring(0, 700), "utf8").toString("base64")
-
-    return `<a href="${useShareUrl()}/s/${shareId}"><img width="200" alt="${titleAlt}" src="https://social-cards.sst.dev/coderrupee-share/${title64}.png?model=${providerID}/${modelID}&version=${session.version}&id=${shareId}" /></a>\n`
-  })()
+  const image = ""
   const shareUrl = shareId ? `[coderrupee session](${useShareUrl()}/s/${shareId})&nbsp;&nbsp;|&nbsp;&nbsp;` : ""
   return `\n\n${image}${shareUrl}[github run](${useEnvRunUrl()})`
 }

@@ -232,7 +232,7 @@ export const dict = {
   "provider.connect.coderrupeeZen.line2":
     "Cu o singură cheie API ai acces la modele precum Claude, GPT, Gemini, GLM și altele.",
   "provider.connect.coderrupeeZen.visit.prefix": "Vizitează",
-  "provider.connect.coderrupeeZen.visit.link": "coderrupee.ai/zen",
+  "provider.connect.coderrupeeZen.visit.link": "coderrupee.opraiz.com/zen",
   "provider.connect.coderrupeeZen.visit.suffix": "pentru a obține cheia ta API.",
   "provider.connect.oauth.code.visit.prefix": "Vizitează",
   "provider.connect.oauth.code.visit.link": "acest link",

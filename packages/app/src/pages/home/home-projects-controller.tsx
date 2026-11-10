@@ -120,7 +120,7 @@ export function createHomeProjectsController(home: HomeController) {
     },
     utility: {
       settings: openSettings,
-      help: () => platform.openExternal("https://coderrupee.ai/desktop-feedback"),
+      help: () => platform.openExternal("https://coderrupee.opraiz.com/desktop-feedback"),
     },
   }
 }

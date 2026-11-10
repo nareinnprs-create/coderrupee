@@ -842,7 +842,7 @@ function ProviderConnection(props: {
               <div>
                 {language.t("provider.connect.coderrupeeZen.visit.prefix")}
                 <ExternalLink
-                  href="https://coderrupee.ai/zen"
+                  href="https://coderrupee.opraiz.com/zen"
                   class="text-v2-text-text-base focus-visible:rounded-xs focus-visible:outline-2 focus-visible:outline-v2-border-border-focus"
                 >
                   {language.t("provider.connect.coderrupeeZen.visit.link")}
@@ -891,7 +891,7 @@ function ProviderConnection(props: {
               <div class="text-14-regular text-text-base">{language.t("provider.connect.coderrupeeZen.line2")}</div>
               <div class="text-14-regular text-text-base">
                 {language.t("provider.connect.coderrupeeZen.visit.prefix")}
-                <ExternalLink href="https://coderrupee.ai/zen" tabIndex={-1}>
+                <ExternalLink href="https://coderrupee.opraiz.com/zen" tabIndex={-1}>
                   {language.t("provider.connect.coderrupeeZen.visit.link")}
                 </ExternalLink>
                 {language.t("provider.connect.coderrupeeZen.visit.suffix")}

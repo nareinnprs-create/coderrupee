@@ -253,7 +253,7 @@ export const dict = {
   "provider.connect.coderrupeeZen.line2":
     "Dengan satu kunci API, Anda akan mendapatkan akses ke model seperti Claude, GPT, Gemini, GLM dan lainnya.",
   "provider.connect.coderrupeeZen.visit.prefix": "Kunjungi ",
-  "provider.connect.coderrupeeZen.visit.link": "coderrupee.ai/zen",
+  "provider.connect.coderrupeeZen.visit.link": "coderrupee.opraiz.com/zen",
   "provider.connect.coderrupeeZen.visit.suffix": " untuk mendapatkan kunci API Anda.",
   "provider.connect.oauth.code.visit.prefix": "Kunjungi ",
   "provider.connect.oauth.code.visit.link": "tautan ini",

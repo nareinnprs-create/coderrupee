@@ -196,7 +196,7 @@ export function modelVariants(output: string, model: string) {
 
 export function translationConfig(agent: string, model: string, targets: string[]) {
   return {
-    $schema: "https://coderrupee.ai/config.json",
+    $schema: "https://coderrupee.opraiz.com/config.json",
     model,
     default_agent: agent,
     share: "disabled" as const,

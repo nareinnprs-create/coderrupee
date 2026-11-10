@@ -233,7 +233,7 @@ export const dict = {
   "provider.connect.coderrupeeZen.line2":
     "Бо як калиди API шумо метавонед ба моделҳое мисли Claude, GPT, Gemini, GLM ва ғайра дастрасӣ пайдо кунед.",
   "provider.connect.coderrupeeZen.visit.prefix": "Ташриф",
-  "provider.connect.coderrupeeZen.visit.link": "coderrupee.ai/zen",
+  "provider.connect.coderrupeeZen.visit.link": "coderrupee.opraiz.com/zen",
   "provider.connect.coderrupeeZen.visit.suffix": "барои гирифтани калиди API худ.",
   "provider.connect.oauth.code.visit.prefix": "Ташриф",
   "provider.connect.oauth.code.visit.link": "ин пайванд",

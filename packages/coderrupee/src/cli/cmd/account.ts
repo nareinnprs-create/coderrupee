@@ -15,7 +15,9 @@ const dim = (value: string) => UI.Style.TEXT_DIM + value + UI.Style.TEXT_NORMAL
 
 const activeSuffix = (isActive: boolean) => (isActive ? dim(" (active)") : "")
 
-export const defaultConsoleUrl = "https://coderrupee.ai/console"
+// The console backend serves device auth and org data for CoderRupee accounts; the
+// default stays on the hosted console until the self-hosted console is deployed.
+export const defaultConsoleUrl = process.env.CODERRUPEE_CONSOLE_URL ?? "https://opencode.ai/console"
 
 export const formatAccountLabel = (account: { email: string; url: string }, isActive: boolean) =>
   `${account.email} ${dim(account.url)}${activeSuffix(isActive)}`

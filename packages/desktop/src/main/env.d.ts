@@ -1,5 +1,6 @@
 interface ImportMetaEnv {
   readonly CODERRUPEE_CHANNEL: string
+  readonly CODERRUPEE_UNSIGNED: string
 }
 
 interface ImportMeta {

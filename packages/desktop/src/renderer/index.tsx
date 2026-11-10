@@ -270,7 +270,7 @@ const createPlatform = (windowState: DesktopWindowState): Platform => {
 
       const notification = new Notification(title, {
         body: description ?? "",
-        icon: "https://coderrupee.ai/favicon-96x96-v3.png",
+        icon: "https://coderrupee.opraiz.com/favicon-96x96-v3.png",
       })
       notification.onclick = () => {
         void window.api.showWindow()

@@ -504,7 +504,7 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
         autoload: false,
         options: {
           headers: {
-            "HTTP-Referer": "https://coderrupee.ai/",
+            "HTTP-Referer": "https://coderrupee.opraiz.com/",
             "X-Title": "coderrupee",
             "X-Source": "coderrupee",
           },
@@ -515,7 +515,7 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
         autoload: false,
         options: {
           headers: {
-            "HTTP-Referer": "https://coderrupee.ai/",
+            "HTTP-Referer": "https://coderrupee.opraiz.com/",
             "X-Title": "coderrupee",
           },
         },
@@ -525,7 +525,7 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
         autoload: provider.source === "config",
         options: {
           headers: {
-            "HTTP-Referer": "https://coderrupee.ai/",
+            "HTTP-Referer": "https://coderrupee.opraiz.com/",
             "X-Title": "coderrupee",
             "X-BILLING-INVOKE-ORIGIN": "CoderRupee",
           },
@@ -536,7 +536,7 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
         autoload: false,
         options: {
           headers: {
-            "http-referer": "https://coderrupee.ai/",
+            "http-referer": "https://coderrupee.opraiz.com/",
             "x-title": "coderrupee",
           },
         },
@@ -641,7 +641,7 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
         autoload: false,
         options: {
           headers: {
-            "HTTP-Referer": "https://coderrupee.ai/",
+            "HTTP-Referer": "https://coderrupee.opraiz.com/",
             "X-Title": "coderrupee",
           },
         },
@@ -947,7 +947,7 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
         autoload: false,
         options: {
           headers: {
-            "HTTP-Referer": "https://coderrupee.ai/",
+            "HTTP-Referer": "https://coderrupee.opraiz.com/",
             "X-Title": "coderrupee",
           },
         },
@@ -1390,11 +1390,17 @@ export function fromModelsDevProvider(provider: ModelsDev.Provider): Info {
   return {
     id: ProviderV2.ID.make(provider.id),
     source: "custom",
-    name: provider.name,
+    name: PROVIDER_DISPLAY_NAMES[provider.id] ?? provider.name,
     env: [...(provider.env ?? [])],
     options: {},
     models,
   }
+}
+
+// Display names replace upstream branding in every UI surface; provider/model IDs stay
+// aligned with models.dev so model resolution and saved configs keep working.
+const PROVIDER_DISPLAY_NAMES: Record<string, string> = {
+  opencode: "CoderRupee",
 }
 
 function modeOptions(model: Model, body: Record<string, unknown> | undefined) {

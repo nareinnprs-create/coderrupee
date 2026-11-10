@@ -232,7 +232,7 @@ export const dict = {
   "provider.connect.coderrupeeZen.line2":
     "ერთი API გასაღებით თქვენ მიიღებთ წვდომას ისეთ მოდელებზე, როგორიცაა Claude, GPT, Gemini, GLM და სხვა.",
   "provider.connect.coderrupeeZen.visit.prefix": "ეწვიეთ ",
-  "provider.connect.coderrupeeZen.visit.link": "coderrupee.ai/zen",
+  "provider.connect.coderrupeeZen.visit.link": "coderrupee.opraiz.com/zen",
   "provider.connect.coderrupeeZen.visit.suffix": " თქვენი API გასაღების შესაგროვებლად.",
   "provider.connect.oauth.code.visit.prefix": "ეწვიეთ ",
   "provider.connect.oauth.code.visit.link": "ეს ბმული",

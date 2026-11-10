@@ -70,7 +70,7 @@ const notify: Platform["notify"] = async (title, description, onClick) => {
   // this transport only handles the Web Notification permission flow.
   const notification = new Notification(title, {
     body: description ?? "",
-    icon: "https://coderrupee.ai/favicon-96x96-v3.png",
+    icon: "https://coderrupee.opraiz.com/favicon-96x96-v3.png",
   })
 
   notification.onclick = () => {
@@ -97,7 +97,7 @@ if (!(root instanceof HTMLElement) && import.meta.env.DEV) {
 }
 
 const getCurrentUrl = () => {
-  if (location.hostname.includes("coderrupee.ai")) return "http://localhost:4096"
+  if (location.hostname.endsWith(".opraiz.com") || location.hostname.includes("coderrupee.ai")) return "http://localhost:4096"
   if (import.meta.env.DEV)
     return `http://${import.meta.env.VITE_CODERRUPEE_SERVER_HOST ?? "localhost"}:${import.meta.env.VITE_CODERRUPEE_SERVER_PORT ?? "4096"}`
   return location.origin

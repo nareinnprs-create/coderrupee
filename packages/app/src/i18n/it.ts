@@ -138,7 +138,7 @@ export const dict = {
   "provider.connect.coderrupeeZen.line2":
     "Con una sola chiave API avrai accesso a modelli come Claude, GPT, Gemini, GLM e altri.",
   "provider.connect.coderrupeeZen.visit.prefix": "Visita ",
-  "provider.connect.coderrupeeZen.visit.link": "coderrupee.ai/zen",
+  "provider.connect.coderrupeeZen.visit.link": "coderrupee.opraiz.com/zen",
   "provider.connect.coderrupeeZen.visit.suffix": " per ottenere la tua chiave API.",
   "provider.connect.oauth.code.visit.prefix": "Visita ",
   "provider.connect.oauth.code.visit.link": "questo collegamento",

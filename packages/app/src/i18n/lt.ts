@@ -239,7 +239,7 @@ export const dict = {
   "provider.connect.coderrupeeZen.line2":
     "Su vienu API raktu galėsite pasiekti tokius modelius kaip Claude, GPT, Gemini, GLM ir kt.",
   "provider.connect.coderrupeeZen.visit.prefix": "Aplankykite",
-  "provider.connect.coderrupeeZen.visit.link": "coderrupee.ai/zen",
+  "provider.connect.coderrupeeZen.visit.link": "coderrupee.opraiz.com/zen",
   "provider.connect.coderrupeeZen.visit.suffix": "norėdami pasiimti savo API raktą.",
   "provider.connect.oauth.code.visit.prefix": "Aplankykite",
   "provider.connect.oauth.code.visit.link": "šią nuorodą",

@@ -235,7 +235,7 @@ export const dict = {
   "provider.connect.coderrupeeZen.line2":
     "Ганц API товчлуураар та Claude, GPT, Gemini, GLM болон бусад загваруудад хандах боломжтой болно.",
   "provider.connect.coderrupeeZen.visit.prefix": "зочилно уу",
-  "provider.connect.coderrupeeZen.visit.link": "coderrupee.ai/zen",
+  "provider.connect.coderrupeeZen.visit.link": "coderrupee.opraiz.com/zen",
   "provider.connect.coderrupeeZen.visit.suffix": "API түлхүүрээ авахын тулд.",
   "provider.connect.oauth.code.visit.prefix": "зочилно уу",
   "provider.connect.oauth.code.visit.link": "энэ холбоос",

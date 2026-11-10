@@ -50,7 +50,7 @@ jobs:
 
       - name: Install CoderRupee
         if: steps.changes.outputs.has_changes == 'true'
-        run: curl -fsSL https://coderrupee.ai/install | bash
+        run: curl -fsSL https://coderrupee.opraiz.com/install | bash
 
       - name: Sync locale docs with CoderRupee
         if: steps.changes.outputs.has_changes == 'true'

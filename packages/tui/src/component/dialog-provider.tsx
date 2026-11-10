@@ -375,7 +375,7 @@ function ApiMethod(props: ApiMethodProps) {
                 key.
               </text>
               <text fg={theme.text}>
-                Go to <span style={{ fg: theme.primary }}>https://coderrupee.ai/zen</span> to get a key
+                Go to <span style={{ fg: theme.primary }}>https://coderrupee.opraiz.com/zen</span> to get a key
               </text>
             </box>
           ),
@@ -386,7 +386,7 @@ function ApiMethod(props: ApiMethodProps) {
                 with generous usage limits.
               </text>
               <text fg={theme.text}>
-                Go to <span style={{ fg: theme.primary }}>https://coderrupee.ai/go</span> and enable CoderRupee Go
+                Go to <span style={{ fg: theme.primary }}>https://coderrupee.opraiz.com/go</span> and enable CoderRupee Go
               </text>
             </box>
           ),

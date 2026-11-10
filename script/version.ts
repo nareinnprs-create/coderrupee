@@ -15,7 +15,7 @@ if (!Script.preview) {
   const dir = process.env.RUNNER_TEMP ?? "/tmp"
   const notesFile = `${dir}/coderrupee-release-notes.txt`
   await Bun.write(notesFile, body)
-  await $`gh release create v${Script.version} -d --target ${sha} --title "v${Script.version}" --notes-file ${notesFile}`
+  await $`gh release create v${Script.version} -d --target ${sha} --title "CoderRupee v${Script.version}" --notes-file ${notesFile}`
   const release = await $`gh release view v${Script.version} --json tagName,databaseId`.json()
   output.push(`release=${release.databaseId}`)
   output.push(`tag=${release.tagName}`)
