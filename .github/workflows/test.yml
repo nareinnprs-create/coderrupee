@@ -23,11 +23,6 @@ env:
 jobs:
   unit:
     name: unit (${{ matrix.settings.name }})
-    env:
-      XDG_CONFIG_HOME: ${{ runner.temp }}/xdg-config
-      XDG_DATA_HOME: ${{ runner.temp }}/xdg-data
-      XDG_CACHE_HOME: ${{ runner.temp }}/xdg-cache
-      XDG_STATE_HOME: ${{ runner.temp }}/xdg-state
     strategy:
       fail-fast: false
       matrix:
@@ -73,6 +68,12 @@ jobs:
         run: GITHUB_ACTIONS=false bun turbo test
         env:
           CODERRUPEE_EXPERIMENTAL_DISABLE_FILEWATCHER: ${{ runner.os == 'Windows' && 'true' || 'false' }}
+          # Isolate each job's global config/data so concurrent package test processes
+          # cannot clobber each other's coderrupee.json (keyring/auth tests).
+          XDG_CONFIG_HOME: ${{ runner.temp }}/xdg-config
+          XDG_DATA_HOME: ${{ runner.temp }}/xdg-data
+          XDG_CACHE_HOME: ${{ runner.temp }}/xdg-cache
+          XDG_STATE_HOME: ${{ runner.temp }}/xdg-state
 
       - name: Check generated client
         if: runner.os == 'Linux'
