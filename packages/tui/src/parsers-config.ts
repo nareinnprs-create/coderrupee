@@ -150,7 +150,14 @@ export default {
           // "https://raw.githubusercontent.com/nvim-treesitter/nvim-treesitter/refs/heads/master/queries/html/highlights.scm",
           "https://github.com/tree-sitter/tree-sitter-html/raw/refs/heads/master/queries/highlights.scm",
         ],
-        // TODO: Injections not working for some reason
+        // Injections disabled by constraint: opentui resolves an injection's
+        // language only from injectionMapping.nodeTypes keyed by the captured
+        // node's type, or from markdown-style code_fence_content/info_string
+        // nodes. It ignores the `#set! injection.language` predicate, and
+        // tree-sitter-html's injections.scm captures the inner `raw_text` node
+        // shared by script and style elements, so no nodeTypes mapping can
+        // distinguish javascript from css and embedded code highlighting
+        // silently no-ops. Revisit when opentui honors `#set! injection.language`.
         // injections: [
         //   "https://github.com/tree-sitter/tree-sitter-html/raw/refs/heads/master/queries/injections.scm",
         // ],
@@ -251,7 +258,11 @@ export default {
     },
     {
       filetype: "clojure",
-      // temporarily using fork to fix issues
+      // Constraint: the official clojure grammar (oakmac/tree-sitter-clojure)
+      // publishes no prebuilt wasm releases, so this build comes from an
+      // unofficial fork; opentui caches it on disk (languages cache), since the
+      // fork's release asset has been observed unavailable. Move to an official
+      // wasm when oakmac/tree-sitter-clojure starts publishing one.
       wasm: "https://github.com/nareinnprs-create/tree-sitter-clojure/releases/download/v0.0.1/tree-sitter-clojure.wasm",
       queries: {
         highlights: [
@@ -284,8 +295,10 @@ export default {
     },
     {
       filetype: "nix",
-      // TODO: Replace with official tree-sitter-nix WASM when published
-      // See: https://github.com/nix-community/tree-sitter-nix/issues/66
+      // Constraint: pinned to a wasm built from the ast-grep website because
+      // the official nix-community/tree-sitter-nix project has not published a
+      // wasm release (nix-community/tree-sitter-nix#66). Switch to the official
+      // wasm when that issue ships one.
       wasm: "https://github.com/ast-grep/ast-grep.github.io/raw/40b84530640aa83a0d34a20a2b0623d7b8e5ea97/website/public/parsers/tree-sitter-nix.wasm",
       queries: {
         highlights: [

@@ -1725,7 +1725,10 @@ function getResponsesModelConfig(modelId: string): ResponsesModelConfig {
   }
 }
 
-// TODO AI SDK 6: use optional here instead of nullish
+// Provider options use .nullish() because AI SDK 5 forwards both undefined and null for
+// unset fields and the Responses API rejects explicit nulls differently per field; the
+// schema mirrors the vendored @ai-sdk/openai source and switches to optional with the
+// AI SDK 6 sync.
 const openaiResponsesProviderOptionsSchema = z.object({
   include: z
     .array(z.enum(["reasoning.encrypted_content", "file_search_call.results", "message.output_text.logprobs"]))

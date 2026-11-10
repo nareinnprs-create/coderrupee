@@ -20,7 +20,7 @@ Use in forms and multi-select lists.
 - Controlled or uncontrolled usage.
 
 ### Accessibility
-- TODO: confirm aria attributes from Kobalte.
+- Kobalte Checkbox renders a native `input[type=checkbox]` with `checked`/`indeterminate` (announced as mixed); Space toggles.
 
 ### Theming/tokens
 - Uses \`data-component="checkbox"\` and related slots.

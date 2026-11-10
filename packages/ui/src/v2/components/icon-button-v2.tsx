@@ -6,7 +6,9 @@ import "./icon-button-v2.css"
 export interface IconButtonV2Props
   extends ComponentProps<typeof Kobalte>,
     Pick<ComponentProps<"button">, "class" | "classList"> {
-  // temporary
+  // Constraint: takes a rendered element, not an icon name — callers compose
+  // <Icon> themselves and no icon size is derived from `size`. The commented
+  // name/size form below is the intended end-state.
   icon?: JSX.Element
   // icon: IconProps["name"]
   size?: "small" | "normal" | "large"

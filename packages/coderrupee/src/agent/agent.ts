@@ -581,7 +581,8 @@ const layer = Layer.effect(
         yield* plugin.trigger("experimental.chat.system.transform", { model: resolved }, { system })
         const existing = yield* InstanceState.useEffect(state, (s) => s.list())
 
-        // TODO: clean this up so provider specific logic doesnt bleed over
+        // Provider-specific auth shape check (OpenAI OAuth vs API key) belongs behind the
+        // LLM request layer; moving it there needs the request-builder seam in @coderrupee/llm.
         const authInfo = yield* auth.get(model.providerID).pipe(Effect.orDie)
         const isOpenaiOauth = model.providerID === "openai" && authInfo?.type === "oauth"
 

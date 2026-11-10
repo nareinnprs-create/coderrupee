@@ -329,6 +329,8 @@ const live: Layer.Layer<
                 specificationVersion: "v3" as const,
                 async transformParams(args) {
                   if (args.type === "stream") {
+                    // The middleware types prompt as LanguageModelV3Prompt; ProviderTransform.message
+                    // returns the equivalent ModelMessage shape the SDK serializes back to that prompt.
                     // @ts-expect-error
                     args.params.prompt = ProviderTransform.message(
                       args.params.prompt,

@@ -236,7 +236,10 @@ const layer = Layer.effect(
           if (!record) return
           const provider = record.provider
 
-          // TODO: Remove these provider-specific assumptions once model syncing reliably reports available deployments.
+          // Azure listings on models.dev include models that are not deployed on a given
+          // resource, and models.dev carries no deployment-availability data to filter
+          // them, so Azure providers are excluded from small-model selection. Revisit
+          // when models.dev exposes per-resource deployment availability.
           if (providerID === ProviderV2.ID.azure || providerID === ProviderV2.ID.make("azure-cognitive-services")) {
             return
           }

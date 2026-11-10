@@ -167,7 +167,9 @@ export const githubInstall = Effect.fn("Cli.github.install")(function* () {
       await installGitHubApp()
 
       const providers = await Effect.runPromise(modelsDev.get()).then((p) => {
-        // TODO: add guide for copilot, for now just hide it
+        // github-copilot is excluded from GitHub agent install: its auth needs an
+        // interactive Copilot device login that the workflow-secrets setup below cannot
+        // express. Include it once the workflow supports Copilot auth end to end.
         delete p["github-copilot"]
         return p
       })

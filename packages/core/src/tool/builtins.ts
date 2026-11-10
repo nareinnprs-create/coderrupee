@@ -24,9 +24,10 @@ import { WriteTool } from "./write"
  * services once to this merged set.
  *
  * TODO: Port the remaining launch-follow-up leaves deliberately: edit fuzzy
- * parity, task, LSP,
- * repo_clone, repo_overview, plan_exit, and Rune/code mode. Keep MCP and plugin
- * transforms separate from this static built-in list.
+ * parity, repo_clone, repo_overview, plan_exit, and Rune/code mode. The task
+ * (subagent) tool needs V2 parent-session and child-completion primitives that
+ * do not exist yet, and upstream v2.2.7 no longer ships an LSP tool. MCP and
+ * plugin transforms stay separate from this static built-in list.
  */
 export const node = makeLocationNode({
   name: "built-in-tools",

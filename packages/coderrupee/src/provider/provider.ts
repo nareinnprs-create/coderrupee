@@ -351,11 +351,12 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
       const awsAccessKeyId = env["AWS_ACCESS_KEY_ID"]
       const configApiKey = providerConfig?.options?.apiKey
 
-      // TODO: Using process.env directly because Env.set only updates a process.env shallow copy,
-      // until the scope of the Env API is clarified (test only or runtime?)
+      // The AWS SDK reads the bearer token from the real process environment at request
+      // time and child processes inherit it; the Env service only tracks an in-process
+      // copy, so the fallback below must also write process.env.
+      const envBearerToken = yield* dep.get("AWS_BEARER_TOKEN_BEDROCK")
       const awsBearerToken = iife(() => {
-        const envToken = process.env.AWS_BEARER_TOKEN_BEDROCK
-        if (envToken) return envToken
+        if (envBearerToken) return envBearerToken
         if (auth?.type === "api") {
           process.env.AWS_BEARER_TOKEN_BEDROCK = auth.key
           return auth.key
@@ -614,11 +615,12 @@ function custom(dep: CustomDep): Record<string, CustomLoader> {
     }),
     "sap-ai-core": Effect.fnUntraced(function* () {
       const auth = yield* dep.auth("sap-ai-core")
-      // TODO: Using process.env directly because Env.set only updates a shallow copy (not process.env),
-      // until the scope of the Env API is clarified (test only or runtime?)
+      // The SAP AI Core SDK reads the service key from the real process environment at
+      // request time and child processes inherit it; the Env service only tracks an
+      // in-process copy, so the fallback below must also write process.env.
+      const serviceKeyFromEnv = yield* dep.get("AICORE_SERVICE_KEY")
       const envServiceKey = iife(() => {
-        const envAICoreServiceKey = process.env.AICORE_SERVICE_KEY
-        if (envAICoreServiceKey) return envAICoreServiceKey
+        if (serviceKeyFromEnv) return serviceKeyFromEnv
         if (auth?.type === "api") {
           process.env.AICORE_SERVICE_KEY = auth.key
           return auth.key
@@ -1484,14 +1486,12 @@ const layer = Layer.effect(
         function mergeProvider(providerID: ProviderV2.ID, provider: Partial<Info>) {
           const existing = providers[providerID]
           if (existing) {
-            // @ts-expect-error
-            providers[providerID] = mergeDeep(existing, provider)
+            providers[providerID] = mergeDeep(existing, provider) as Info
             return
           }
           const match = database[providerID]
           if (!match) return
-          // @ts-expect-error
-          providers[providerID] = mergeDeep(match, provider)
+          providers[providerID] = mergeDeep(match, provider) as Info
         }
 
         // load plugins first so config() hook runs before reading cfg.provider
@@ -1994,7 +1994,10 @@ const layer = Layer.effect(
         }
       }
 
-      // TODO: Remove these provider-specific assumptions once model syncing reliably reports available deployments.
+      // Azure listings on models.dev include models that are not deployed on a given
+      // resource, and models.dev carries no deployment-availability data to filter them,
+      // so Azure providers are excluded from small-model selection. Revisit when
+      // models.dev exposes per-resource deployment availability.
       if (providerID === ProviderV2.ID.azure || providerID === ProviderV2.ID.make("azure-cognitive-services")) {
         return undefined
       }

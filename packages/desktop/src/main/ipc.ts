@@ -40,7 +40,6 @@ const pickedFiles = createPickedFileAuthorizations()
 
 type Deps = {
   killSidecar: () => Promise<void> | void
-  installCli: () => Promise<string>
   relaunch: () => void
   awaitInitialization: () => Promise<ServerReadyData>
   consumeInitialDeepLinks: () => Promise<string[]> | string[]
@@ -128,10 +127,6 @@ export function registerIpcHandlers(deps: Deps) {
   app.on("browser-window-created", (_event, win) => win.on("session-end", () => drafts.flush()))
 
   ipcMain.handle("kill-sidecar", () => deps.killSidecar())
-  ipcMain.handle("install-cli", (event: IpcMainInvokeEvent) => {
-    requireTrustedSender("install-cli", event)
-    return deps.installCli()
-  })
   ipcMain.handle("await-initialization", () => deps.awaitInitialization())
   ipcMain.handle("consume-initial-deep-links", () => deps.consumeInitialDeepLinks())
   ipcMain.handle("get-default-server-url", () => deps.getDefaultServerUrl())

@@ -15,6 +15,7 @@ import { FileMutation } from "../file-mutation"
 import { FSUtil } from "../fs-util"
 import { LocationMutation } from "../location-mutation"
 import { PermissionV2 } from "../permission"
+import { EditReplace } from "./edit-replace"
 import { ToolRegistry } from "./registry"
 import { Tool } from "./tool"
 import { Tools } from "./tools"
@@ -36,13 +37,36 @@ export const Input = Schema.Struct({
 export const Output = Schema.Struct({
   files: Schema.Array(FileDiff.Info),
   replacements: Schema.Number,
+  diagnostics: Schema.optional(Schema.String),
 })
 export type Output = typeof Output.Type
 
-const normalizeLineEndings = (text: string) => text.replaceAll("\r\n", "\n")
-const detectLineEnding = (text: string): "\n" | "\r\n" => (text.includes("\r\n") ? "\r\n" : "\n")
-const convertToLineEnding = (text: string, ending: "\n" | "\r\n") =>
-  ending === "\n" ? normalizeLineEndings(text) : normalizeLineEndings(text).replaceAll("\n", "\r\n")
+const previewLines = (value: string, prefix: "+" | "-") => {
+  const lines = value.replaceAll("\r\n", "\n").split("\n")
+  const shown = lines.slice(0, 6).map((line) => `${prefix}${line.length > 240 ? `${line.slice(0, 240)}...` : line}`)
+  if (lines.length > shown.length) shown.push(`${prefix}...`)
+  return shown
+}
+
+export const toModelOutput = (output: Output, oldString: string, newString: string) => {
+  const lines = [
+    `Edited file successfully: ${output.files[0]?.file}`,
+    `Replacements: ${output.replacements}`,
+    "```diff",
+    ...previewLines(oldString, "-"),
+    ...previewLines(newString, "+"),
+    "```",
+  ]
+  if (output.diagnostics) lines.push("", `LSP errors detected in this file, please fix:\n${output.diagnostics}`)
+  return lines.join("\n")
+}
+
+/**
+ * Matching, replacement, and post-mutation settle (format, file events, LSP
+ * diagnostics) come from the EditReplace module and the FileMutation pipeline.
+ * Single-mutation snapshots / undo remain deferred.
+ */
+// TODO: Capture single-edit snapshots / undo after the V2 session undo design exists.
 
 const splitBom = (text: string) =>
   text.startsWith("\uFEFF") ? { bom: true, text: text.slice(1) } : { bom: false, text }
@@ -51,41 +75,6 @@ const decodeUtf8 = (content: Uint8Array) => {
   const bom = content[0] === 0xef && content[1] === 0xbb && content[2] === 0xbf
   return { bom, content, text: new TextDecoder().decode(bom ? content.slice(3) : content) }
 }
-
-const countOccurrences = (content: string, search: string) => {
-  if (search === "") return content.length + 1
-  let count = 0
-  let offset = 0
-  while ((offset = content.indexOf(search, offset)) !== -1) {
-    count++
-    offset += search.length
-  }
-  return count
-}
-
-const previewLines = (value: string, prefix: "+" | "-") => {
-  const lines = normalizeLineEndings(value).split("\n")
-  const shown = lines.slice(0, 6).map((line) => `${prefix}${line.length > 240 ? `${line.slice(0, 240)}...` : line}`)
-  if (lines.length > shown.length) shown.push(`${prefix}...`)
-  return shown
-}
-
-export const toModelOutput = (output: Output, oldString: string, newString: string) =>
-  [
-    `Edited file successfully: ${output.files[0]?.file}`,
-    `Replacements: ${output.replacements}`,
-    "```diff",
-    ...previewLines(oldString, "-"),
-    ...previewLines(newString, "+"),
-    "```",
-  ].join("\n")
-
-/** Deferred V2 edit behavior and UX integrations remain visible at the model-facing seam. */
-// TODO: Port V1 fuzzy correction strategies only after exact-edit behavior is established: line-trimmed matching, block-anchor fallback, indentation correction, and similarity-threshold review.
-// TODO: Add formatter integration after V2 formatter runtime exists.
-// TODO: Publish watcher/file-edit events after V2 watcher integration exists.
-// TODO: Add snapshots / undo after design exists.
-// TODO: Add LSP notification and diagnostics after V2 LSP runtime exists.
 
 const layer = Layer.effectDiscard(
   Effect.gen(function* () {
@@ -159,14 +148,19 @@ const layer = Layer.effectDiscard(
                   }),
                 )
                 const source = decodeUtf8(yield* unableToEdit(fs.readFile(target.canonical)))
-                const ending = detectLineEnding(source.text)
-                const oldString = convertToLineEnding(input.oldString, ending)
-                const newString = convertToLineEnding(input.newString, ending)
-                const replacements = countOccurrences(source.text, oldString)
+                // Strings that differ only in \r ask to change line endings themselves, so they apply to the exact
+                // bytes. Every other edit matches the LF view Read shows the model and keeps the file's endings.
+                const endingsOnly = input.oldString.replaceAll("\r", "") === input.newString.replaceAll("\r", "")
+                const matched = endingsOnly
+                  ? { matches: EditReplace.findOccurrences(source.text, input.oldString), replace: () => input.newString }
+                  : EditReplace.matchView(source.text, input.oldString, input.newString)
+                const replacements = matched.matches.length
                 if (replacements === 0) {
+                  const hint = EditReplace.missHint(source.text, input.oldString, input.newString)
                   return yield* new ToolFailure({
                     message:
-                      "Could not find oldString in the file. It must match exactly, including whitespace and indentation.",
+                      "Could not find oldString in the file. It must match exactly, including whitespace and indentation." +
+                      (hint ? `\n\n${hint}` : ""),
                   })
                 }
                 if (replacements > 1 && input.replaceAll !== true) {
@@ -176,17 +170,25 @@ const layer = Layer.effectDiscard(
                   })
                 }
 
-                const replaced =
-                  input.replaceAll === true
-                    ? source.text.replaceAll(oldString, newString)
-                    : source.text.replace(oldString, newString)
-                const counts = diffLines(source.text, replaced).reduce(
-                  (result, item) => ({
-                    additions: result.additions + (item.added ? (item.count ?? 0) : 0),
-                    deletions: result.deletions + (item.removed ? (item.count ?? 0) : 0),
-                  }),
-                  { additions: 0, deletions: 0 },
-                )
+                const replaced = (input.replaceAll === true ? matched.matches : matched.matches.slice(0, 1))
+                  .toReversed()
+                  .reduce(
+                    (content, match) => `${content.slice(0, match.start)}${matched.replace(match)}${content.slice(match.end)}`,
+                    source.text,
+                  )
+                if (replaced === source.text) {
+                  return yield* new ToolFailure({
+                    message: "No changes to apply: the edit leaves the file unchanged.",
+                  })
+                }
+                const counts = (text: string) =>
+                  diffLines(source.text, text).reduce(
+                    (result, item) => ({
+                      additions: result.additions + (item.added ? (item.count ?? 0) : 0),
+                      deletions: result.deletions + (item.removed ? (item.count ?? 0) : 0),
+                    }),
+                    { additions: 0, deletions: 0 },
+                  )
                 const next = splitBom(replaced)
                 const result = yield* unableToEdit(
                   files.writeIfUnchanged({
@@ -195,16 +197,20 @@ const layer = Layer.effectDiscard(
                     content: joinBom(next.text, source.bom || next.bom),
                   }),
                 )
+                const settled = yield* FileMutation.settle(result)
+                const edited =
+                  settled.formatted ? decodeUtf8(yield* unableToEdit(fs.readFile(target.canonical))).text : replaced
                 return {
                   files: [
                     {
                       file: result.resource,
-                      patch: createTwoFilesPatch(result.resource, result.resource, source.text, replaced),
+                      patch: createTwoFilesPatch(result.resource, result.resource, source.text, edited),
                       status: "modified" as const,
-                      ...counts,
+                      ...counts(edited),
                     },
                   ],
                   replacements,
+                  ...(settled.diagnostics ? { diagnostics: settled.diagnostics } : {}),
                 } satisfies Output
               })
             },

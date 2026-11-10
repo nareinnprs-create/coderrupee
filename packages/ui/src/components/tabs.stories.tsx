@@ -22,7 +22,7 @@ Compose \`Tabs.List\` + \`Tabs.Trigger\` + \`Tabs.Content\`.
 - Uses Kobalte Tabs for roving focus and selection management.
 
 ### Accessibility
-- TODO: confirm keyboard interactions from Kobalte Tabs.
+- Kobalte renders `role="tablist"`/`tab`/`tabpanel` with `aria-selected`/`aria-controls` and arrow-key navigation between tabs.
 
 ### Theming/tokens
 - Uses \`data-component="tabs"\` with variant/orientation data attributes.

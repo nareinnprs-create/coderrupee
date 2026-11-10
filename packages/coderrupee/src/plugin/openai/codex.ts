@@ -568,9 +568,11 @@ export async function CodexAuthPlugin(input: PluginInput, options: CodexAuthPlug
       output.headers.originator = "coderrupee"
       output.headers["User-Agent"] = `coderrupee/${InstallationVersion} (${os.platform()} ${os.release()}; ${os.arch()})`
       output.headers["session-id"] = input.sessionID
-      // Temporary fetch-layer hack: title generation currently shares the conversation
-      // session ID, so the OpenAI plugin marks it for HTTP fallback until transport
-      // context can be passed directly instead of smuggled through headers.
+      // The AI SDK fetch boundary only carries RequestInfo + RequestInit, so the
+      // chat.headers hook has no native channel to attach request purpose to a transport
+      // call. This header is the marker the websocket fetch layer reads to route title
+      // generation over HTTP; pass per-request context through the plugin transport
+      // request itself once it exposes one.
       if (websocketFetchInstalled && input.agent === "title") output.headers[OpenAIWebSocketPool.TITLE_HEADER] = "true"
     },
     "chat.params": async (input, output) => {

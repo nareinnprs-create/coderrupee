@@ -409,6 +409,76 @@ describe("EditTool", () => {
       (tmp) => Effect.promise(() => tmp[Symbol.asyncDispose]()),
     ),
   )
+
+  it.live("matches oldString ignoring trailing whitespace and reports seam diagnostics after settle", () =>
+    Effect.acquireUseRelease(
+      Effect.promise(() => tmpdir()),
+      (tmp) => {
+        reset()
+        const target = path.join(tmp.path, "fuzzy.txt")
+        const diagnosed: string[] = []
+        const diagnostics = Layer.succeed(
+          FileMutation.Diagnostics,
+          FileMutation.Diagnostics.of({
+            afterEdit: (file) => Effect.sync(() => (diagnosed.push(file), `<diagnostics file="x"></diagnostics>`)),
+          }),
+        )
+        return Effect.promise(() => fs.writeFile(target, "alpha   \nbeta\n")).pipe(
+          Effect.andThen(
+            withTool(tmp.path, (registry) =>
+              settleTool(registry, call({ path: "fuzzy.txt", oldString: "alpha\nbeta", newString: "one\ntwo" })),
+            ).pipe(Effect.provide(diagnostics)),
+          ),
+          Effect.andThen((settled) =>
+            Effect.gen(function* () {
+              expect(settled.result).toEqual({
+                type: "text",
+                value:
+                  "Edited file successfully: fuzzy.txt\nReplacements: 1\n```diff\n-alpha\n-beta\n+one\n+two\n```\n\nLSP errors detected in this file, please fix:\n<diagnostics file=\"x\"></diagnostics>",
+              })
+              expect(diagnosed).toHaveLength(1)
+              expect(yield* Effect.promise(() => fs.readFile(target, "utf8"))).toBe("one\ntwo\n")
+            }),
+          ),
+        )
+      },
+      (tmp) => Effect.promise(() => tmp[Symbol.asyncDispose]()),
+    ),
+  )
+
+  it.live("reports an already-applied hint when oldString is missing but newString is present", () =>
+    Effect.acquireUseRelease(
+      Effect.promise(() => tmpdir()),
+      (tmp) => {
+        reset()
+        const target = path.join(tmp.path, "replayed.txt")
+        return Effect.promise(() => fs.writeFile(target, "the replacement already landed in this file\n")).pipe(
+          Effect.andThen(
+            withTool(tmp.path, (registry) =>
+              executeTool(
+                registry,
+                call({
+                  path: "replayed.txt",
+                  oldString: "the previous text",
+                  newString: "the replacement already landed in this file",
+                }),
+              ),
+            ),
+          ),
+          Effect.andThen((result) =>
+            Effect.sync(() =>
+              expect(result).toEqual({
+                type: "error",
+                value:
+                  "Could not find oldString in the file. It must match exactly, including whitespace and indentation.\n\nnewString is already in the file, so this edit may already be applied.",
+              }),
+            ),
+          ),
+        )
+      },
+      (tmp) => Effect.promise(() => tmp[Symbol.asyncDispose]()),
+    ),
+  )
 })
 
 test("keeps the locked edit schema, semantics docstring, and deferred TODOs visible", async () => {
@@ -423,11 +493,7 @@ test("keeps the locked edit schema, semantics docstring, and deferred TODOs visi
     "absolute external paths retain mutation capability through a separate\n * external_directory approval before edit approval.",
   )
   for (const todo of [
-    "Port V1 fuzzy correction strategies only after exact-edit behavior is established: line-trimmed matching, block-anchor fallback, indentation correction, and similarity-threshold review.",
-    "Add formatter integration after V2 formatter runtime exists.",
-    "Publish watcher/file-edit events after V2 watcher integration exists.",
-    "Add snapshots / undo after design exists.",
-    "Add LSP notification and diagnostics after V2 LSP runtime exists.",
+    "Capture single-edit snapshots / undo after the V2 session undo design exists.",
   ]) {
     expect(source).toContain(`TODO: ${todo}`)
   }

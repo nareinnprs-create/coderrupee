@@ -97,7 +97,10 @@ function sdkKey(npm: string): string | undefined {
   return undefined
 }
 
-// TODO: fix this stupid inefficient dogshit function
+// Sanitizes and filters messages in a fixed number of single passes: one sanitize map,
+// at most one model-specific empty-part filter, and the claude tool-call-id scrub. The
+// filter passes reuse the original message when nothing was removed, so messages that
+// need no changes are not cloned.
 function normalizeMessages(
   msgs: ModelMessage[],
   model: Provider.Model,
@@ -188,6 +191,7 @@ function normalizeMessages(
           }
           return true
         })
+        if (filtered.length === msg.content.length) return msg
         if (filtered.length === 0) return undefined
         return { ...msg, content: filtered }
       })
@@ -215,6 +219,7 @@ function normalizeMessages(
           }
           return true
         })
+        if (filtered.length === msg.content.length) return msg
         if (filtered.length === 0) return undefined
         return { ...msg, content: filtered }
       })

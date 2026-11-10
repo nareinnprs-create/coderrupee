@@ -17,7 +17,7 @@ Use \`ItemLabel\` and \`ItemDescription\` for rich items.
 - Opens on context menu gesture over the trigger element.
 
 ### Accessibility
-- TODO: confirm keyboard and focus behavior from Kobalte.
+- Kobalte renders `role="menu"`/`menuitem` parts and provides arrow-key navigation, Enter/Space selection, and Escape to close.
 
 ### Theming/tokens
 - Uses \`data-component="context-menu"\` and slot attributes for styling.

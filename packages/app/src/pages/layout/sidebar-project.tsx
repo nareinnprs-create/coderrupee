@@ -342,7 +342,6 @@ export const SortableProject = (props: {
   )
 
   return (
-    // @ts-ignore
     <div use:sortable classList={{ "opacity-30": sortable.isActiveDraggable }}>
       <Show when={preview() && !selected()} fallback={tile()}>
         <HoverCard

@@ -383,7 +383,10 @@ export class OpenAICompatibleChatLanguageModel implements LanguageModelV3 {
             controller.enqueue({ type: "stream-start", warnings })
           },
 
-          // TODO we lost type safety on Chunk, most likely due to the error schema. MUST FIX
+          // The chunk schema's error branch erases the discriminated chunk union, so
+          // chunk handling relies on runtime checks instead of static narrowing. Restore
+          // type safety by reshaping the error schema when this model is re-synced with
+          // the AI SDK 6 upstream source.
           transform(chunk, controller) {
             // Emit raw chunk if requested (before anything else)
             if (options.includeRawChunks) {

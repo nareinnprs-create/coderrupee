@@ -18,7 +18,7 @@ Use for short status lines; avoid long paragraphs.
 - Types one character at a time with randomized delays.
 
 ### Accessibility
-- TODO: confirm if cursor should be aria-hidden in all contexts.
+- The cursor is an inline glyph in the same text flow and is read with the text by screen readers; it is removed two seconds after typing completes.
 
 ### Theming/tokens
 - Uses \`blinking-cursor\` class for cursor styling.

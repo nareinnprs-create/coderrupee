@@ -49,7 +49,7 @@ import { registerWslIpcHandlers } from "./wsl/ipc"
 import { spawnWslSidecar } from "./wsl/sidecar"
 import { migrate } from "./migrate"
 import { cleanupStoreFiles } from "./store-cleanup"
-import { installCliStaged, startBackgroundCli } from "./background-cli"
+import { startBackgroundCli } from "./background-cli"
 import { setNativeTranslations } from "./native-translations"
 import { createSidecarSupervisor } from "./sidecar-supervisor"
 import { getStore } from "./store"
@@ -357,7 +357,6 @@ const main = Effect.gen(function* () {
   })
   registerIpcHandlers({
     killSidecar: () => killSidecar(),
-    installCli: () => installCliStaged(logger),
     relaunch,
     awaitInitialization: Effect.fnUntraced(
       function* () {

@@ -274,8 +274,8 @@ export const { use: useTheme, provider: ThemeProvider } = createSimpleContext({
     return {
       theme: new Proxy(values(), {
         get(_target, prop) {
-          // @ts-expect-error Properties are forwarded to the current reactive value.
-          return values()[prop]
+          // Forward to the current reactive value, not the captured Proxy target.
+          return (values() as Record<string | symbol, unknown>)[prop]
         },
       }),
       get selected() {

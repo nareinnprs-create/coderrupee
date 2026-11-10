@@ -398,7 +398,9 @@ export function Prompt(props: PromptProps) {
         run: () => {
           if (auto()?.visible) return
           if (!input.focused) return
-          // TODO: this should be its own command
+          // Inline by design: shell mode is exited here instead of routing
+          // through the command registry, so shell handling stays out of the
+          // registered session.interrupt command.
           if (store.mode === "shell") {
             setStore("mode", "normal")
             return
@@ -1131,7 +1133,12 @@ export function Prompt(props: PromptProps) {
     setStore("extmarkToPartIndex", new Map())
     props.onSubmit?.()
 
-    // temporary hack to make sure the message is sent
+    // Race guard: when this submit created a new session, the session.created
+    // event and the prompt POST above may not have settled in sync yet, so
+    // navigating synchronously can render the session view before the client
+    // knows the session. The 50ms delay papers over that. Proper fix:
+    // navigate once the session appears in sync (event-driven) or make the
+    // session route fetch on demand, then drop the timer.
     if (!props.sessionID) {
       if (editorParts.length > 0) editor.preserveSelectionFromNewSession()
       setTimeout(() => {

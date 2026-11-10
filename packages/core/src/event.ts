@@ -177,7 +177,6 @@ export const layerWith = (options?: LayerOptions) =>
         typed: new Map<string, PubSub.PubSub<Payload>>(),
       }
       const projectors = new Map<string, Subscriber[]>()
-      // TODO: Bind durable projectors to exact type+version before supporting incompatible historical payloads.
       const listeners = new Array<Subscriber>()
       const { db } = yield* Database.Service
 
@@ -233,7 +232,9 @@ export const layerWith = (options?: LayerOptions) =>
                   }),
                 )
               }
-              const list = projectors.get(event.type) ?? []
+              // Projectors are registered per type+version, so a commit of one definition
+              // version never dispatches projectors written for another schema shape.
+              const list = projectors.get(versionedType(event.type, durable.version)) ?? []
               return yield* Effect.uninterruptible(
                 Effect.gen(function* () {
                   const committed = yield* db
@@ -614,9 +615,12 @@ export const layerWith = (options?: LayerOptions) =>
 
       const project = <D extends Definition>(definition: D, projector: Subscriber<D>): Effect.Effect<void> =>
         Effect.sync(() => {
-          const list = projectors.get(definition.type) ?? []
+          const key = definition.durable
+            ? versionedType(definition.type, definition.durable.version)
+            : definition.type
+          const list = projectors.get(key) ?? []
           list.push((event) => projector(event as Payload<D>))
-          projectors.set(definition.type, list)
+          projectors.set(key, list)
         })
 
       return Service.of({

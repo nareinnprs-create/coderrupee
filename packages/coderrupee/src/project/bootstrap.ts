@@ -1,4 +1,5 @@
 import { makeGlobalNode } from "@coderrupee/core/effect/app-node"
+import { FileMutationAdapter } from "../tool/file-mutation-adapter"
 import { Plugin } from "../plugin"
 import { Format } from "../format"
 import { LSP } from "@/lsp/lsp"
@@ -23,6 +24,7 @@ const layer = Layer.effect(
     const config = yield* Config.Service
     const format = yield* Format.Service
     const lsp = yield* LSP.Service
+    yield* FileMutationAdapter.registerFileMutationAdapter(format, lsp)
     const plugin = yield* Plugin.Service
     const project = yield* Project.Service
     const shareNext = yield* ShareNext.Service

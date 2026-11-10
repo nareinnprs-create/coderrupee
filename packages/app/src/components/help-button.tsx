@@ -3,6 +3,7 @@ import { IconButtonV2 } from "@coderrupee/ui/v2/icon-button-v2"
 import { isRTL } from "@kobalte/core/i18n"
 import { createSignal, Show } from "solid-js"
 import { Drawer, DrawerClose, DrawerContent } from "@/components/ui/drawer"
+import { useHighlights } from "@/context/highlights"
 import { usePlatform } from "@/context/platform"
 import { useSettings } from "@/context/settings"
 import { useLanguage } from "@/context/language"
@@ -10,13 +11,11 @@ import introducingTabsVideo from "@/assets/help/introducing-tabs.mp4"
 import homeImage from "@/assets/help/home.png"
 import tabsImage from "@/assets/help/tabs.png"
 
-// TODO: wire to changelog / seen-state when available
-const showPopover = () => true
-
 // can remove this after the tabs rollout has been out for a while
 export function TabsInfoPopup() {
   const settings = useSettings()
   const platform = usePlatform()
+  const highlights = useHighlights()
   const language = useLanguage()
   const [drawerOpen, setDrawerOpen] = createSignal(false)
   const windows = () => platform.platform === "desktop" && platform.os === "windows"
@@ -24,7 +23,8 @@ export function TabsInfoPopup() {
 
   return (
     <Drawer open={drawerOpen()} onOpenChange={setDrawerOpen} side={rtl() ? "left" : "right"}>
-      <Show when={settings.general.shouldDisplayTabsToast()}>
+      {/* Show only while the current version's highlights are unseen; highlights marks them seen when the release-notes dialog is queued. */}
+      <Show when={settings.general.shouldDisplayTabsToast() && highlights.last !== platform.version}>
         <div
           class="fixed bottom-5 end-5 z-50 h-[240px] w-[192px] rounded-[8px] bg-v2-background-bg-base p-1 shadow-[var(--v2-elevation-floating)]"
           aria-label={language.t("help.tabs.toast.ariaLabel")}

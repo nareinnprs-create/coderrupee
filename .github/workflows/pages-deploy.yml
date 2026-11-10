@@ -8,6 +8,7 @@ on:
       - release-prep
     paths:
       - "site/**"
+      - "packages/web/**"
       - "install"
       - "packages/coderrupee/script/schema.ts"
       - ".github/workflows/pages-deploy.yml"
@@ -40,6 +41,17 @@ jobs:
       - name: Generate JSON schemas
         run: bun ./script/schema.ts "$GITHUB_WORKSPACE/site/out/config.json" "$GITHUB_WORKSPACE/site/out/tui.json"
         working-directory: packages/coderrupee
+
+      - name: Build docs
+        run: |
+          bun run build
+          mkdir -p "$GITHUB_WORKSPACE/site/out/docs"
+          cp -r dist/docs/. "$GITHUB_WORKSPACE/site/out/docs/"
+          cp "$GITHUB_WORKSPACE/packages/web/public/favicon-v3.ico" "$GITHUB_WORKSPACE/packages/web/public/favicon-96x96-v3.png" "$GITHUB_WORKSPACE/packages/web/public/apple-touch-icon-v3.png" "$GITHUB_WORKSPACE/site/out/"
+        working-directory: packages/web
+        env:
+          SST_STAGE: production
+          DOCS_STATIC: "1"
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@953926a2e2182532811c01a25e53647d93bf07c0 # v4.1.3

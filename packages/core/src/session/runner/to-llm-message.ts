@@ -38,8 +38,9 @@ const toolCall = (tool: SessionMessage.AssistantTool, providerMetadata: Provider
 
 const toolResult = (tool: SessionMessage.AssistantTool, providerMetadata: ProviderMetadata | undefined) => {
   if (tool.state.status === "completed") {
-    // TODO: Materialize remote and managed URIs before provider-history lowering.
-    // ToolOutput.toResultValue rejects unresolved URIs rather than treating them as media bytes.
+    // Remote and managed URIs must be materialized before provider-history lowering;
+    // ToolOutput.toResultValue rejects unresolved URIs rather than treating them as
+    // media bytes. Needs the media-materialization slice.
     const result =
       tool.provider?.executed === true && tool.state.result !== undefined
         ? tool.state.result

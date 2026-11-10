@@ -98,8 +98,12 @@ const make = (options: Config) =>
       executeUnprepared(query, params, transformRows) {
         return this.execute(query, params, transformRows)
       },
-      executeStream() {
-        return Stream.die("executeStream not implemented")
+      executeStream(query, params, transformRows) {
+        // bun:sqlite materializes statements synchronously, so the stream is the full
+        // result set from the shared `run` helper drained row by row.
+        return Stream.unwrap(
+          Effect.map(run(query, params), (rows) => Stream.fromIterable(transformRows ? transformRows(rows) : rows)),
+        )
       },
       export: Effect.try({
         try: () => native.serialize(),
@@ -181,3 +185,5 @@ export const layer = (config: Config) => {
     Layer.provide(Reactivity.layer),
   )
 }
+
+export * as SqliteBun from "./sqlite.bun"

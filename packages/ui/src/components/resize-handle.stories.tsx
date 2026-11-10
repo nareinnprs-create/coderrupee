@@ -19,7 +19,7 @@ Use alongside resizable panels and split layouts.
 - Drag updates size and calls \`onResize\` with clamped values.
 
 ### Accessibility
-- TODO: provide keyboard resizing guidance if needed.
+- Resize is pointer-driven only: the handle exposes no keyboard interaction and no ARIA slider semantics.
 
 ### Theming/tokens
 - Uses \`data-component="resize-handle"\` with direction/edge data attributes.

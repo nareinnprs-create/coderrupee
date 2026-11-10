@@ -19,7 +19,7 @@ Use for small contextual details; avoid long forms.
 - Closes on outside click or Escape by default.
 
 ### Accessibility
-- TODO: confirm focus management from Kobalte.
+- Kobalte Popover traps focus while open via a focus scope and returns focus to the trigger on close.
 
 ### Theming/tokens
 - Uses \`data-component="popover-content"\` and related slots.

@@ -9,11 +9,14 @@ import { rehypeHeadingIds } from "@astrojs/markdown-remark"
 import rehypeAutolinkHeadings from "rehype-autolink-headings"
 import { spawnSync } from "child_process"
 
+// DOCS_STATIC=1 builds a static docs mirror for the Pages site (server routes go to _worker.js, which is not deployed there)
+const staticDocs = process.env.DOCS_STATIC === "1"
+
 // https://astro.build/config
 export default defineConfig({
   site: config.url,
   base: "/docs",
-  output: "server",
+  output: staticDocs ? "static" : "server",
   adapter: cloudflare({
     imageService: "passthrough",
   }),

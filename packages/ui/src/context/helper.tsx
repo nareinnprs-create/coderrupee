@@ -19,8 +19,7 @@ export function createSimpleContext<T, Props extends Record<string, any>>(
 
       // Access init.ready inside the memo to make it reactive for getter properties
       const isReady = createMemo(() => {
-        // @ts-expect-error
-        const ready = init.ready as Accessor<boolean> | boolean | undefined
+        const ready = (init as { ready?: Accessor<boolean> | boolean }).ready
         return ready === undefined || (typeof ready === "function" ? ready() : ready)
       })
       return (

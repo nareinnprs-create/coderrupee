@@ -39,7 +39,7 @@ import { ToolOutputStore } from "./tool-output-store"
 
 export { LocationServiceMap } from "./location-service-map"
 
-export const locationServices = LayerNode.group([
+export const locationServiceNodes = [
   Location.node,
   Policy.node,
   Config.node,
@@ -76,7 +76,9 @@ export const locationServices = LayerNode.group([
   SessionRunnerModel.node,
   Snapshot.node,
   SessionRunnerLLM.node,
-])
+]
+
+export const locationServices = LayerNode.group(locationServiceNodes)
 
 export type LocationServices = LayerNode.Output<typeof locationServices>
 export type LocationError = LayerNode.Error<typeof locationServices>
@@ -111,5 +113,6 @@ export function buildLocationServiceMap(
   )
 }
 
-// This is temporary for backwards compatibility
+// Shared default instance over the implicit-local location. Consumers needing custom
+// replacements call buildLocationServiceMap(replacements) directly.
 export const locationServiceMapLayer = buildLocationServiceMap()

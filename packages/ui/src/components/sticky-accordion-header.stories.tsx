@@ -17,7 +17,7 @@ Use only inside \`Accordion.Item\` with \`Accordion.Trigger\`.
 - Renders inside an Accordion item header.
 
 ### Accessibility
-- TODO: confirm semantics from Accordion.Header usage.
+- Renders Kobalte `Accordion.Header`, which is an `h3` heading containing the trigger button.
 
 ### Theming/tokens
 - Uses \`data-component="sticky-accordion-header"\`.

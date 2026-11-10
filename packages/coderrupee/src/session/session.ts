@@ -350,10 +350,13 @@ export const getUsage = (input: { model: Provider.Model; usage: Usage; metadata?
         // google-vertex-anthropic returns metadata under "vertex" key
         // (AnthropicMessagesLanguageModel custom provider key from 'vertex.anthropic.messages')
         input.metadata?.["vertex"]?.["cacheCreationInputTokens"] ??
-        // @ts-expect-error
-        input.metadata?.["bedrock"]?.["usage"]?.["cacheWriteInputTokens"] ??
-        // @ts-expect-error
-        input.metadata?.["venice"]?.["usage"]?.["cacheCreationInputTokens"] ??
+        // bedrock and venice nest the counter one level deeper in provider metadata
+        (input.metadata?.["bedrock"]?.["usage"] as Record<string, unknown> | undefined)?.[
+          "cacheWriteInputTokens"
+        ] ??
+        (input.metadata?.["venice"]?.["usage"] as Record<string, unknown> | undefined)?.[
+          "cacheCreationInputTokens"
+        ] ??
         0,
     ),
   )

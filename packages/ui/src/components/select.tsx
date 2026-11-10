@@ -83,7 +83,8 @@ export function Select<T>(props: SelectProps<T> & Omit<ButtonProps, "children">)
   })
 
   return (
-    // @ts-ignore
+    // @ts-ignore Kobalte's polymorphic typing cannot check this spread of loose
+    // wrapper props against SelectRootProps; the pass-through is intentional.
     <Kobalte<T, { category: string; options: T[] }>
       {...others}
       data-component="select"

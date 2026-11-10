@@ -32,17 +32,17 @@ export const Output = Schema.Struct({
   target: Schema.String,
   resource: Schema.String,
   existed: Schema.Boolean,
+  diagnostics: Schema.optional(Schema.String),
 })
 export type Output = typeof Output.Type
 
-export const toModelOutput = (output: Output) =>
-  `${output.existed ? "Wrote" : "Created"} file successfully: ${output.resource}`
+export const toModelOutput = (output: Output) => {
+  const text = `${output.existed ? "Wrote" : "Created"} file successfully: ${output.resource}`
+  return output.diagnostics ? `${text}\n\nLSP errors detected in this file, please fix:\n${output.diagnostics}` : text
+}
 
-/** Deferred V2 write UX integrations remain visible at the model-facing seam. */
-// TODO: Add formatter integration after V2 formatter runtime exists.
-// TODO: Publish watcher/file-edit events after V2 watcher integration exists.
-// TODO: Add snapshots / undo after design exists.
-// TODO: Add LSP notification and diagnostics after V2 LSP runtime exists.
+/** Write settles through the FileMutation pipeline (format, file events, LSP diagnostics). */
+// TODO: Capture write snapshots / undo after the V2 session undo design exists.
 
 const layer = Layer.effectDiscard(
   Effect.gen(function* () {
@@ -84,7 +84,9 @@ const layer = Layer.effectDiscard(
                   agent: context.agent,
                   source,
                 })
-                return yield* files.writeTextPreservingBom({ target, content: input.content })
+                const result = yield* files.writeTextPreservingBom({ target, content: input.content })
+                const settled = yield* FileMutation.settle(result)
+                return settled.diagnostics ? { ...result, diagnostics: settled.diagnostics } : result
               }).pipe(Effect.mapError(() => new ToolFailure({ message: `Unable to write ${input.path}` }))),
           }),
           "edit",

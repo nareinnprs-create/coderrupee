@@ -16,6 +16,8 @@ function notFoundText(locals: unknown) {
   return "share.not_found"
 }
 
+export const prerender = false
+
 export const GET: APIRoute = async ({ params, locals }) => {
   const slug = params.slug || "index"
   const docs = await getCollection("docs")

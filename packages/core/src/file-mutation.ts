@@ -1,9 +1,12 @@
 export * as FileMutation from "./file-mutation"
 
 import { makeLocationNode } from "./effect/app-node"
-import { Context, Effect, Layer, Schema } from "effect"
+import { Context, Effect, Layer, Option, Schema } from "effect"
 import { dirname } from "path"
+import { FileSystemWatcher } from "@coderrupee/schema/filesystem-watcher"
+import { FileSystem } from "@coderrupee/schema/filesystem"
 import { KeyedMutex } from "./effect/keyed-mutex"
+import { EventV2 } from "./event"
 import { FSUtil } from "./fs-util"
 
 export interface Target {
@@ -65,6 +68,75 @@ export interface Interface {
 }
 
 export class Service extends Context.Service<Service, Interface>()("@coderrupee/v2/FileMutation") {}
+
+/**
+ * Optional app-provided formatter seam invoked after successful mutations.
+ * The production adapter maps the coderrupee Format service; absent seams skip
+ * formatting.
+ */
+export interface FormatterInterface {
+  readonly file: (filepath: string) => Effect.Effect<boolean>
+}
+
+export class Formatter extends Context.Service<Formatter, FormatterInterface>()("@coderrupee/v2/FileMutationFormatter") {}
+
+/**
+ * Optional app-provided LSP seam. `afterEdit` touches the file, collects
+ * diagnostics, and returns the rendered error block for the file (empty when
+ * there are no errors). Implementations log their own failures.
+ */
+export interface DiagnosticsInterface {
+  readonly afterEdit: (file: string) => Effect.Effect<string>
+}
+
+export class Diagnostics extends Context.Service<Diagnostics, DiagnosticsInterface>()(
+  "@coderrupee/v2/FileMutationDiagnostics",
+) {}
+
+export interface Settled {
+  /** True when a formatter modified the file after the mutation. */
+  readonly formatted: boolean
+  /** Rendered LSP error block for the mutated file, empty when none or unavailable. */
+  readonly diagnostics: string
+}
+
+/**
+ * Process-global adapter registry for hosts that compose their runtime without
+ * adding nodes to the location graph. Registration happens once at app bootstrap;
+ * context services win when both are present.
+ */
+let globalAdapter:
+  | { formatter?: FormatterInterface; diagnostics?: DiagnosticsInterface }
+  | undefined
+
+export function registerFileMutationAdapter(adapter: {
+  formatter?: FormatterInterface
+  diagnostics?: DiagnosticsInterface
+}) {
+  globalAdapter = { ...globalAdapter, ...adapter }
+}
+
+/**
+ * Best-effort post-mutation pipeline: format, publish file.edited and watcher
+ * events, collect LSP diagnostics. Every step is skipped when its service is
+ * absent, so bare Locations and tests need no providers.
+ */
+export const settle = Effect.fn("FileMutation.settle")(function* (result: WriteResult | RemoveResult) {
+  const watcherEvent = result.operation === "remove" ? "unlink" : result.existed ? "change" : "add"
+  const events = yield* Effect.serviceOption(EventV2.Service)
+  if (Option.isSome(events)) {
+    yield* events.value.publish(FileSystem.Event.Edited, { file: result.target })
+    yield* events.value.publish(FileSystemWatcher.Event.Updated, { file: result.target, event: watcherEvent })
+  }
+  if (result.operation === "remove") return { formatted: false, diagnostics: "" }
+  const formatter = yield* Effect.serviceOption(Formatter)
+  const formatterSource = Option.isSome(formatter) ? formatter.value : globalAdapter?.formatter
+  const formatted = formatterSource ? yield* formatterSource.file(result.target) : false
+  const lsp = yield* Effect.serviceOption(Diagnostics)
+  const diagnosticsSource = Option.isSome(lsp) ? lsp.value : globalAdapter?.diagnostics
+  const diagnostics = diagnosticsSource ? yield* diagnosticsSource.afterEdit(result.target) : ""
+  return { formatted, diagnostics }
+})
 
 /**
  * Serialize file changes by canonical target. Conditional writes compare and
@@ -145,6 +217,13 @@ const layer = Layer.effect(
       withTargetLock(input.target)(
         Effect.gen(function* () {
           const current = yield* fs.readFile(input.target.canonical)
+          // Crash replay: when the target already holds the intended bytes the
+          // mutation settled before the crash, so succeed without rewriting.
+          const applied =
+            typeof input.content === "string"
+              ? new TextDecoder().decode(current) === input.content
+              : sameBytes(current, input.content)
+          if (applied) return writeResult(input.target, true)
           if (!sameBytes(current, input.expected)) {
             return yield* new StaleContentError({ path: input.target.canonical })
           }
@@ -198,10 +277,6 @@ export const node = makeLocationNode({ service: Service, layer, deps: [FSUtil.no
 /**
  * Deferred until the corresponding V2 integrations exist.
  */
-// TODO: Add formatter integration after V2 formatter runtime exists.
-// TODO: Publish watcher/file-edit events after V2 watcher integration exists.
-// TODO: Add snapshots / undo after V2 snapshot design exists.
-// TODO: Notify LSP and collect diagnostics after V2 LSP runtime exists.
-// TODO: Design multi-file transactions / rollback if apply_patch needs atomic edits.
-// Until then, edits are sequential and report partial application.
-// TODO: Define crash recovery and idempotency for side effects between Tool.Called and durable settlement.
+// TODO: Capture single-mutation snapshots / undo after the V2 session undo design exists.
+// TODO: Define durable crash recovery for side effects between Tool.Called and durable settlement; writeIfUnchanged already replays already-applied mutations deterministically.
+// TODO: Provide the coderrupee adapter layers mapping Format.Service and LSP.Service onto the Formatter and Diagnostics seams above (production formatting and LSP diagnostics stay inert until then).

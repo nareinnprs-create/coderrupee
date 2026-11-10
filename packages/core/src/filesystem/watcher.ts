@@ -1,5 +1,6 @@
 export * as Watcher from "./watcher"
 
+// @parcel/watcher does not publish type declarations for the /wrapper subpath export.
 // @ts-ignore
 import { createWrapper } from "@parcel/watcher/wrapper"
 import type ParcelWatcher from "@parcel/watcher"

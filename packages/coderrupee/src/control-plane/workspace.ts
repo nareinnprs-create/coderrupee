@@ -465,11 +465,11 @@ const layer = Layer.effect(
 
       setStatus(space.id, "disconnected")
 
+      // Error status both surfaces the failure and re-enables the restart guard above:
+      // FiberMap removes the completed fiber, and the next sync trigger starts a fresh loop.
       yield* FiberMap.run(
         syncFibers,
         space.id,
-        // TODO: look into `tapError` to set the status but still
-        // allow the fiber to fail and automatically get removed
         syncWorkspaceLoop(space).pipe(
           Effect.catch((error) =>
             Effect.gen(function* () {

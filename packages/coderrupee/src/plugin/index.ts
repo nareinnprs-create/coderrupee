@@ -59,14 +59,18 @@ export interface Interface {
 
 export class Service extends Context.Service<Service, Interface>()("@coderrupee/Plugin") {}
 
+// WebSocket transport rollout policy by release channel: pre-release channels get it by
+// default to gather signal before a stable release; stable releases keep it opt-in via
+// the experimentalWebSockets runtime flag until a full release cycle validates it.
+const webSocketDefaultChannels = ["local", "dev", "beta"]
+
 export function experimentalWebSocketsEnabled(input: { enabled: boolean; channel?: string }) {
-  return input.enabled || ["local", "dev", "beta"].includes(input.channel ?? InstallationChannel)
+  return input.enabled || webSocketDefaultChannels.includes(input.channel ?? InstallationChannel)
 }
 
 // Built-in plugins that are directly imported (not installed from npm)
 function internalPlugins(flags: RuntimeFlags.Info): PluginInstance[] {
   return [
-    // Temporary rollout: pre-release builds use WebSockets by default; releases require explicit opt-in.
     (input) =>
       CodexAuthPlugin(input, {
         experimentalWebSockets: experimentalWebSocketsEnabled({ enabled: flags.experimentalWebSockets }),
@@ -163,6 +167,8 @@ const layer = Layer.effect(
           get serverUrl(): URL {
             return Server.url ?? new URL("http://localhost:4096")
           },
+          // Bun.$ is only defined on the Bun runtime; under Node it stays undefined and
+          // bun-types' Shell declaration is structurally but not nominally BunShell.
           // @ts-expect-error
           $: typeof Bun === "undefined" ? undefined : Bun.$,
         }
@@ -229,13 +235,8 @@ const layer = Layer.effect(
             },
           }).pipe(
             Effect.tapError((error) => Effect.logError("failed to load plugin", { path: load.spec, error })),
-            Effect.catch(() => {
-              // TODO: make proper events for this
-              // events.publish(Session.Event.Error, {
-              //   error: new NamedError.Unknown({
-              //     message: `Failed to load plugin ${load.spec}: ${message}`,
-              //   }).toObject(),
-              // })
+            Effect.catch((message) => {
+              publishPluginError(`Failed to load plugin ${load.spec}: ${message}`)
               return Effect.void
             }),
           )

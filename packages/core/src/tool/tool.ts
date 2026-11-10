@@ -46,6 +46,8 @@ type Config<
   readonly input: Input
   readonly output: Output
   readonly structured?: Structured
+  /** Catalog permission action; execution authorization stays in the tool's own execute. */
+  readonly permission?: string
   readonly toStructuredOutput?: (input: {
     readonly input: Schema.Schema.Type<Input>
     readonly output: Output["Encoded"]
@@ -76,6 +78,7 @@ export function make<
   const tool = Object.freeze({}) as Definition<Input, Structured>
   const definitions = new Map<string, ToolDefinition>()
   runtimes.set(tool, {
+    permission: config.permission,
     definition: (name) => {
       const cached = definitions.get(name)
       if (cached) return cached

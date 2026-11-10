@@ -4,6 +4,8 @@ import { describe, expect } from "bun:test"
 import { Deferred, Effect, Fiber, Layer } from "effect"
 import { AppNodeBuilder } from "@coderrupee/core/effect/app-node-builder"
 import { LayerNode } from "@coderrupee/core/effect/layer-node"
+import { Database } from "@coderrupee/core/database/database"
+import { EventV2 } from "@coderrupee/core/event"
 import { FileMutation } from "@coderrupee/core/file-mutation"
 import { FSUtil } from "@coderrupee/core/fs-util"
 import { Location } from "@coderrupee/core/location"
@@ -349,7 +351,73 @@ describe("FileMutation", () => {
       }),
     ),
   )
+
+  it.live("settle skips absent formatter, diagnostics, and event seams", () =>
+    withTmp((directory) =>
+      Effect.gen(function* () {
+        const target = yield* (yield* LocationMutation.Service).resolve({ path: "hello.txt" })
+        const result = yield* (yield* FileMutation.Service).write({ target, content: "content" })
+        expect(yield* FileMutation.settle(result)).toEqual({ formatted: false, diagnostics: "" })
+      }).pipe(provide(directory)),
+    ),
+  )
+
+  it.live("settle runs the formatter and diagnostics seams and publishes file events", () =>
+    withTmp((directory) =>
+      Effect.gen(function* () {
+        const formatted: string[] = []
+        const diagnosed: string[] = []
+        const received: string[] = []
+        const events = yield* EventV2.Service
+        yield* events.listen((event) => Effect.sync(() => received.push(event.type)))
+        const target = yield* (yield* LocationMutation.Service).resolve({ path: "hello.txt" })
+        const result = yield* (yield* FileMutation.Service).write({ target, content: "content" })
+
+        expect(
+          yield* FileMutation.settle(result).pipe(
+            Effect.provide(Layer.mergeAll(formatterLayer(formatted), diagnosticsLayer(diagnosed))),
+          ),
+        ).toEqual({ formatted: true, diagnostics: `<diagnostics file="${target.canonical}"></diagnostics>` })
+        expect(formatted).toEqual([target.canonical])
+        expect(diagnosed).toEqual([target.canonical])
+        expect(received).toEqual(["file.edited", "file.watcher.updated"])
+      }).pipe(
+        provide(directory),
+        Effect.provide(AppNodeBuilder.build(LayerNode.group([Database.node, EventV2.node]))),
+      ),
+    ),
+  )
+
+  it.live("writeIfUnchanged replays an already-applied mutation as success", () =>
+    withTmp((directory) =>
+      Effect.gen(function* () {
+        const targetPath = path.join(directory, "hello.txt")
+        yield* Effect.promise(() => fs.writeFile(targetPath, "after"))
+        const target = yield* (yield* LocationMutation.Service).resolve({ path: "hello.txt" })
+        // Crash replay: expected no longer matches, but the target already holds
+        // the intended bytes, so the mutation settles without rewriting.
+        expect(
+          yield* (yield* FileMutation.Service).writeIfUnchanged({
+            target,
+            expected: new TextEncoder().encode("before"),
+            content: "after",
+          }),
+        ).toEqual({ operation: "write", target: target.canonical, resource: "hello.txt", existed: true })
+        expect(yield* Effect.promise(() => fs.readFile(targetPath, "utf8"))).toBe("after")
+      }).pipe(provide(directory)),
+    ),
+  )
 })
+
+const formatterLayer = (formatted: string[]) =>
+  Layer.succeed(FileMutation.Formatter, FileMutation.Formatter.of({
+    file: (filepath) => Effect.sync(() => (formatted.push(filepath), true)),
+  }))
+
+const diagnosticsLayer = (diagnosed: string[]) =>
+  Layer.succeed(FileMutation.Diagnostics, FileMutation.Diagnostics.of({
+    afterEdit: (file) => Effect.sync(() => (diagnosed.push(file), `<diagnostics file="${file}"></diagnostics>`)),
+  }))
 
 function instrumentWrites(run: <E>(write: Effect.Effect<void, E>, target: string) => Effect.Effect<void, E>) {
   return Layer.effect(

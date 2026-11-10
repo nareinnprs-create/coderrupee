@@ -27,5 +27,10 @@ export declare module "solid-js" {
     interface Directives {
       sortable: true
     }
+    // Solid types define `autocomplete` only on form/input-flavored
+    // attributes, but it is a valid global HTML attribute (e.g. contenteditable).
+    interface HTMLAttributes<T> {
+      autocomplete?: string | undefined
+    }
   }
 }

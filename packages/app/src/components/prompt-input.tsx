@@ -1523,7 +1523,6 @@ export const PromptInput: Component<PromptInputProps> = (props) => {
               autocorrect={store.mode === "normal" ? "on" : "off"}
               spellcheck={store.mode === "normal"}
               inputMode="text"
-              // @ts-expect-error
               autocomplete="off"
               onInput={handleInput}
               onPaste={handlePaste}

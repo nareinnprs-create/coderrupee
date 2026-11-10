@@ -99,8 +99,12 @@ const make = (options: Config) =>
       executeUnprepared(query, params, transformRows) {
         return this.execute(query, params, transformRows)
       },
-      executeStream() {
-        return Stream.die("executeStream not implemented")
+      executeStream(query, params, transformRows) {
+        // node:sqlite has no cursor API, so the stream is the full result set from the
+        // shared `run` helper drained row by row.
+        return Stream.unwrap(
+          Effect.map(run(query, params), (rows) => Stream.fromIterable(transformRows ? transformRows(rows) : rows)),
+        )
       },
       loadExtension: (path) =>
         Effect.try({
@@ -176,3 +180,5 @@ export const layer = (config: Config) => {
     Layer.provide(Reactivity.layer),
   )
 }
+
+export * as SqliteNode from "./sqlite.node"

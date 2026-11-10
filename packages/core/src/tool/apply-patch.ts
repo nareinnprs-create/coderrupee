@@ -7,6 +7,7 @@ import { Effect, Layer, Schema } from "effect"
 import { makeLocationNode } from "../effect/app-node"
 import { FileMutation } from "../file-mutation"
 import { FSUtil } from "../fs-util"
+import { MultiFile } from "../multi-file"
 import { LocationMutation } from "../location-mutation"
 import { Patch } from "../patch"
 import { PermissionV2 } from "../permission"
@@ -43,8 +44,15 @@ export const toModelOutput = (output: Output) =>
   ].join("\n")
 
 type Prepared =
-  | (Extract<Patch.Hunk, { readonly type: "add" | "delete" }> & {
+  | (Extract<Patch.Hunk, { readonly type: "add" }> & {
       readonly target: LocationMutation.Target
+      readonly before: string
+      readonly after: string
+    })
+  | (Extract<Patch.Hunk, { readonly type: "delete" }> & {
+      readonly target: LocationMutation.Target
+      // Original bytes kept so MultiFile rollback can recreate the file exactly.
+      readonly source: Uint8Array
       readonly before: string
       readonly after: string
     })
@@ -69,7 +77,7 @@ const layer = Layer.effectDiscard(
         [name]: Tool.withPermission(
           Tool.make({
             description:
-              "Apply one patch containing add, update, and delete file operations. All targets are resolved and approved before target contents are read. Operations apply sequentially; if a later operation fails, earlier operations remain applied and the failure reports them explicitly. Moves and atomic rollback are not supported yet.",
+              "Apply one patch containing add, update, and delete file operations. All targets are resolved and approved before target contents are read. Operations apply sequentially; if a later operation fails, earlier operations are rolled back so the patch applies all-or-nothing. Moves are not supported yet.",
             input: Input,
             output: Output,
             toModelOutput: ({ output }) => [{ type: "text", text: toModelOutput(output) }],
@@ -140,7 +148,7 @@ const layer = Layer.effectDiscard(
                     const original = new TextDecoder("utf-8", { ignoreBOM: true }).decode(source)
                     const before = original.replace(/^\uFEFF/, "")
                     if (hunk.type === "delete") {
-                      prepared.push({ ...hunk, target, before, after: "" })
+                      prepared.push({ ...hunk, target, source, before, after: "" })
                       return
                     }
                     const update = Patch.derive(hunk.path, hunk.chunks, original)
@@ -156,35 +164,42 @@ const layer = Layer.effectDiscard(
                 }
 
                 const patchFiles = prepared.map(patchFile)
-                yield* Effect.forEach(
-                  prepared,
-                  (change) =>
-                    Effect.gen(function* () {
-                      if (change.type === "add") {
-                        const result = yield* files.create({
-                          target: change.target,
-                          content:
-                            change.contents.endsWith("\n") || change.contents === ""
-                              ? change.contents
-                              : `${change.contents}\n`,
-                        })
-                        applied.push({ type: change.type, resource: result.resource, target: result.target })
-                        return
-                      }
-                      if (change.type === "delete") {
-                        const result = yield* files.remove({ target: change.target })
-                        applied.push({ type: change.type, resource: result.resource, target: result.target })
-                        return
-                      }
-                      const result = yield* files.writeIfUnchanged({
+                const results = yield* MultiFile.apply(
+                  files,
+                  prepared.map((change): MultiFile.Change => {
+                    if (change.type === "add")
+                      return {
+                        path: change.path,
                         target: change.target,
-                        expected: change.source,
-                        content: change.content,
-                      })
-                      applied.push({ type: change.type, resource: result.resource, target: result.target })
-                    }).pipe(Effect.mapError(() => fail(change.path))),
-                  { discard: true },
+                        operation: "create",
+                        content: change.after,
+                      }
+                    if (change.type === "delete")
+                      return { path: change.path, target: change.target, operation: "delete", original: change.source }
+                    return {
+                      path: change.path,
+                      target: change.target,
+                      operation: "update",
+                      expected: change.source,
+                      content: change.content,
+                    }
+                  }),
+                ).pipe(
+                  Effect.mapError((error) =>
+                    error.applied.length === 0
+                      ? fail(error.path)
+                      : new ToolFailure({
+                          message: `Patch failed at ${error.path} and earlier operations were rolled back. Applied before failure: ${error.applied.join(", ")}`,
+                        }),
+                  ),
                 )
+                for (const [index, change] of prepared.entries())
+                  applied.push({
+                    type: change.type,
+                    resource: results[index]!.resource,
+                    target: results[index]!.target,
+                  })
+                yield* Effect.forEach(results, (result) => FileMutation.settle(result), { discard: true })
                 return { applied, files: patchFiles }
               }).pipe(Effect.mapError((error) => (error instanceof ToolFailure ? error : fail("patch"))))
             },

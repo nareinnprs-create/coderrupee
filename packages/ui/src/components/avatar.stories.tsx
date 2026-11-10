@@ -19,7 +19,7 @@ Use in user lists and headers.
 - Uses grapheme-aware fallback rendering.
 
 ### Accessibility
-- TODO: provide alt text when using images; currently image is decorative.
+- Images render without `alt`: avatars are decorative, so convey identity through adjacent text.
 
 ### Theming/tokens
 - Uses \`data-component="avatar"\` with size and image state attributes.

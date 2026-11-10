@@ -18,7 +18,7 @@ Use for short summaries; avoid dense interactive controls.
 - Opens on hover/focus over the trigger.
 
 ### Accessibility
-- TODO: confirm focus and hover intent behavior from Kobalte.
+- Kobalte opens the card on trigger hover and keyboard focus, with a default `openDelay` of 700ms; focus is not trapped.
 
 ### Theming/tokens
 - Uses \`data-component="hover-card-content"\` and slots for styling.

@@ -440,7 +440,8 @@ const layer: Layer.Layer<Service, never, AccountRepo.Service | HttpClient.HttpCl
 
       const [account, remoteOrgs] = yield* Effect.all([user, orgs], { concurrency: 2 })
 
-      // TODO: When there are multiple orgs, let the user choose
+      // First org is the non-interactive default; the CLI prompts on PollSuccess when the
+      // account has multiple orgs and overwrites it through Account.use.
       const firstOrgID = remoteOrgs.length > 0 ? Option.some(remoteOrgs[0].id) : Option.none<OrgID>()
 
       const now = yield* Clock.currentTimeMillis
@@ -457,7 +458,7 @@ const layer: Layer.Layer<Service, never, AccountRepo.Service | HttpClient.HttpCl
         orgID: firstOrgID,
       })
 
-      return new PollSuccess({ email: account.email })
+      return new PollSuccess({ email: account.email, orgs: remoteOrgs })
     })
 
     return Service.of({
