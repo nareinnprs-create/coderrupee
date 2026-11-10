@@ -240,7 +240,7 @@ describe("SessionStatus.Info", () => {
         title: "Free limit reached",
         message: "Subscribe to CoderRupee Go.",
         label: "subscribe",
-        link: "https://coderrupee.ai/go",
+        link: "https://coderrupee.opraiz.com/go",
       },
       next: 500,
     }

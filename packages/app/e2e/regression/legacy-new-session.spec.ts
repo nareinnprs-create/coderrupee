@@ -21,6 +21,9 @@ test("redirects a draft to the legacy new-session route", async ({ page }) => {
     sessions: [],
     pageMessages: () => ({ items: [] }),
   })
+  // The legacy interface force-retires after oldInterfaceSunset (Sep 14, 2026); pin the
+  // clock before it so the redirect path stays testable deterministically.
+  await page.clock.setFixedTime(new Date(2026, 6, 1))
   await page.addInitScript(
     ({ directory, draftID, server }) => {
       localStorage.setItem("settings.v3", JSON.stringify({ general: { newLayoutDesigns: false } }))

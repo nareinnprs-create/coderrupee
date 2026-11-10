@@ -117,13 +117,23 @@ describe("AgentV2", () => {
       expect(agents.map((item) => String(item.id)).sort()).toEqual([
         "build",
         "compaction",
+        "deployer",
+        "documenter",
         "explore",
         "general",
+        "migrator",
         "plan",
+        "profiler",
+        "reviewer",
+        "security",
         "summary",
+        "tester",
         "title",
       ])
-      for (const item of agents) {
+      // Core built-ins must not gain bash implicitly; the specialized subagents carry
+      // scoped bash allows by design (see plugin/agent.ts).
+      const ambient = ["build", "compaction", "explore", "general", "plan", "summary", "title"]
+      for (const item of agents.filter((agent) => ambient.includes(String(agent.id)))) {
         expect(item.permissions.some((rule) => rule.action === "bash" && rule.effect !== "deny")).toBe(false)
       }
     }),

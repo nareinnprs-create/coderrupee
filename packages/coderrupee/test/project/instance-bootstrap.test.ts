@@ -52,7 +52,7 @@ const bootstrapFixture = Effect.gen(function* () {
     Bun.write(
       path.join(dir, "coderrupee.json"),
       JSON.stringify({
-        $schema: "https://coderrupee.ai/config.json",
+        $schema: "https://coderrupee.opraiz.com/config.json",
         plugin: [pathToFileURL(pluginFile).href],
       }),
     ),

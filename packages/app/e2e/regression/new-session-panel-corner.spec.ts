@@ -55,6 +55,14 @@ test("matches the rounded panel corners to the dark new-session background", asy
   if (!box) throw new Error("New-session panel bounds are unavailable")
 
   const screenshot = await page.screenshot({ path: testInfo.outputPath("new-session-dark.png") })
+  // Corners must show the page background behind the panel's rounded corners,
+  // whatever the active theme's background token is.
+  const pageBackground = await page.evaluate(() => {
+    const raw = getComputedStyle(document.documentElement).backgroundColor
+    const match = raw.match(/(\d+(?:\.\d+)?),\s*(\d+(?:\.\d+)?),\s*(\d+(?:\.\d+)?)(?:,\s*(\d+(?:\.\d+)?))?/)
+    if (!match) throw new Error(`Unexpected page background color: ${raw}`)
+    return [Number(match[1]), Number(match[2]), Number(match[3]), match[4] === undefined ? 255 : Number(match[4])]
+  })
   const corners = await page.evaluate(
     async ({ source, points }) => {
       const image = new Image()
@@ -79,5 +87,8 @@ test("matches the rounded panel corners to the dark new-session background", asy
     },
   )
 
-  expect(corners.every(([red, green, blue, alpha]) => red <= 8 && green <= 8 && blue <= 8 && alpha === 255)).toBe(true)
+  const matchesBackground = (channel: number, expected: number) => Math.abs(channel - expected) <= 2
+  expect(
+    corners.every((corner) => corner.every((channel, index) => matchesBackground(channel, pageBackground[index]))),
+  ).toBe(true)
 })

@@ -1,4 +1,4 @@
-import { DatabaseSync, type SQLInputValue } from "node:sqlite"
+import type { DatabaseSync, SQLInputValue } from "node:sqlite"
 import { drizzle } from "drizzle-orm/node-sqlite"
 import * as Context from "effect/Context"
 import * as Effect from "effect/Effect"
@@ -152,6 +152,9 @@ const nativeLayer = (config: Config) =>
   Layer.effect(
     Sqlite.Native,
     Effect.gen(function* () {
+      // Lazy: older Bun releases ship no `node:sqlite` builtin, so the import must
+      // only happen when the node client is actually constructed.
+      const { DatabaseSync } = yield* Effect.promise(() => import("node:sqlite"))
       const native = new DatabaseSync(config.filename, {
         readOnly: config.readonly,
         timeout: config.timeout,

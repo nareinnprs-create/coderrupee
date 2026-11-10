@@ -1,4 +1,4 @@
 {
-  "$schema": "https://coderrupee.ai/config.json",
+  "$schema": "https://coderrupee.opraiz.com/config.json",
   "model": "anthropic/claude-sonnet"
 }

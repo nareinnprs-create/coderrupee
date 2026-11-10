@@ -39,7 +39,7 @@ describe("NvidiaPlugin", () => {
       yield* addPlugin()
       expect((yield* catalog.provider.get(ProviderV2.ID.make("nvidia")))?.request.headers).toEqual({
         Existing: "value",
-        "HTTP-Referer": "https://coderrupee.ai/",
+        "HTTP-Referer": "https://coderrupee.opraiz.com/",
         "X-Title": "coderrupee",
         "X-BILLING-INVOKE-ORIGIN": "CoderRupee",
       })
@@ -62,7 +62,7 @@ describe("NvidiaPlugin", () => {
       yield* addPlugin()
 
       expect((yield* catalog.provider.get(ProviderV2.ID.make("nvidia")))?.request.headers).toEqual({
-        "HTTP-Referer": "https://coderrupee.ai/",
+        "HTTP-Referer": "https://coderrupee.opraiz.com/",
         "X-Title": "coderrupee",
         "X-BILLING-INVOKE-ORIGIN": "CoderRupee",
       })
@@ -88,7 +88,7 @@ describe("NvidiaPlugin", () => {
       yield* addPlugin()
 
       expect((yield* catalog.provider.get(ProviderV2.ID.make("nvidia")))?.request.headers).toEqual({
-        "HTTP-Referer": "https://coderrupee.ai/",
+        "HTTP-Referer": "https://coderrupee.opraiz.com/",
         "X-Title": "coderrupee",
         "X-BILLING-INVOKE-ORIGIN": "CustomOrigin",
       })

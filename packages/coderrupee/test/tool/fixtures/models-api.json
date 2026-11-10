@@ -33607,9 +33607,9 @@
     "id": "coderrupee-go",
     "env": ["CODERRUPEE_API_KEY"],
     "npm": "@ai-sdk/openai-compatible",
-    "api": "https://coderrupee.ai/zen/go/v1",
+    "api": "https://coderrupee.opraiz.com/zen/go/v1",
     "name": "CoderRupee Go",
-    "doc": "https://coderrupee.ai/docs/zen",
+    "doc": "https://coderrupee.opraiz.com/docs/zen",
     "models": {
       "deepseek-v4-flash": {
         "id": "deepseek-v4-flash",
@@ -90323,9 +90323,9 @@
     "id": "coderrupee",
     "env": ["CODERRUPEE_API_KEY"],
     "npm": "@ai-sdk/openai-compatible",
-    "api": "https://coderrupee.ai/zen/v1",
+    "api": "https://coderrupee.opraiz.com/zen/v1",
     "name": "CoderRupee Zen",
-    "doc": "https://coderrupee.ai/docs/zen",
+    "doc": "https://coderrupee.opraiz.com/docs/zen",
     "models": {
       "ring-2.6-1t-free": {
         "id": "ring-2.6-1t-free",

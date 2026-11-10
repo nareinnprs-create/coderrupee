@@ -74,7 +74,7 @@ describe("plugin.workspace", () => {
           path.join(dir, "coderrupee.json"),
           JSON.stringify(
             {
-              $schema: "https://coderrupee.ai/config.json",
+              $schema: "https://coderrupee.opraiz.com/config.json",
               plugin: [pathToFileURL(file).href],
             },
             null,

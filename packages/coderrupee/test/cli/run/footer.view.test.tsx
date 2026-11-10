@@ -59,7 +59,7 @@ function model(input: {
     providerID: "coderrupee",
     api: {
       id: "coderrupee",
-      url: "https://coderrupee.ai",
+      url: "https://coderrupee.opraiz.com",
       npm: "@ai-sdk/openai-compatible",
     },
     name: input.name,

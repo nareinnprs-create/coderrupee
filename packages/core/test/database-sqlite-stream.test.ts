@@ -28,6 +28,11 @@ describe("executeStream", () => {
   })
 
   test("streams rows from the node sqlite client", async () => {
+    // Older Bun releases ship no node:sqlite builtin; skip instead of failing there.
+    const available = await import("node:sqlite")
+      .then(() => true)
+      .catch(() => false)
+    if (!available) return
     const rows = await run(SqliteNode.layer({ filename: ":memory:", disableWAL: true }))
     expect(rows).toEqual(expected)
   })

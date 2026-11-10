@@ -1,5 +1,5 @@
 {
-  "$schema": "https://coderrupee.ai/config.json",
+  "$schema": "https://coderrupee.opraiz.com/config.json",
   // Empty shell in a global update removes the setting.
   "shell": "bash",
   "model": { "providerID": "example", "model": "demo" },

@@ -1307,7 +1307,7 @@ it.instance(
   Effect.gen(function* () {
     const providers = yield* list
     expect(providers[ProviderV2.ID.make("nvidia")].options.headers).toEqual({
-      "HTTP-Referer": "https://coderrupee.ai/",
+      "HTTP-Referer": "https://coderrupee.opraiz.com/",
       "X-Title": "coderrupee",
       "X-BILLING-INVOKE-ORIGIN": "CoderRupee",
     })
@@ -1320,7 +1320,7 @@ it.instance(
   Effect.gen(function* () {
     const providers = yield* list
     expect(providers[ProviderV2.ID.make("nvidia")].options.headers).toEqual({
-      "HTTP-Referer": "https://coderrupee.ai/",
+      "HTTP-Referer": "https://coderrupee.opraiz.com/",
       "X-Title": "coderrupee",
       "X-BILLING-INVOKE-ORIGIN": "CoderRupee",
     })

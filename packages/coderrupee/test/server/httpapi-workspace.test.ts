@@ -399,7 +399,7 @@ describe("workspace HttpApi", () => {
             "content-type": "application/json",
             "x-coderrupee-workspace": "internal",
           },
-          body: JSON.stringify({ $schema: "https://coderrupee.ai/config.json" }),
+          body: JSON.stringify({ $schema: "https://coderrupee.opraiz.com/config.json" }),
         })
 
         const responseBody = yield* response.text
@@ -416,7 +416,7 @@ describe("workspace HttpApi", () => {
               "content-type": "application/json",
               "x-target-auth": "secret",
             }),
-            body: JSON.stringify({ $schema: "https://coderrupee.ai/config.json" }),
+            body: JSON.stringify({ $schema: "https://coderrupee.opraiz.com/config.json" }),
           },
         ])
         expect(forwarded[0]?.headers).not.toHaveProperty("x-coderrupee-directory")
