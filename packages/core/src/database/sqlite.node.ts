@@ -152,10 +152,12 @@ const nativeLayer = (config: Config) =>
   Layer.effect(
     Sqlite.Native,
     Effect.gen(function* () {
-      // Lazy: older Bun releases ship no `node:sqlite` builtin, so the import must
-      // only happen when the node client is actually constructed.
-      const { DatabaseSync } = yield* Effect.promise(() => import(/* the specifier is computed so old Bun transpilers cannot fail the module graph */ "node" + ":sqlite"))
-      const native = new DatabaseSync(config.filename, {
+      // Lazy: older Bun releases ship no `node:sqlite` builtin; the computed specifier
+      // keeps the transpiler from resolving the builtin while collecting this module.
+      const { DatabaseSync: DatabaseSyncCtor } = yield* Effect.promise(
+        () => import("node" + ":sqlite") as Promise<{ DatabaseSync: DatabaseSyncCtor }>,
+      )
+      const native = new DatabaseSyncCtor(config.filename, {
         readOnly: config.readonly,
         timeout: config.timeout,
         allowExtension: config.allowExtension,
@@ -173,9 +175,26 @@ const sqliteLayer = (config: Config) => Layer.effect(Client.SqlClient, make(conf
 const drizzleLayer = Layer.effect(
   Sqlite.Drizzle,
   Effect.gen(function* () {
+    // Same lazy/computed treatment: drizzle's node-sqlite driver statically imports
+    // node:sqlite, which older Bun releases do not ship.
+    const { drizzle } = yield* Effect.promise(() => import("drizzle-orm/node-sqlite"))
     return drizzle({ client: (yield* Sqlite.Native) as DatabaseSync }) as unknown as Sqlite.DrizzleClient
   }),
 )
+
+// bun-types declares node:sqlite's DatabaseSync without a construct signature.
+interface DatabaseSyncCtor {
+  new (
+    filename: string,
+    options?: {
+      readonly readOnly?: boolean
+      readonly timeout?: number
+      readonly allowExtension?: boolean
+      readonly enableForeignKeyConstraints?: boolean
+      readonly open?: boolean
+    },
+  ): DatabaseSync
+}
 
 export const layer = (config: Config) => {
   const native = nativeLayer(config)

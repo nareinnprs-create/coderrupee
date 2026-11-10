@@ -1,8 +1,16 @@
 import { createHash } from "node:crypto"
 import { eq } from "drizzle-orm"
-import { drizzle } from "drizzle-orm/node-sqlite"
 import { blob, sqliteTable, text } from "drizzle-orm/sqlite-core"
-import type { DatabaseSync } from "node:sqlite"
+
+// bun-types declares node:sqlite's DatabaseSync without a construct signature.
+interface DatabaseSyncCtor {
+  new (filename: string): DatabaseSyncInstance
+}
+interface DatabaseSyncInstance {
+  exec: (sql: string) => void
+  close: () => void
+}
+type NodeSqliteDatabase = import("node:sqlite").DatabaseSync
 
 const documents = sqliteTable("document", {
   key: text().primaryKey(),
@@ -13,26 +21,15 @@ const blobs = sqliteTable("blob", {
   data: blob({ mode: "buffer" }).notNull(),
 })
 
-export function createDesktopDraftStore(native: DatabaseSync) {
-  const open = () => {
-    native.exec(
-      "PRAGMA journal_mode=WAL; CREATE TABLE IF NOT EXISTS document (key TEXT PRIMARY KEY, value TEXT NOT NULL); CREATE TABLE IF NOT EXISTS blob (id TEXT PRIMARY KEY, data BLOB NOT NULL);",
-    )
-    return native
-  }
-  return buildDesktopDraftStore(open())
-}
-
-// Older Bun releases ship no node:sqlite builtin, so the builtin import happens only
-// when the production store actually opens.
+// Older Bun releases ship no node:sqlite builtin, and drizzle's node-sqlite driver
+// statically imports it, so both imports stay dynamic and computed: a literal
+// specifier would fail this module's graph before any runtime guard can run.
 export async function openDesktopDraftStore(filename: string) {
-  // Computed specifier: Bun 1.3 transpilers fail the whole file when a literal
-  // import names a builtin the runtime does not ship.
-  const { DatabaseSync } = await import(/* @vite-ignore */ "node" + ":sqlite")
-  return createDesktopDraftStore(new DatabaseSync(filename))
-}
-
-function buildDesktopDraftStore(native: DatabaseSync) {
+  const [{ DatabaseSync: DatabaseSyncCtor }, { drizzle }] = await Promise.all([
+    import(/* @vite-ignore */ "node" + ":sqlite") as Promise<{ DatabaseSync: DatabaseSyncCtor }>,
+    import("drizzle-orm/node-sqlite"),
+  ])
+  const native = new DatabaseSyncCtor(filename) as NodeSqliteDatabase
   native.exec(
     "PRAGMA journal_mode=WAL; CREATE TABLE IF NOT EXISTS document (key TEXT PRIMARY KEY, value TEXT NOT NULL); CREATE TABLE IF NOT EXISTS blob (id TEXT PRIMARY KEY, data BLOB NOT NULL);",
   )

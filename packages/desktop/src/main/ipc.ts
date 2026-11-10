@@ -28,7 +28,7 @@ import {
 import { getCloseToTrayEnabled, setCloseToTrayEnabled } from "./tray"
 import type { UpdaterController } from "./updater-controller"
 import { createUpdaterSubscriptions } from "./updater-subscriptions"
-import { createDesktopDraftStore, openDesktopDraftStore } from "./draft-store"
+import { openDesktopDraftStore } from "./draft-store"
 import { nativeT } from "./native-translations"
 
 const pickerFilters = (ext?: string[]) => {

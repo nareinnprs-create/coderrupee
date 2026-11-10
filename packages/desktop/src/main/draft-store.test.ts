@@ -1,11 +1,10 @@
 import { expect, test } from "bun:test"
-import { createDesktopDraftStore } from "./draft-store"
+import { openDesktopDraftStore } from "./draft-store"
 
 test(
   "flushes the latest buffered draft and stores blobs",
   async () => {
-    // Older Bun releases ship no node:sqlite builtin; skip instead of failing there.
-    // Computed specifier so the transpiler cannot resolve it at graph-collection time.
+    // Older Bun releases ship no node:sqlite builtin; skip rather than fail there.
     let available = false
     try {
       await import("node" + ":sqlite")
@@ -14,8 +13,7 @@ test(
       available = false
     }
     if (!available) return
-    const { DatabaseSync } = await import("node" + ":sqlite")
-    const store = createDesktopDraftStore(new DatabaseSync(":memory:"))
+    const store = await openDesktopDraftStore(":memory:")
     store.set("prompt", "first")
     store.set("prompt", "latest")
     expect(store.get("prompt")).toBe("latest")
