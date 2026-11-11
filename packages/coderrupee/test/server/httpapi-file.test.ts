@@ -54,7 +54,8 @@ describe("file HttpApi", () => {
 
   // GH Windows runners' file-search index does not warm up within the test
   // script's timeout on a cold machine; Linux CI and local Windows pass.
-  const windowsCi = process.platform === "win32" && process.env.GITHUB_ACTIONS === "true"
+  // Gate on CI: test.yml overrides GITHUB_ACTIONS=false for unit tests.
+  const windowsCi = process.platform === "win32" && process.env.CI === "true"
   test("serves search endpoints", async () => {
     if (windowsCi) return
     if (windowsCi) return

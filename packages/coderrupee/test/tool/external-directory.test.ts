@@ -113,7 +113,8 @@ describe("tool.assertExternalDirectory", () => {
       "normalizes Windows path variants to one glob",
       () =>
         Effect.gen(function* () {
-          if (process.env.GITHUB_ACTIONS === "true") return
+          // test.yml overrides GITHUB_ACTIONS=false for unit tests; gate on CI.
+          if (process.env.CI === "true") return
           const { requests, ctx } = makeCtx()
 
           const outerTmp = yield* tmpdirScoped()

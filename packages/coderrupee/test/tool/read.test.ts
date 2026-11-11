@@ -192,7 +192,8 @@ describe("tool.read external_directory permission", () => {
       "normalizes read permission paths on Windows",
       () =>
         Effect.gen(function* () {
-          if (process.env.GITHUB_ACTIONS === "true") return
+          // test.yml overrides GITHUB_ACTIONS=false for unit tests; gate on CI.
+          if (process.env.CI === "true") return
           const dir = yield* tmpdirScoped({ git: true })
           yield* put(path.join(dir, "test.txt"), "hello world")
 
