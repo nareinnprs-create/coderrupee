@@ -1,6 +1,7 @@
 export * as Doctor from "."
 
 import { Cause, Effect, Exit, Schema, SchemaIssue } from "effect"
+import { spawn } from "node:child_process"
 import fs from "fs/promises"
 import { existsSync } from "node:fs"
 import path from "path"
@@ -77,18 +78,25 @@ export function defaultContext(cwd = process.cwd()): DoctorContext {
     },
     runCommand: async (file, args, opts) => {
       try {
-        const proc = Bun.spawn([file, ...args], {
+        // node:child_process works under both Bun and Node (desktop sidecar).
+        const proc = spawn(file, args, {
           cwd: opts?.cwd,
-          stdout: "pipe",
-          stderr: "pipe",
-          stdin: "ignore",
+          stdio: ["ignore", "pipe", "pipe"],
         })
+        const read = (stream: NodeJS.ReadableStream | null) =>
+          new Promise<string>((resolve) => {
+            let out = ""
+            if (!stream) return resolve(out)
+            stream.on("data", (chunk) => (out += chunk.toString()))
+            stream.on("end", () => resolve(out))
+            stream.on("error", () => resolve(out))
+          })
         const [stdout, stderr, code] = await Promise.all([
-          new Response(proc.stdout).text(),
-          new Response(proc.stderr).text(),
-          proc.exited,
+          read(proc.stdout),
+          read(proc.stderr),
+          new Promise<number>((resolve) => proc.on("close", (c) => resolve(c ?? -1))),
         ])
-        return { code: await code, stdout, stderr }
+        return { code, stdout, stderr }
       } catch (err) {
         return { code: -1, stdout: "", stderr: errorMessage(err) }
       }

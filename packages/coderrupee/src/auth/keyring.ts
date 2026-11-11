@@ -29,6 +29,7 @@ import { AppProcess } from "@coderrupee/core/process"
 import { FSUtil } from "@coderrupee/core/fs-util"
 import { Global } from "@coderrupee/core/global"
 import { LayerNode } from "@coderrupee/core/effect/layer-node"
+import { existsSync } from "fs"
 import path from "path"
 import { ChildProcess } from "effect/unstable/process"
 import { Context, Effect, Layer, Schema } from "effect"
@@ -60,10 +61,28 @@ export class Service extends Context.Service<Service, Interface>()("@coderrupee/
 export const SERVICE = "coderrupee"
 const INDEX_ACCOUNT = "$index"
 
+// The engine bundle also runs under Node (desktop utilityProcess sidecar),
+// where the Bun global does not exist; PATH scan covers both runtimes.
+const which = (cmd: string): string | undefined => {
+  if (typeof Bun !== "undefined") return Bun.which(cmd) ?? undefined
+  const exts = process.platform === "win32" ? ["", ".exe"] : [""]
+  for (const dir of (process.env.PATH ?? "").split(path.delimiter)) {
+    for (const ext of exts) {
+      const candidate = path.join(dir, cmd + ext)
+      try {
+        if (existsSync(candidate)) return candidate
+      } catch {
+        // unreadable PATH entry; skip
+      }
+    }
+  }
+  return undefined
+}
+
 const detect = (): Backend => {
-  if (process.platform === "win32" && Bun.which("powershell.exe")) return "dpapi-vault"
-  if (process.platform === "darwin" && Bun.which("security")) return "macos-security"
-  if (process.platform === "linux" && Bun.which("secret-tool")) return "linux-secret-tool"
+  if (process.platform === "win32" && which("powershell.exe")) return "dpapi-vault"
+  if (process.platform === "darwin" && which("security")) return "macos-security"
+  if (process.platform === "linux" && which("secret-tool")) return "linux-secret-tool"
   return "none"
 }
 

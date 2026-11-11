@@ -110,7 +110,20 @@ const layer = Layer.effect(
         )
         if (!data) return []
 
-        const sourceRoot = path.resolve(global.cache, "skills", Bun.hash(base).toString(16))
+        // Bun.hash is unavailable under Node (desktop sidecar); FNV-1a keeps
+        // the cache path deterministic in both runtimes.
+        const digest =
+          typeof Bun !== "undefined"
+            ? Bun.hash(base).toString(16)
+            : (() => {
+                let h = 2166136261
+                for (let i = 0; i < base.length; i++) {
+                  h ^= base.charCodeAt(i)
+                  h = Math.imul(h, 16777619)
+                }
+                return (h >>> 0).toString(16)
+              })()
+        const sourceRoot = path.resolve(global.cache, "skills", digest)
         return yield* Effect.forEach(
           data.skills.flatMap((skill) => {
             if (!isSafeSegment(skill.name)) {
