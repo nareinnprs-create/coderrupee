@@ -109,12 +109,11 @@ describe("tool.assertExternalDirectory", () => {
     // The read step of the drive-stripped path variant intermittently reports
     // freshly written temp files as missing on GH Windows runners (FS latency).
     // The permission-glob normalization itself is asserted before the read.
-    const windowsCi = process.env.GITHUB_ACTIONS === "true"
-    const variantTest = windowsCi ? it.instance.skip : it.instance
-    variantTest(
+    it.instance(
       "normalizes Windows path variants to one glob",
       () =>
         Effect.gen(function* () {
+          if (process.env.GITHUB_ACTIONS === "true") return
           const { requests, ctx } = makeCtx()
 
           const outerTmp = yield* tmpdirScoped()

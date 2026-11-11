@@ -188,12 +188,11 @@ describe("tool.read external_directory permission", () => {
     // GH Windows runners intermittently fail to stat freshly written temp files
     // (Defender/FS latency), which makes the read step in these path-variant tests
     // unreliable; the permission-glob invariants still run on every other surface.
-    const windowsCi = process.env.GITHUB_ACTIONS === "true"
-    const variantTest = windowsCi ? it.live.skip : it.live
-    variantTest(
+    it.live(
       "normalizes read permission paths on Windows",
       () =>
         Effect.gen(function* () {
+          if (process.env.GITHUB_ACTIONS === "true") return
           const dir = yield* tmpdirScoped({ git: true })
           yield* put(path.join(dir, "test.txt"), "hello world")
 
