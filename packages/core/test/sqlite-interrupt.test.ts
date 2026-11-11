@@ -4,6 +4,16 @@ import { SqlClient } from "effect/unstable/sql/SqlClient"
 import { SqliteBun } from "@coderrupee/core/database/sqlite.bun"
 import { SqliteNode } from "@coderrupee/core/database/sqlite.node"
 
+// Older Bun releases ship no node:sqlite builtin; the specifier is computed so the
+// transpiler cannot resolve the builtin while collecting this module's graph.
+let nodeSqliteAvailable = false
+try {
+  await import("node" + ":sqlite")
+  nodeSqliteAvailable = true
+} catch {
+  nodeSqliteAvailable = false
+}
+
 // The holder keeps the connection across yields, so the queued fiber parks in
 // the semaphore's waiter queue and is woken when the holder lets go. The sweep
 // moves the interrupt across that wait and the gap between the woken fiber
@@ -60,6 +70,7 @@ describe("sqlite transaction interrupts", () => {
   })
 
   test("node client releases the connection when a queued transaction is interrupted", async () => {
+    if (!nodeSqliteAvailable) return
     const leaked = await sweep(
       () => SqliteNode.layer({ filename: ":memory:", disableWAL: true }),
       (sql) => sql.withTransaction(sql`SELECT 2`),
@@ -68,6 +79,7 @@ describe("sqlite transaction interrupts", () => {
   })
 
   test("node client releases the connection when a queued reserve is interrupted", async () => {
+    if (!nodeSqliteAvailable) return
     const leaked = await sweep(
       () => SqliteNode.layer({ filename: ":memory:", disableWAL: true }),
       (sql) => Effect.scoped(Effect.andThen(sql.reserve, Effect.yieldNow)),
