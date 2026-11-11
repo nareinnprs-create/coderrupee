@@ -29,3 +29,19 @@
 
 packages/core/migration/**/snapshot.json linguist-generated
 packages/core/src/database/migration.gen.ts linguist-generated
+
+# Language statistics: exclude assets, docs content, and generated code so the
+# GitHub language bar reflects the hand-written product source.
+*.svg linguist-vendored
+*.mdx linguist-documentation
+patches/** linguist-generated
+specs/** linguist-documentation
+.coderrupee/** linguist-documentation
+packages/web/src/content/** linguist-documentation
+packages/core/src/generated/** linguist-generated
+packages/core/src/generated-effect/** linguist-generated
+packages/core/src/database/migration/** linguist-generated
+packages/sdk/js/src/gen/** linguist-generated
+**/*.gen.ts linguist-generated
+packages/tui/src/theme/assets/** linguist-generated
+packages/ui/src/theme/themes/** linguist-generated
