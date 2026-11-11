@@ -70,11 +70,27 @@ const make = (options: Config) =>
       Effect.withFiber<ReadonlyArray<ReadonlyArray<unknown>>, SqlError>((fiber) => {
         const statement = native.prepare(query)
         statement.setReadBigInts(Context.get(fiber.context, Client.SafeIntegers))
-        statement.setReturnArrays(true)
+        // node:sqlite gained setReturnArrays in Node 24; Electron's bundled Node
+        // (22.x) lacks it, so reshape object rows via column order there.
+        if (typeof statement.setReturnArrays === "function") {
+          statement.setReturnArrays(true)
+          try {
+            return Effect.succeed(
+              statement.all(...(params as SQLInputValue[])) as unknown as ReadonlyArray<ReadonlyArray<unknown>>,
+            )
+          } catch (cause) {
+            return Effect.fail(
+              new SqlError({
+                reason: classifySqliteError(cause, { message: "Failed to execute statement", operation: "execute" }),
+              }),
+            )
+          }
+        }
         try {
-          return Effect.succeed(
-            statement.all(...(params as SQLInputValue[])) as unknown as ReadonlyArray<ReadonlyArray<unknown>>,
-          )
+          // Object keys arrive in SELECT column order, so Object.values is
+          // already positional; no metadata API needed on older Node.
+          const rows = statement.all(...(params as SQLInputValue[])) as Array<Record<string, unknown>>
+          return Effect.succeed(rows.map((row) => Object.values(row)))
         } catch (cause) {
           return Effect.fail(
             new SqlError({
