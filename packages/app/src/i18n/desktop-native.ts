@@ -280,6 +280,22 @@ export const DESKTOP_NATIVE_ENGLISH = {
   "desktop.updater.dialog.manual.title": "Update Available",
   "desktop.updater.dialog.manual.download": "Download Update",
 
+  "desktop.updater.notification.available.title": "Update available",
+  "desktop.updater.notification.available.message": "CoderRupee {{version}} is ready to install. Click to update.",
+  "desktop.updater.notification.downloading.title": "Downloading update",
+  "desktop.updater.notification.downloading.message": "Downloading CoderRupee {{version}}.",
+  "desktop.updater.notification.ready.title": "Update downloaded",
+  "desktop.updater.notification.ready.message": "Click to restart and install CoderRupee {{version}}.",
+  "desktop.updater.notification.installing.title": "Installing update",
+  "desktop.updater.notification.installing.message": "CoderRupee {{version}} is installing. The app will close now.",
+  "desktop.updater.notification.manualMac.title": "Installer opened",
+  "desktop.updater.notification.manualMac.message": "Drag CoderRupee to Applications to finish the update.",
+  "desktop.updater.notification.manualLinux.title": "Installer downloaded",
+  "desktop.updater.notification.manualLinux.message":
+    "CoderRupee {{version}} was saved to your Downloads folder. Run the installer to update.",
+  "desktop.updater.notification.failed.title": "Update failed",
+  "desktop.updater.notification.failed.message": "The update could not be installed. Try again later.",
+
   "desktop.recovery.action.relaunch": "Relaunch",
   "desktop.recovery.action.exportLogs": "Export Logs",
   "desktop.recovery.action.keepWaiting": "Keep Waiting",
