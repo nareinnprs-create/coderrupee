@@ -15,10 +15,19 @@ if (!Script.preview) {
   const dir = process.env.RUNNER_TEMP ?? "/tmp"
   const notesFile = `${dir}/coderrupee-release-notes.txt`
   await Bun.write(notesFile, body)
-  await $`gh release create v${Script.version} -d --target ${sha} --title "CoderRupee v${Script.version}" --notes-file ${notesFile}`
-  const release = await $`gh release view v${Script.version} --json tagName,databaseId`.json()
-  output.push(`release=${release.databaseId}`)
-  output.push(`tag=${release.tagName}`)
+  // Re-dispatch tolerance: the release may already exist (e.g. npm retry after
+  // a token failure); reuse it instead of failing on create.
+  const existing = await $`gh release view v${Script.version} --json tagName,databaseId --repo ${process.env.GH_REPO}`.nothrow()
+  if (existing.exitCode === 0) {
+    const release = await existing.json()
+    output.push(`release=${release.databaseId}`)
+    output.push(`tag=${release.tagName}`)
+  } else {
+    await $`gh release create v${Script.version} -d --target ${sha} --title "CoderRupee v${Script.version}" --notes-file ${notesFile}`
+    const release = await $`gh release view v${Script.version} --json tagName,databaseId`.json()
+    output.push(`release=${release.databaseId}`)
+    output.push(`tag=${release.tagName}`)
+  }
 } else if (Script.channel === "beta") {
   await $`gh release create v${Script.version} -d --target ${sha} --title "v${Script.version}" --repo ${process.env.GH_REPO}`
   const release =
