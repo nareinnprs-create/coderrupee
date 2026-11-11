@@ -1740,6 +1740,23 @@ const scenarios: Scenario[] = [
     .probe({ path: "/global/upgrade", body: { target: 1 } })
     .at(() => ({ path: "/global/upgrade", body: { target: 1 } }))
     .status(400),
+  http.protected
+    .get("/global/diagnostics", "global.diagnostics")
+    .global()
+    .json(200, object, "status"),
+  http.protected
+    .post("/global/rollback", "global.rollback")
+    .global()
+    .at(() => ({ path: "/global/rollback" }))
+    .json(
+      200,
+      (body) => {
+        object(body)
+        check(body.success === false || body.success === true, "rollback should report an outcome")
+        if (body.success === false) check(typeof body.error === "string", "rollback failure should carry a message")
+      },
+      "status",
+    ),
 ]
 
 const llmScenarios = new Set([
