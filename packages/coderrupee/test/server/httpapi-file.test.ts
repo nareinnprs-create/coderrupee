@@ -50,7 +50,7 @@ describe("file HttpApi", () => {
 
     expect(status.status).toBe(200)
     expect(await status.json()).toEqual([])
-  })
+  }, 60_000)
 
   test("serves search endpoints", async () => {
     await using tmp = await tmpdir({ git: true })
@@ -68,6 +68,8 @@ describe("file HttpApi", () => {
           return body.includes("hello.txt") ? { response, body } : undefined
         }),
         "file search index was not ready",
+        // Cold runners build the search index from scratch; the default 5s is not enough.
+        "60 seconds",
       ),
     )
 
