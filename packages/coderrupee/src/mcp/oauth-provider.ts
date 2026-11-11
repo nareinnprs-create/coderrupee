@@ -5,11 +5,27 @@ import type {
   OAuthClientInformation,
   OAuthClientInformationFull,
 } from "@modelcontextprotocol/sdk/shared/auth.js"
+import { OAuthTokensSchema } from "@modelcontextprotocol/sdk/shared/auth.js"
+import type { FetchLike } from "@modelcontextprotocol/sdk/shared/transport.js"
 import { Effect } from "effect"
 import { McpAuth } from "./auth"
 
 const OAUTH_CALLBACK_PORT = 19876
 const OAUTH_CALLBACK_PATH = "/mcp/oauth/callback"
+
+// A refresh failure the SDK cannot classify becomes a lost login; temporarily_unavailable surfaces as a
+// typed OAuth error the SDK rethrows, so the attempt fails while the stored credential stays for the next one.
+const unavailable = (reason: string) =>
+  Response.json(
+    { error: "temporarily_unavailable", error_description: `Could not refresh the OAuth token: ${reason}` },
+    { status: 503 },
+  )
+
+const rotated = () =>
+  Response.json(
+    { error: "invalid_grant", error_description: "The refresh token was already used by another connection" },
+    { status: 400 },
+  )
 
 export interface McpOAuthConfig {
   clientId?: string
@@ -24,6 +40,10 @@ export interface McpOAuthCallbacks {
 }
 
 export class McpOAuthProvider implements OAuthClientProvider {
+  // Tracks the refresh token this provider last presented to the SDK, so invalidate can tell whether the
+  // SDK rejected the currently-stored credential or a snapshot another connection already rotated past.
+  private presented?: string
+
   constructor(
     protected mcpName: string,
     protected serverUrl: string,
@@ -97,6 +117,7 @@ export class McpOAuthProvider implements OAuthClientProvider {
     // Use getForUrl to validate tokens are for the current server URL
     const entry = await Effect.runPromise(this.auth.getForUrl(this.mcpName, this.serverUrl))
     if (!entry?.tokens) return undefined
+    this.presented = entry.tokens.refreshToken
 
     return {
       access_token: entry.tokens.accessToken,
@@ -110,6 +131,10 @@ export class McpOAuthProvider implements OAuthClientProvider {
   }
 
   async saveTokens(tokens: OAuthTokens): Promise<void> {
+    const entry = await Effect.runPromise(this.auth.getForUrl(this.mcpName, this.serverUrl))
+    // Another connection may have rotated past the refresh token this one presented; its tokens win.
+    const stored = entry?.tokens?.refreshToken
+    if (stored && stored !== this.presented && stored !== tokens.refresh_token) return
     await Effect.runPromise(
       this.auth.updateTokens(
         this.mcpName,
@@ -122,6 +147,7 @@ export class McpOAuthProvider implements OAuthClientProvider {
         this.serverUrl,
       ),
     )
+    this.presented = tokens.refresh_token
   }
 
   async redirectToAuthorization(authorizationUrl: URL): Promise<void> {
@@ -166,21 +192,84 @@ export class McpOAuthProvider implements OAuthClientProvider {
   }
 
   async invalidateCredentials(type: "all" | "client" | "tokens"): Promise<void> {
-    const entry = await Effect.runPromise(this.auth.get(this.mcpName))
-    if (!entry) return
     switch (type) {
       case "all":
-        await Effect.runPromise(this.auth.remove(this.mcpName))
+        // Only drop tokens the SDK actually rejected — the stored refresh token must still be the one this
+        // provider presented. Rotating servers hand out a fresh refresh token per use, so a concurrent
+        // connection may have already replaced ours; deleting then would discard the newer valid credential
+        // and strand every connection in needs_auth until a manual re-auth.
+        await Effect.runPromise(this.auth.clearTokens(this.mcpName, this.presented ?? ""))
+        await Effect.runPromise(this.auth.clearClientInfo(this.mcpName))
         break
       case "client":
-        delete entry.clientInfo
-        await Effect.runPromise(this.auth.set(this.mcpName, entry))
+        await Effect.runPromise(this.auth.clearClientInfo(this.mcpName))
         break
       case "tokens":
-        delete entry.tokens
-        await Effect.runPromise(this.auth.set(this.mcpName, entry))
+        await Effect.runPromise(this.auth.clearTokens(this.mcpName, this.presented ?? ""))
         break
     }
+  }
+
+  /**
+   * Fetch wrapper for the transports that coordinates token refreshes. Refresh-grant requests run under the
+   * server's refresh lock — in-process callers share one operation, other processes serialize behind the
+   * file lock — so a rotating server never sees the same refresh token twice. Everything else passes through.
+   */
+  refreshFetch(): FetchLike {
+    return (input, init) => {
+      const body = init?.body instanceof URLSearchParams ? init.body : undefined
+      if (body?.get("grant_type") !== "refresh_token") return fetch(input, init)
+      return this.lockedRefresh(body.get("refresh_token") ?? "", input, init)
+    }
+  }
+
+  private lockedRefresh(refreshToken: string, input: string | URL, init?: RequestInit): Promise<Response> {
+    const auth = this.auth
+    const mcpName = this.mcpName
+    const serverUrl = this.serverUrl
+    return Effect.runPromise(
+      auth.withRefreshLock(
+        mcpName,
+        Effect.gen(function* () {
+          const stored = yield* auth.getForUrl(mcpName, serverUrl)
+          if (stored?.tokens?.refreshToken !== refreshToken) {
+            // The stored credential already rotated past the token we were about to spend. Failing the
+            // grant here keeps the newer tokens and makes the SDK reload them instead of saving over them.
+            return rotated()
+          }
+          const response = yield* Effect.tryPromise({
+            // Bounds the request so a stalled token endpoint cannot hold the refresh lock.
+            try: () => fetch(input, { ...init, signal: AbortSignal.timeout(30_000) }),
+            catch: (cause) => cause,
+          }).pipe(
+            Effect.catch((cause) => Effect.succeed(unavailable(cause instanceof Error ? cause.message : String(cause)))),
+          )
+          if (response.status === 429 || response.status >= 500) return unavailable(`HTTP ${response.status}`)
+          if (!response.ok) return response
+          const text = yield* Effect.promise(() => response.text())
+          let parsed: unknown
+          try {
+            parsed = JSON.parse(text)
+          } catch {
+            return new Response(text, { status: response.status, headers: response.headers })
+          }
+          const tokens = OAuthTokensSchema.safeParse(parsed)
+          if (!tokens.success) return new Response(text, { status: response.status, headers: response.headers })
+          // Save under the lock so a concurrent waiter re-checks against the rotated token, not the spent one.
+          yield* auth.updateTokens(
+            mcpName,
+            {
+              accessToken: tokens.data.access_token,
+              refreshToken: tokens.data.refresh_token ?? refreshToken,
+              expiresAt: tokens.data.expires_in ? Date.now() / 1000 + tokens.data.expires_in : undefined,
+              scope: tokens.data.scope,
+            },
+            serverUrl,
+          )
+          return Response.json(tokens.data)
+        }),
+      ),
+    ).then((response) => response.clone())
   }
 }
 

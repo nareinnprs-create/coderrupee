@@ -69,6 +69,11 @@ export const ApplyPatchTool = Tool.define(
 
       let totalDiff = ""
 
+      // Threads content between hunks touching the same file so later hunks see
+      // earlier hunks' results instead of stale on-disk bytes; a null entry marks
+      // a file a previous hunk deleted or moved away.
+      const tracked = new Map<string, { readonly text: string; readonly bom: boolean } | null>()
+
       for (const hunk of hunks) {
         const filePath = path.resolve(instance.directory, hunk.path)
         yield* assertExternalDirectoryEffect(ctx, filePath)
@@ -98,21 +103,29 @@ export const ApplyPatchTool = Tool.define(
               deletions,
               bom: next.bom,
             })
+            tracked.set(filePath, { text: next.text, bom: next.bom })
 
             totalDiff += diff + "\n"
             break
           }
 
           case "update": {
-            // Check if file exists for update
-            const stats = yield* afs.stat(filePath).pipe(Effect.catch(() => Effect.succeed(undefined)))
-            if (!stats || stats.type === "Directory") {
+            const previous = tracked.get(filePath)
+            if (previous === null) {
               return yield* Effect.fail(
-                new Error(`apply_patch verification failed: Failed to read file to update: ${filePath}`),
+                new Error(`apply_patch verification failed: Failed to read file to update ${filePath}: file does not exist`),
               )
             }
-
-            const source = yield* Bom.readFile(afs, filePath)
+            const source = previous ?? (yield* Effect.gen(function* () {
+              // Check if file exists for update
+              const stats = yield* afs.stat(filePath).pipe(Effect.catch(() => Effect.succeed(undefined)))
+              if (!stats || stats.type === "Directory") {
+                return yield* Effect.fail(
+                  new Error(`apply_patch verification failed: Failed to read file to update: ${filePath}`),
+                )
+              }
+              return yield* Bom.readFile(afs, filePath)
+            }))
             const oldContent = source.text
             let newContent = oldContent
             let bom = source.bom
@@ -139,14 +152,17 @@ export const ApplyPatchTool = Tool.define(
               if (change.removed) deletions += change.count || 0
             }
 
-            const movePath = hunk.move_path ? path.resolve(instance.directory, hunk.move_path) : undefined
-            yield* assertExternalDirectoryEffect(ctx, movePath)
+            // A move onto the file's own path is an in-place update: writing the
+            // destination then removing the source would delete the file.
+            const requestedMovePath = hunk.move_path ? path.resolve(instance.directory, hunk.move_path) : undefined
+            const movePath = requestedMovePath && requestedMovePath !== filePath ? requestedMovePath : undefined
+            yield* assertExternalDirectoryEffect(ctx, requestedMovePath)
 
             fileChanges.push({
               filePath,
               oldContent,
               newContent,
-              type: hunk.move_path ? "move" : "update",
+              type: movePath ? "move" : "update",
               movePath,
               diff,
               additions,
@@ -154,12 +170,25 @@ export const ApplyPatchTool = Tool.define(
               bom,
             })
 
+            if (movePath) {
+              tracked.set(filePath, null)
+              tracked.set(movePath, { text: newContent, bom })
+            } else {
+              tracked.set(filePath, { text: newContent, bom })
+            }
+
             totalDiff += diff + "\n"
             break
           }
 
           case "delete": {
-            const source = yield* Bom.readFile(afs, filePath).pipe(
+            const previous = tracked.get(filePath)
+            if (previous === null) {
+              return yield* Effect.fail(
+                new Error(`apply_patch verification failed: Failed to delete ${filePath}: file does not exist`),
+              )
+            }
+            const source = previous ?? (yield* Bom.readFile(afs, filePath).pipe(
               Effect.catch((error) =>
                 Effect.fail(
                   new Error(
@@ -167,7 +196,7 @@ export const ApplyPatchTool = Tool.define(
                   ),
                 ),
               ),
-            )
+            ))
             const contentToDelete = source.text
             const deleteDiff = trimDiff(createTwoFilesPatch(filePath, filePath, contentToDelete, ""))
 
@@ -183,6 +212,7 @@ export const ApplyPatchTool = Tool.define(
               deletions,
               bom: source.bom,
             })
+            tracked.set(filePath, null)
 
             totalDiff += deleteDiff + "\n"
             break

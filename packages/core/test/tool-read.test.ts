@@ -66,6 +66,7 @@ const permission = Layer.succeed(
         assertions.push(input)
       }).pipe(Effect.andThen(allow ? Effect.void : Effect.fail(new PermissionV2.BlockedError({ rules: [] })))),
     ask: () => Effect.die("unused"),
+    assertNotDenied: () => Effect.void,
     reply: () => Effect.die("unused"),
     get: () => Effect.die("unused"),
     forSession: () => Effect.die("unused"),

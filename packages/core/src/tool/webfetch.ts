@@ -2,7 +2,7 @@ export * as WebFetchTool from "./webfetch"
 
 import { ToolFailure } from "@coderrupee/llm"
 import { Duration, Effect, Layer, Schema } from "effect"
-import { HttpClient, HttpClientRequest, HttpClientResponse } from "effect/unstable/http"
+import { FetchHttpClient, HttpClient, HttpClientRequest, HttpClientResponse } from "effect/unstable/http"
 import { Parser } from "htmlparser2"
 import TurndownService from "turndown"
 import { makeLocationNode } from "../effect/app-node"
@@ -84,10 +84,44 @@ const request = (url: string, format: Format, userAgent = browserUserAgent) =>
 
 const assertHttpUrl = (url: URL) => {
   if (url.protocol !== "http:" && url.protocol !== "https:") throw new Error("URL must use http:// or https://")
+  // Rules match the URL, so `https://user@evil.com` would slip past a rule for `https://evil.com/*`.
+  if (url.username || url.password) throw new Error("URL must not include credentials")
 }
 
-const execute = (http: HttpClient.HttpClient, url: string, format: Format, userAgent = browserUserAgent) =>
-  http.execute(request(url, format, userAgent)).pipe(Effect.flatMap(HttpClientResponse.filterStatusOk))
+export const MAX_REDIRECTS = 10
+const redirectStatuses = new Set([301, 302, 303, 307, 308])
+
+// Follows redirects here instead of in fetch so each new URL is checked against the permission rules first.
+const execute = (
+  http: HttpClient.HttpClient,
+  check: (url: string) => Effect.Effect<void, Error>,
+  url: string,
+  format: Format,
+  userAgent = browserUserAgent,
+  redirects = 0,
+): Effect.Effect<HttpClientResponse.HttpClientResponse, Error> =>
+  http.execute(request(url, format, userAgent)).pipe(
+    Effect.provideService(FetchHttpClient.RequestInit, { redirect: "manual" }),
+    Effect.flatMap((response) => {
+      const location = response.headers.location
+      if (!redirectStatuses.has(response.status) || !location) return HttpClientResponse.filterStatusOk(response)
+      if (redirects >= MAX_REDIRECTS) return Effect.fail(new Error(`Too many redirects (more than ${MAX_REDIRECTS})`))
+      return Effect.gen(function* () {
+        const next = yield* Effect.try({
+          try: () => {
+            const target = new URL(location, url)
+            assertHttpUrl(target)
+            // The fragment is never sent, and would keep a rule for the exact URL from matching.
+            target.hash = ""
+            return target.href
+          },
+          catch: (error) => (error instanceof Error ? error : new Error(String(error))),
+        })
+        yield* check(next)
+        return yield* execute(http, check, next, format, userAgent, redirects + 1)
+      })
+    }),
+  )
 
 const collectBody = (response: HttpClientResponse.HttpClientResponse) =>
   collectBoundedResponseBody(
@@ -130,14 +164,17 @@ const layer = Layer.effectDiscard(
           toModelOutput: ({ output }) => [{ type: "text", text: output.output }],
           execute: (input, context) =>
             Effect.gen(function* () {
+              // Rules match the URL as written. The fragment is never sent, and would keep a rule for the exact
+              // URL from matching.
+              const url = input.url.split("#")[0]
               yield* Effect.try({
-                try: () => assertHttpUrl(new URL(input.url)),
+                try: () => assertHttpUrl(new URL(url)),
                 catch: (error) => error,
               })
 
               yield* permission.assert({
                 action: name,
-                resources: [input.url],
+                resources: [url],
                 save: ["*"],
                 metadata: input,
                 sessionID: context.sessionID,
@@ -146,8 +183,17 @@ const layer = Layer.effectDiscard(
               })
 
               const { body, contentType } = yield* Effect.gen(function* () {
-                const response = yield* execute(http, input.url, input.format).pipe(
-                  Effect.catchIf(isCloudflareChallenge, () => execute(http, input.url, input.format, "coderrupee")),
+                const check = (next: string) =>
+                  permission.assertNotDenied({
+                    action: name,
+                    resources: [next],
+                    metadata: { ...input, url: next },
+                    sessionID: context.sessionID,
+                    agent: context.agent,
+                    source: { type: "tool", messageID: context.assistantMessageID, callID: context.toolCallID },
+                  })
+                const response = yield* execute(http, check, url, input.format).pipe(
+                  Effect.catchIf(isCloudflareChallenge, () => execute(http, check, url, input.format, "coderrupee")),
                 )
                 const contentType = response.headers["content-type"] || ""
                 const mime = mimeFrom(contentType)

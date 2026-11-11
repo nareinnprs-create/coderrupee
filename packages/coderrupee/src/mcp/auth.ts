@@ -2,7 +2,7 @@ import { LayerNode } from "@coderrupee/core/effect/layer-node"
 import path from "path"
 import { serviceUse } from "@coderrupee/core/effect/service-use"
 import { Global } from "@coderrupee/core/global"
-import { Effect, Layer, Context, Option, Schema } from "effect"
+import { Effect, Fiber, Layer, Context, Option, Schema } from "effect"
 import { FSUtil } from "@coderrupee/core/fs-util"
 import { EffectFlock } from "@coderrupee/core/util/effect-flock"
 
@@ -50,6 +50,17 @@ export interface Interface {
   readonly updateOAuthState: (mcpName: string, oauthState: string) => Effect.Effect<void>
   readonly getOAuthState: (mcpName: string) => Effect.Effect<string | undefined>
   readonly clearOAuthState: (mcpName: string) => Effect.Effect<void>
+  /** Clears stored tokens only when the stored refresh token is still the one the caller was given. */
+  readonly clearTokens: (mcpName: string, expectRefresh: string) => Effect.Effect<void>
+  readonly clearClientInfo: (mcpName: string) => Effect.Effect<void>
+  /**
+   * Concurrent callers for one server share the running operation's result, including failures, and the
+   * operation holds a file lock so other processes refreshing the same credential serialize behind it.
+   */
+  readonly withRefreshLock: <A, E>(
+    mcpName: string,
+    operation: Effect.Effect<A, E>,
+  ) => Effect.Effect<A, E | EffectFlock.LockError>
 }
 
 export class Service extends Context.Service<Service, Interface>()("@coderrupee/McpAuth") {}
@@ -61,6 +72,8 @@ const layer = Layer.effect(
   Effect.gen(function* () {
     const fs = yield* FSUtil.Service
     const flock = yield* EffectFlock.Service
+    const scope = yield* Effect.scope
+    const pending = new Map<string, Fiber.Fiber<unknown, unknown>>()
 
     const read = Effect.fn("McpAuth.read")(function* () {
       return yield* fs.readJson(filepath).pipe(
@@ -141,6 +154,43 @@ const layer = Layer.effect(
       return entry?.oauthState
     })
 
+    const clearTokens = Effect.fn("McpAuth.clearTokens")(function* (mcpName: string, expectRefresh: string) {
+      yield* mutate((data) => {
+        const entry = data[mcpName]
+        // Another connection may have refreshed past the token the caller presented; its tokens win.
+        if (!entry?.tokens || entry.tokens.refreshToken !== expectRefresh) return undefined
+        delete entry.tokens
+        return { ...data, [mcpName]: entry }
+      })
+    })
+
+    const clearClientInfo = Effect.fn("McpAuth.clearClientInfo")(function* (mcpName: string) {
+      yield* mutate((data) => {
+        const entry = data[mcpName]
+        if (!entry?.clientInfo) return undefined
+        delete entry.clientInfo
+        return { ...data, [mcpName]: entry }
+      })
+    })
+
+    const withRefreshLock = <A, E>(
+      mcpName: string,
+      operation: Effect.Effect<A, E>,
+    ): Effect.Effect<A, E | EffectFlock.LockError> =>
+      Effect.gen(function* () {
+        const current = pending.get(mcpName)
+        if (current) return yield* Fiber.join(current as Fiber.Fiber<A, E>)
+        // The layer scope owns the operation so it outlives the first caller; the file lock extends
+        // coordination to other processes refreshing the same server's credential.
+        const fiber = yield* operation.pipe(
+          flock.withLock(`mcp-auth-refresh:${mcpName}`),
+          Effect.ensuring(Effect.sync(() => pending.delete(mcpName))),
+          Effect.forkIn(scope),
+        )
+        pending.set(mcpName, fiber as Fiber.Fiber<unknown, unknown>)
+        return yield* Fiber.join(fiber)
+      })
+
     return Service.of({
       all,
       get,
@@ -154,6 +204,9 @@ const layer = Layer.effect(
       updateOAuthState,
       getOAuthState,
       clearOAuthState,
+      clearTokens,
+      clearClientInfo,
+      withRefreshLock,
     })
   }),
 )

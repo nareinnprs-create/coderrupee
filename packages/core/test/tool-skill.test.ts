@@ -50,6 +50,7 @@ describe("SkillTool", () => {
                   Effect.andThen(deny ? Effect.fail(new PermissionV2.BlockedError({ rules: [] })) : Effect.void),
                 ),
               ask: () => Effect.die("unused"),
+              assertNotDenied: () => Effect.void,
               reply: () => Effect.die("unused"),
               get: () => Effect.die("unused"),
               forSession: () => Effect.die("unused"),

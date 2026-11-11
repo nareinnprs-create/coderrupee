@@ -97,6 +97,7 @@ const permission = Layer.succeed(
   PermissionV2.Service.of({
     assert: (input) => Effect.sync(() => assertions.push(input)),
     ask: () => Effect.die("unused"),
+    assertNotDenied: () => Effect.void,
     reply: () => Effect.die("unused"),
     get: () => Effect.die("unused"),
     forSession: () => Effect.die("unused"),

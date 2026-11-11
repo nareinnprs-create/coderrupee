@@ -8,6 +8,7 @@ import { StreamableHTTPClientTransport } from "@modelcontextprotocol/sdk/client/
 import { SSEClientTransport } from "@modelcontextprotocol/sdk/client/sse.js"
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js"
 import { UnauthorizedError } from "@modelcontextprotocol/sdk/client/auth.js"
+import { TemporarilyUnavailableError } from "@modelcontextprotocol/sdk/server/auth/errors.js"
 import {
   ListRootsRequestSchema,
   type LoggingMessageNotification,
@@ -272,6 +273,7 @@ const layer = Layer.effect(
           transport: new StreamableHTTPClientTransport(url, {
             authProvider,
             requestInit: mcp.headers ? { headers: mcp.headers } : undefined,
+            fetch: authProvider?.refreshFetch(),
           }),
         },
         {
@@ -279,6 +281,7 @@ const layer = Layer.effect(
           transport: new SSEClientTransport(url, {
             authProvider,
             requestInit: mcp.headers ? { headers: mcp.headers } : undefined,
+            fetch: authProvider?.refreshFetch(),
           }),
         },
       ]
@@ -291,8 +294,11 @@ const layer = Layer.effect(
           Effect.map((client) => ({ client, transportName: name })),
           Effect.catch((error) => {
             const lastError = error instanceof Error ? error : new Error(String(error))
+            // A temporarily-unavailable refresh is a transient failure, not a lost login: fail the connection
+            // so the next attempt retries instead of reporting needs_auth for a credential that is still good.
             const isAuthError =
-              error instanceof UnauthorizedError || (authProvider && lastError.message.includes("OAuth"))
+              !(error instanceof TemporarilyUnavailableError) &&
+              (error instanceof UnauthorizedError || (authProvider && lastError.message.includes("OAuth")))
 
             if (isAuthError) {
               if (lastError.message.includes("registration") || lastError.message.includes("client_id")) {

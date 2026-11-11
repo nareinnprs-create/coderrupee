@@ -2,10 +2,8 @@ import { Database } from "bun:sqlite"
 import { drizzle } from "drizzle-orm/bun-sqlite"
 import * as Context from "effect/Context"
 import * as Effect from "effect/Effect"
-import * as Fiber from "effect/Fiber"
 import { identity } from "effect/Function"
 import * as Layer from "effect/Layer"
-import * as Scope from "effect/Scope"
 import * as Semaphore from "effect/Semaphore"
 import * as Stream from "effect/Stream"
 import * as Reactivity from "effect/unstable/reactivity/Reactivity"
@@ -124,14 +122,17 @@ const make = (options: Config) =>
 
     const semaphore = yield* Semaphore.make(1)
     const acquirer = semaphore.withPermits(1)(Effect.succeed(connection))
-    const transactionAcquirer = Effect.uninterruptibleMask((restore) => {
-      const fiber = Fiber.getCurrent()!
-      const scope = Context.getUnsafe(fiber.context, Scope.Scope)
-      return Effect.as(
-        Effect.tap(restore(semaphore.take(1)), () => Scope.addFinalizer(scope, semaphore.release(1))),
+    // Fully uninterruptible acquisition: the scheduler can park the fiber between
+    // the semaphore grant and the finalizer registration, and an interrupt landing
+    // in that window would leak the permit and lock up every later query. A parked
+    // uninterruptible fiber always resumes to completion; the recorded interrupt
+    // fires afterwards, when the scope already owns the release.
+    const transactionAcquirer = Effect.uninterruptible(
+      Effect.as(
+        Effect.tap(semaphore.take(1), () => Effect.addFinalizer(() => semaphore.release(1))),
         connection,
-      )
-    })
+      ),
+    )
 
     const client = Object.assign(
       (yield* Client.make({
@@ -159,6 +160,7 @@ const nativeLayer = (config: Config) =>
   Layer.effect(
     Sqlite.Native,
     Effect.gen(function* () {
+      Sqlite.restrictToOwner(config.filename, (config.create ?? true) && config.readonly !== true)
       const native = new Database(config.filename, {
         readonly: config.readonly,
         readwrite: config.readwrite ?? true,

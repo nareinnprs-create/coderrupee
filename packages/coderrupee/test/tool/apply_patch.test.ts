@@ -318,6 +318,61 @@ describe("tool.apply_patch freeform", () => {
     }),
   )
 
+  it.instance("preserves files across self-moves and multi-hunk moves in one patch", () =>
+    Effect.gen(function* () {
+      const test = yield* TestInstance
+      const { ctx } = makeCtx()
+      const same = path.join(test.directory, "same.txt")
+      const source = path.join(test.directory, "old.txt")
+      const destination = path.join(test.directory, "moved.txt")
+      yield* writeText(same, "before\n")
+      yield* writeText(source, "a\nb\nc\n")
+
+      const patchText = [
+        "*** Begin Patch",
+        "*** Update File: same.txt",
+        "*** Move to: ./same.txt",
+        "@@",
+        "-before",
+        "+after",
+        "*** Update File: old.txt",
+        "@@",
+        "-a",
+        "+A",
+        "*** Update File: old.txt",
+        "*** Move to: moved.txt",
+        "@@",
+        "-b",
+        "+B",
+        "*** Update File: moved.txt",
+        "@@",
+        "-c",
+        "+C",
+        "*** End Patch",
+      ].join("\n")
+
+      yield* execute({ patchText }, ctx)
+
+      expect(yield* readText(same)).toBe("after\n")
+      yield* expectReadFailure(source)
+      expect(yield* readText(destination)).toBe("A\nB\nC\n")
+    }),
+  )
+
+  it.instance("rejects deleting a file the same patch already deleted or moved away", () =>
+    Effect.gen(function* () {
+      const test = yield* TestInstance
+      const { ctx } = makeCtx()
+      const target = path.join(test.directory, "gone.txt")
+      yield* writeText(target, "content\n")
+
+      const patchText = "*** Begin Patch\n*** Delete File: gone.txt\n*** Delete File: gone.txt\n*** End Patch"
+
+      yield* expectFailure(execute({ patchText }, ctx), "file does not exist")
+      expect(yield* readText(target)).toBe("content\n")
+    }),
+  )
+
   it.instance("adds file overwriting existing file", () =>
     Effect.gen(function* () {
       const test = yield* TestInstance

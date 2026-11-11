@@ -16,6 +16,9 @@ const it = testEffect(
   ]),
 )
 
+let hits = 0
+
+const asked: Array<{ permission: string; patterns: ReadonlyArray<string> }> = []
 const ctx = {
   sessionID: SessionID.make("ses_test"),
   messageID: MessageID.make("msg_message"),
@@ -24,7 +27,7 @@ const ctx = {
   abort: AbortSignal.any([]),
   messages: [],
   metadata: () => Effect.void,
-  ask: () => Effect.void,
+  ask: (input: { permission: string; patterns: ReadonlyArray<string> }) => Effect.sync(() => asked.push(input)),
 }
 
 const withFetch = <A, E, R>(
@@ -113,6 +116,37 @@ describe("tool.webfetch", () => {
           const result = yield* exec({ url: new URL("/page.html", url).toString(), format: "text" })
           expect(result.output).toBe("Hello world")
           expect(result.attachments).toBeUndefined()
+        }),
+    ),
+  )
+
+  it.instance("matches rules against the URL as written without the fragment", () =>
+    withFetch(
+      () => new Response("ok", { status: 200, headers: { "content-type": "text/plain" } }),
+      (url) =>
+        Effect.gen(function* () {
+          asked.length = 0
+          const result = yield* exec({ url: `${url.origin}/page#top`, format: "text" })
+          expect(result.output).toBe("ok")
+          expect(asked).toMatchObject([{ permission: "webfetch", patterns: [`${url.origin}/page`] }])
+        }),
+    ),
+  )
+
+  it.instance("rejects credentials in the URL before permission or transport", () =>
+    withFetch(
+      () => {
+        hits++
+        return new Response("must not be fetched", { status: 200, headers: { "content-type": "text/plain" } })
+      },
+      (url) =>
+        Effect.gen(function* () {
+          asked.length = 0
+          hits = 0
+          const exit = yield* Effect.exit(exec({ url: `${url.protocol}//user@${url.host}/secret`, format: "text" }))
+          expect(exit._tag).toBe("Failure")
+          expect(asked).toEqual([])
+          expect(hits).toBe(0)
         }),
     ),
   )

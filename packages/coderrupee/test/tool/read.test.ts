@@ -189,7 +189,8 @@ describe("tool.read external_directory permission", () => {
     // (Defender/FS latency), which makes the read step in these path-variant tests
     // unreliable; the permission-glob invariants still run on every other surface.
     const windowsCi = process.env.GITHUB_ACTIONS === "true"
-    it.live(
+    const variantTest = windowsCi ? it.live.skip : it.live
+    variantTest(
       "normalizes read permission paths on Windows",
       () =>
         Effect.gen(function* () {
@@ -205,8 +206,6 @@ describe("tool.read external_directory permission", () => {
           expect(read).toBeDefined()
           expect(read!.patterns).toEqual([path.relative(dir, full(target))])
         }),
-      undefined,
-      windowsCi ? { skip: true, seed: 0 } : undefined,
     )
   }
 

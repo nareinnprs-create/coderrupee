@@ -279,7 +279,10 @@ export class SQLiteEffectPreparedQuery<
       assertUnreachable(cacheStrat)
     }).pipe(
       Effect.catch((e) => {
-        return Effect.fail(new EffectDrizzleQueryError({ query: queryString, params, cause: Cause.fail(e) }))
+        // Params can hold credential material; error reports must not echo them.
+        return Effect.fail(
+          new EffectDrizzleQueryError({ query: queryString, params: params.map(() => "[redacted]"), cause: Cause.fail(e) }),
+        )
       }),
     )
   }

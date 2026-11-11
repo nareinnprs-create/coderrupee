@@ -44,6 +44,7 @@ const permission = Layer.succeed(
         ),
       ),
     ask: () => Effect.die("unused"),
+    assertNotDenied: () => Effect.void,
     reply: () => Effect.die("unused"),
     get: () => Effect.die("unused"),
     forSession: () => Effect.die("unused"),
