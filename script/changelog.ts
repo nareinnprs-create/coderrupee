@@ -52,12 +52,20 @@ const cmd = ["coderrupee", "run"]
 cmd.push("--variant", values.variant)
 cmd.push("--command", "changelog", "--", ...args)
 
-const proc = Bun.spawn(cmd, {
-  cwd: root,
-  stdin: "inherit",
-  stdout: quiet ? "pipe" : "inherit",
-  stderr: quiet ? "pipe" : "inherit",
-})
+let proc: Bun.Subprocess<"inherit", "pipe", "pipe">
+try {
+  proc = Bun.spawn(cmd, {
+    cwd: root,
+    stdin: "inherit",
+    stdout: quiet ? "pipe" : "inherit",
+    stderr: quiet ? "pipe" : "inherit",
+  })
+} catch {
+  // coderrupee binary not installed (e.g. CI version job); skip AI changelog.
+  // version.ts falls back to "No notable changes" when the file is absent.
+  process.stderr.write("coderrupee executable not found; skipping changelog generation\n")
+  process.exit(0)
+}
 
 const [out, err] = quiet
   ? await Promise.all([new Response(proc.stdout).text(), new Response(proc.stderr).text()])
