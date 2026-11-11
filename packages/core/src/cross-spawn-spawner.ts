@@ -154,7 +154,11 @@ export const make = Effect.gen(function* () {
     const pipe = (x: NodeChildProcess.IOType | undefined) =>
       process.platform === "win32" && x === "pipe" ? "overlapped" : x
     const arr: Array<NodeChildProcess.IOType | undefined> = [
-      pipe(input(sin.stream)),
+      // stdin must stay a plain pipe on Windows: "overlapped" stdin silently
+      // never delivers written data to children that read stdin (e.g. the
+      // keyring's PowerShell [Console]::In.ReadToEnd()), hanging them until
+      // their timeout. Only stdout/stderr benefit from "overlapped".
+      input(sin.stream),
       pipe(output(sout.stream)),
       pipe(output(serr.stream)),
     ]
