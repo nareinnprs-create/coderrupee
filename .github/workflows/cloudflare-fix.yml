@@ -1,0 +1,56 @@
+name: cloudflare-fix
+
+# Points coderrupee.opraiz.com at the coderrupee Pages project (currently the
+# DNS record targets a dead origin, so Cloudflare returns 522) and verifies
+# the site serves.
+
+on:
+  workflow_dispatch:
+
+concurrency: cloudflare-fix
+
+permissions:
+  contents: read
+
+jobs:
+  fix:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Attach custom domain to Pages project
+        run: |
+          API="https://api.cloudflare.com/client/v4"
+          ACC="${{ secrets.CLOUDFLARE_ACCOUNT_ID }}"
+          AUTH="Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}"
+          RESULT=$(curl -s -X POST "$API/accounts/$ACC/pages/projects/coderrupee/domains" \
+            -H "$AUTH" -H "Content-Type: application/json" \
+            -d '{"name":"coderrupee.opraiz.com"}')
+          echo "$RESULT" | head -c 500
+          echo "$RESULT" | grep -q '"success":true' || echo "$RESULT" | grep -q 'already' || echo "::warning::domain attach response unexpected"
+
+      - name: Fix DNS record (CNAME coderrupee -> coderrupee.pages.dev, proxied)
+        run: |
+          API="https://api.cloudflare.com/client/v4"
+          AUTH="Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}"
+          ZONE=$(curl -sf "$API/zones?name=opraiz.com" -H "$AUTH" | jq -r '.result[0].id // empty')
+          if [ -z "$ZONE" ]; then echo "::error::zone opraiz.com not found (token may lack Zone:Read)"; exit 1; fi
+          REC_ID=$(curl -sf "$API/zones/$ZONE/dns_records?name=coderrupee.opraiz.com" -H "$AUTH" | jq -r '.result[0].id // empty')
+          if [ -n "$REC_ID" ]; then
+            echo "deleting stale record $REC_ID"
+            curl -sf -X DELETE "$API/zones/$ZONE/dns_records/$REC_ID" -H "$AUTH" || true
+          fi
+          RESULT=$(curl -s -X POST "$API/zones/$ZONE/dns_records" -H "$AUTH" -H "Content-Type: application/json" \
+            -d '{"type":"CNAME","name":"coderrupee","content":"coderrupee.pages.dev","proxied":true}')
+          echo "$RESULT" | head -c 500
+          echo "$RESULT" | grep -q '"success":true' || { echo "::error::DNS create failed"; exit 1; }
+
+      - name: Verify site serves
+        run: |
+          sleep 30
+          for i in 1 2 3 4; do
+            CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "https://coderrupee.opraiz.com/changelog.json" || echo 000)
+            echo "attempt $i: changelog.json -> $CODE"
+            [ "$CODE" = "200" ] && { echo "site is live"; exit 0; }
+            sleep 30
+          done
+          echo "::warning::domain not serving 200 yet (Pages custom-domain validation + DNS propagation can take several minutes)"
+          exit 0
