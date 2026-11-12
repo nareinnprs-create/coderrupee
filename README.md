@@ -54,7 +54,7 @@ curl -fsSL https://coderrupee.opraiz.com/install | bash
 Or with npm:
 
 ```bash
-npm install -g coderrupee-ai
+npm install -g @coderrupee/cli
 ```
 
 Windows, macOS (Intel & Apple Silicon), and Linux desktop installers are available on

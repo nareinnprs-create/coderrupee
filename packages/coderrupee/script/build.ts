@@ -224,7 +224,9 @@ for (const item of targets) {
   await Bun.file(`dist/${name}/package.json`).write(
     JSON.stringify(
       {
-        name,
+        // npm name is scoped so the org granular token can publish it; the
+        // dist directory and release zip names keep the unscoped form.
+        name: `@coderrupee/${name}`,
         version: Script.version,
         preferUnplugged: true,
         os: [item.os],
@@ -235,7 +237,7 @@ for (const item of targets) {
       2,
     ),
   )
-  binaries[name] = Script.version
+  binaries[`@coderrupee/${name}`] = Script.version
 }
 
 if (Script.release) {

@@ -24,9 +24,11 @@ async function publish(dir: string, name: string, version: string) {
 }
 
 const binaries: Record<string, string> = {}
+const dirs: Record<string, string> = {}
 for (const filepath of new Bun.Glob("*/package.json").scanSync({ cwd: "./dist" })) {
   const pkg = await Bun.file(`./dist/${filepath}`).json()
   binaries[pkg.name] = pkg.version
+  dirs[pkg.name] = filepath.split("/")[0]
 }
 console.log("binaries", binaries)
 const version = Object.values(binaries)[0]
@@ -37,13 +39,13 @@ await $`cp ./script/postinstall.mjs ./dist/${pkg.name}/postinstall.mjs`
 await Bun.file(`./dist/${pkg.name}/LICENSE`).write(await Bun.file("../../LICENSE").text())
 await Bun.file(`./dist/${pkg.name}/bin/${pkg.name}.exe`).write(
   [
-    `echo "Error: ${pkg.name}-ai's postinstall script was not run." >&2`,
+    `echo "Error: @coderrupee/cli's postinstall script was not run." >&2`,
     'echo "" >&2',
     'echo "This occurs when using --ignore-scripts during installation, or when using a" >&2',
     'echo "package manager like pnpm that does not run postinstall scripts by default." >&2',
     'echo "" >&2',
     'echo "To fix this, run the postinstall script manually:" >&2',
-    `echo "  cd node_modules/${pkg.name}-ai && node postinstall.mjs" >&2`,
+    `echo "  cd node_modules/@coderrupee/cli && node postinstall.mjs" >&2`,
     'echo "" >&2',
     `echo "Or reinstall ${pkg.name}-ai without the --ignore-scripts flag." >&2`,
     "exit 1",
@@ -73,10 +75,10 @@ await Bun.file(`./dist/${pkg.name}/package.json`).write(
 )
 
 const tasks = Object.entries(binaries).map(async ([name]) => {
-  await publish(`./dist/${name}`, name, binaries[name])
+  await publish(`./dist/${dirs[name]}`, name, binaries[name])
 })
 await Promise.all(tasks)
-await publish(`./dist/${pkg.name}`, `${pkg.name}-ai`, version)
+await publish(`./dist/${pkg.name}`, "@coderrupee/cli", version)
 
 const image = "ghcr.io/nareinnprs-create/coderrupee"
 const platforms = "linux/amd64,linux/arm64"

@@ -181,11 +181,11 @@ else
     fi
 
     if [ -z "$requested_version" ]; then
-        # GitHub releases are the primary version source; the coderrupee-ai npm package is a
+        # GitHub releases are the primary version source; the @coderrupee/cli npm package is a
         # secondary fallback for the window where npm is published but the release is not up yet.
         specific_version=$(curl -fsSL --max-time 30 "https://api.github.com/repos/nareinnprs-create/coderrupee/releases/latest" 2>/dev/null | grep -o '"tag_name": *"v1\.[0-9]*\.[0-9]*"' | head -n 1 | sed 's/.*"v\([^"]*\)"$/\1/' || true)
         if [ -z "$specific_version" ]; then
-            specific_version=$(curl -fsSL --max-time 10 "https://registry.npmjs.org/coderrupee-ai/latest" 2>/dev/null | grep -o '"version": *"[^"]*"' | head -n 1 | sed 's/.*"\([^"]*\)"$/\1/' || true)
+            specific_version=$(curl -fsSL --max-time 10 "https://registry.npmjs.org/@coderrupee%2fcli/latest" 2>/dev/null | grep -o '"version": *"[^"]*"' |head -n 1 | sed 's/.*"\([^"]*\)"$/\1/' || true)
         fi
 
         if [[ -z "$specific_version" ]]; then

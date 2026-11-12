@@ -24,7 +24,7 @@ const archMap = {
 
 const platform = platformMap[os.platform()] ?? os.platform()
 const arch = archMap[os.arch()] ?? os.arch()
-const base = `coderrupee-${platform}-${arch}`
+const base = `@coderrupee/${platform}-${arch}`
 const sourceBinary = platform === "windows" ? "coderrupee.exe" : "coderrupee"
 const targetBinary = path.join(__dirname, "bin", "coderrupee.exe")
 
@@ -135,7 +135,7 @@ function installPackage(name) {
       { stdio: "inherit", windowsHide: true },
     )
     if (result.status !== 0) return
-    const packageDir = path.join(temp, "node_modules", name)
+    const packageDir = path.join(temp, "node_modules", "@coderrupee", name.split("/")[1])
     copyBinary(path.join(packageDir, "bin", sourceBinary), targetBinary)
     return true
   } finally {
