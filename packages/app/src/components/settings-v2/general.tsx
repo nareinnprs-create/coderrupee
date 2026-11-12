@@ -12,6 +12,7 @@ import { useUpdaterAction } from "../updater-action"
 import { useSettings } from "@/context/settings"
 import { useServerSDK } from "@/context/server-sdk"
 import { useServerSync } from "@/context/server-sync"
+import { authTokenFromCredentials } from "@/utils/server"
 import { ExternalLink } from "../external-link"
 import { SettingsListV2 } from "./parts/list"
 import { SettingsRowV2 } from "./parts/row"
@@ -548,7 +549,17 @@ export const SettingsGeneralV2: Component<{
     const serverSync = useServerSync()
     const serverSDK = useServerSDK()
     const request = async <T,>(path: string, method: "GET" | "POST") => {
-      const response = await (platform.fetch ?? globalThis.fetch)(new URL(path, serverSDK().url), { method })
+      // The engine requires basic auth on this route; the sidecar password must
+      // be attached or the call 401s and takes the whole page down.
+      const headers: Record<string, string> = {}
+      const http = serverSDK().server.http
+      if (http.password !== undefined || http.username) {
+        headers.Authorization = `Basic ${authTokenFromCredentials({ username: http.username, password: http.password ?? "" })}`
+      }
+      const response = await (platform.fetch ?? globalThis.fetch)(new URL(path, serverSDK().url), {
+        method,
+        headers,
+      })
       if (!response.ok) throw new Error(`Request failed: ${response.status}`)
       return (await response.json()) as T
     }
