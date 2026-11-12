@@ -16,6 +16,17 @@ jobs:
   fix:
     runs-on: ubuntu-24.04
     steps:
+      - name: Diagnose Pages project
+        run: |
+          API="https://api.cloudflare.com/client/v4"
+          ACC="${{ secrets.CLOUDFLARE_ACCOUNT_ID }}"
+          AUTH="Authorization: Bearer ${{ secrets.CLOUDFLARE_API_TOKEN }}"
+          echo "== project =="
+          curl -s "$API/accounts/$ACC/pages/projects/coderrupee" -H "$AUTH" | head -c 1200
+          echo
+          echo "== deployments (latest 5) =="
+          curl -s "$API/accounts/$ACC/pages/projects/coderrupee/deployments" -H "$AUTH" | jq -r '.result[] | "\(.created_on) \(.latest_stage) \(.deployment_trigger.metadata.commit_hash // "n/a")"' | head -5
+
       - name: Attach custom domain to Pages project
         run: |
           API="https://api.cloudflare.com/client/v4"
