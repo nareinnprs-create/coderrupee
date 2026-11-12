@@ -137,6 +137,7 @@ const targets = singleFlag
 await $`rm -rf dist`
 
 const binaries: Record<string, string> = {}
+const distDirs: Record<string, string> = {}
 if (!skipInstall) {
   await $`bun install --os="*" --cpu="*" @opentui/core@${pkg.dependencies["@opentui/core"]}`
   await $`bun install --os="*" --cpu="*" @parcel/watcher@${pkg.dependencies["@parcel/watcher"]}`
@@ -238,14 +239,16 @@ for (const item of targets) {
     ),
   )
   binaries[`@coderrupee/${name}`] = Script.version
+  // npm key -> dist directory/zip base (release assets keep unscoped names)
+  distDirs[`@coderrupee/${name}`] = name
 }
 
 if (Script.release) {
-  for (const key of Object.keys(binaries)) {
-    if (key.includes("linux")) {
-      await $`tar -czf ../../${key}.tar.gz *`.cwd(`dist/${key}/bin`)
+  for (const [, dirName] of Object.entries(distDirs)) {
+    if (dirName.includes("linux")) {
+      await $`tar -czf ../../${dirName}.tar.gz *`.cwd(`dist/${dirName}/bin`)
     } else {
-      await $`zip -r ../../${key}.zip *`.cwd(`dist/${key}/bin`)
+      await $`zip -r ../../${dirName}.zip *`.cwd(`dist/${dirName}/bin`)
     }
   }
   await $`gh release upload v${Script.version} ./dist/*.zip ./dist/*.tar.gz --clobber --repo ${process.env.GH_REPO}`
