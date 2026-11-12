@@ -57,11 +57,11 @@ jobs:
       - name: Verify site serves
         run: |
           sleep 30
-          for i in 1 2 3 4; do
-            CODE=$(curl -s -o /dev/null -w "%{http_code}" --max-time 15 "https://coderrupee.opraiz.com/changelog.json" || echo 000)
-            echo "attempt $i: changelog.json -> $CODE"
-            [ "$CODE" = "200" ] && { echo "site is live"; exit 0; }
-            sleep 30
-          done
-          echo "::warning::domain not serving 200 yet (Pages custom-domain validation + DNS propagation can take several minutes)"
-          exit 0
+          echo "== coderrupee.opraiz.com root (browser UA) =="
+          curl -s -D - -o /dev/null --max-time 15 -A "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/126 Safari/537.36" "https://coderrupee.opraiz.com/" | grep -iE "HTTP/|server:|cf-mitigated|cf-ray|location" || true
+          echo "== changelog.json (curl UA) =="
+          curl -s -D - -o /dev/null --max-time 15 "https://coderrupee.opraiz.com/changelog.json" | grep -iE "HTTP/|server:|cf-mitigated|cf-ray" || true
+          echo "== pages.dev root =="
+          curl -s -o /dev/null -w "%{http_code}\n" --max-time 15 "https://coderrupee.pages.dev/"
+          echo "== pages.dev changelog =="
+          curl -s -D - -o /dev/null --max-time 15 "https://coderrupee.pages.dev/changelog.json" | grep -iE "HTTP/|server:" || true
