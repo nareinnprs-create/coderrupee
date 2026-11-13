@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 300" role="img" aria-labelledby="title">
+<title id="title">Coder Rupee by OPRAIZ</title>
+<g transform="translate(8 0) scale(.92)" color="#FF765F">
+<g fill="none" stroke="currentColor" stroke-width="20" stroke-linecap="square" stroke-linejoin="miter">
+  <path d="M132 66 H72 V234 H132"/>
+  <path d="M132 66 H222 V150 H132"/>
+  <path d="M132 150 L228 234"/>
+</g>
+</g>
+<text x="320" y="132" fill="#F6F7F9" font-family="Inter, Arial, sans-serif" font-size="82" font-weight="750" letter-spacing="1.5">CODER RUPEE</text>
+<text x="324" y="184" fill="#AEB3C7" font-family="Inter, Arial, sans-serif" font-size="26" font-weight="650" letter-spacing="4">BY OPRAIZ</text>
+<text x="324" y="238" fill="#00BFA5" font-family="Inter, Arial, sans-serif" font-size="22" font-weight="500" letter-spacing="1">ENGINEERING OPRAIZ INTELLIGENCE.</text>
+</svg>

@@ -1,0 +1,46 @@
+{
+  "brand": {
+    "name": "Coder Rupee",
+    "endorsement": "by OPRAIZ",
+    "tagline": "Engineering Opraiz Intelligence."
+  },
+  "color": {
+    "deepIndigo": "#171A2E",
+    "porcelain": "#F6F7F9",
+    "coralEmber": "#FF765F",
+    "aquaTeal": "#00BFA5",
+    "mutedLavender": "#AEB3C7",
+    "ink": "#111111",
+    "lightCoral": "#E85F4B",
+    "lightTeal": "#008F7B",
+    "lightMuted": "#62697D"
+  },
+  "type": {
+    "primary": "Inter",
+    "technical": "JetBrains Mono",
+    "fallback": "Arial, sans-serif"
+  },
+  "logo": {
+    "grid": "300x300",
+    "strokeWidth": 20,
+    "clearSpace": "20 units minimum; use 1x stroke width as baseline"
+  },
+  "themes": {
+    "dark": {
+      "background": "#171A2E",
+      "surface": "#20243B",
+      "text": "#F6F7F9",
+      "muted": "#AEB3C7",
+      "accent": "#FF765F",
+      "accentSecondary": "#00BFA5"
+    },
+    "light": {
+      "background": "#F6F7F9",
+      "surface": "#FFFFFF",
+      "text": "#171A2E",
+      "muted": "#62697D",
+      "accent": "#E85F4B",
+      "accentSecondary": "#008F7B"
+    }
+  }
+}
